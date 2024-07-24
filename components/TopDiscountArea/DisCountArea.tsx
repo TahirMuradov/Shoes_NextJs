@@ -1,6 +1,6 @@
 
 
-const DisCountArea = () => {
+const DisCountArea:React.FC = () => {
   return (
     <section className="top-discount-area grid grid-cols-1 md:grid-cols-3">
 

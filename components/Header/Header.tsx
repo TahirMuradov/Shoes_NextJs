@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { PhoneCallback } from '@mui/icons-material';
 
 
-const Header = () => {
+const Header:React.FC = () => {
   const [visible,SetVisible]=useState<Boolean>(false);
   function CartListToogle(){
     document.body.classList.toggle("cart-data-open")
