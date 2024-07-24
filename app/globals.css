@@ -1,9 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "slick-carousel/slick/slick.css";
-@import "slick-carousel/slick/slick-theme.css";
-/* [Master Stylesheet] */
+
+
 
 /* ------------- Index of Stylesheet -------------
 :: 1.0 Import Web Fonts
@@ -37,13 +36,7 @@
 :: 2.0 Import All CSS
 ------------------ */
 
-/* @import '../css/bootstrap.min.css';
-@import '../css/owl.carousel.css';
-@import '../css/font-awesome.min.css';
-@import '../css/themify-icons.css';
-@import '../css/magnific-popup.css';
-@import '../css/animate.css';
-@import '../css/jquery-ui.min.css'; */
+
 
 /* -------------------
 :: 3.0 Common/Base CSS
@@ -149,7 +142,61 @@ img {
     vertical-align: middle;
 }
 
+.mt-15 {
+    margin-top: 15px;
+}
 
+.mt-30 {
+    margin-top: 30px;
+}
+
+.mt-50 {
+    margin-top: 50px;
+}
+
+.mt-70 {
+    margin-top: 70px;
+}
+
+.mt-100 {
+    margin-top: 100px;
+}
+
+.mb-15 {
+    margin-bottom: 15px;
+}
+
+.mb-30 {
+    margin-bottom: 30px;
+}
+
+.mb-50 {
+    margin-bottom: 50px;
+}
+
+.ml-15 {
+    margin-left: 15px;
+}
+
+.ml-30 {
+    margin-left: 30px;
+}
+
+.mr-15 {
+    margin-right: 15px;
+}
+
+.mr-30 {
+    margin-right: 30px;
+}
+
+.mb-70 {
+    margin-bottom: 70px;
+}
+
+.mb-100 {
+    margin-bottom: 100px;
+}
 
 .bg-img {
     background-position: center center;
@@ -289,25 +336,16 @@ img {
 :: 4.0 Wrapper CSS
 ------------------- */
 
-#wrapper {
-    position: relative;
-    z-index: 1000;
-    background-color: #fff;
-    left: 0;
-    top: 0;
-    -webkit-transition: all linear 500ms;
-    transition: all linear 500ms;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
-}
 
-#wrapper.karl-side-menu-open {
+
+.karl-side-menu-open {
     top: 0;
     left: 300px;
     -webkit-transition-duration: 500ms;
     transition-duration: 500ms;
 }
 
-#wrapper.karl-side-menu-open:after {
+.karl-side-menu-open:after {
     top: 0;
     left: 0;
     width: 100%;
@@ -408,7 +446,7 @@ img {
     -webkit-transition-duration: 750ms;
     transition-duration: 750ms;
     border-radius: 0;
-    display: none;
+  display: none;
     position: absolute;
     right: -44px;
     top: 50px;
@@ -472,8 +510,9 @@ img {
 }
 
 .main_header_area {
-    height: 150px;
+   
     padding-top: 30px;
+ 
 }
 
 .header-social-area a {
@@ -689,15 +728,11 @@ img {
 ------------------- */
 
 .top-discount-area .single-discount-area {
-    -webkit-box-flex: 0;
-    -ms-flex: 0 0 33.333333%;
-    flex: 0 0 33.333333%;
-    max-width: 33.333333%;
+ width: 100%;
     padding: 40px 15px;
     background-color: #b8b8b8;
     text-align: center;
-    -ms-flex-item-align: stretch;
-        align-self: stretch;
+
 }
 
 .top-discount-area .single-discount-area:nth-child(2) {
