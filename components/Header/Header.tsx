@@ -150,15 +150,11 @@ visible?SetVisible(false):SetVisible(true);
                       </li>
                      
                       <li className="mx-3">
-                        <Link className="" href="/">
-                          Dresses
+                        <Link className="" href="/shop">
+                          Shop
                         </Link>
                       </li>
-                      <li className="mx-3">
-                        <Link className="" href="/">
-                           Shoes
-                        </Link>
-                      </li>
+
                       <li className="mx-3">
                         <Link className="" href="/">
                           Contact
