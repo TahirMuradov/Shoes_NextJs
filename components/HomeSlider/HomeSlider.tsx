@@ -51,7 +51,7 @@ const HomeSlider: React.FC = () => {
 
 
   return (
-    <section className="welcome_area">
+    <section className="welcome_area overflow-hidden w-full">
       <Slider {...settings} className="welcome_slides owl-carousel">
         {slidesData.map(slide => (
           <div>
@@ -64,7 +64,7 @@ const HomeSlider: React.FC = () => {
                     <h6 data-animation="bounceInDown" data-delay="0" data-duration="500ms">
                       * Sadece bugün ücretsiz kargo imkanı
                     </h6>
-                    <h2 data-animation="fadeInUp" data-delay="500ms" data-duration="500ms">
+                    <h2 data-animation="fadeInUp" className='sm:font-[38px]' data-delay="500ms" data-duration="500ms">
                       {slide.heading}
                     </h2>
                     <a

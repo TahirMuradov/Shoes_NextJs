@@ -10,7 +10,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import Link from 'next/link';
-
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { PhoneCallback } from '@mui/icons-material';
 
 
@@ -21,15 +21,23 @@ const Header:React.FC = () => {
   }
 function ToggleMenu(){
 visible?SetVisible(false):SetVisible(true);
-console.log(visible)
+
 }
 
   return (
     <header className="header_area">
       <div className="top_header_area">
         <div className="w-[80%] mx-auto h-full">
-          <div className="flex h-full items-center justify-end">
-            <div className="w-full lg:w-3/4">
+          <div className="lg:flex h-full lg:items-center lg:justify-end grid grid-cols-4">
+          <div className='laungugage_box lg: w-1/4 col-span-1'>
+                    <select name="launguage" id="launguage">
+
+                      <option value="az">AZ</option>
+                      <option value="az">Ru</option>
+                      <option value="az">EN</option>
+                    </select>
+                  </div>
+            <div className="w-full lg:w-3/4 col-span-3">
               <div className="top_single_area grid grid-cols-2 gap-3 lg:flex lg:items-center lg:justify-between">
                 <div className="top_logo col-span-1">
                   <a href="#">
@@ -37,10 +45,13 @@ console.log(visible)
                   </a>
                 </div>
                 <div className="header-cart-menu flex items-center">
-                  <div className="cart">
+                  <div className="cart mx-2">
                     <a type='button' id="header-cart-btn" className='cursor-pointer' onClick={CartListToogle}>
                       <span className="cart_quantity">2</span>{' '}
-                     <ShoppingBagOutlinedIcon/> Your Bag $20
+                     <ShoppingBagOutlinedIcon/> 
+                     <span className='hidden lg:inline-block'>
+                      Your Bag $20
+                      </span> 
                     </a>
 
                     <ul className="cart-list z-50">
@@ -87,30 +98,28 @@ console.log(visible)
                       </li>
                     </ul>
                   </div>
-                
+                  <div className='mx-2 p-2'>
+
+                  <AccountCircleOutlinedIcon/>
+                  <span className='font-sans hidden lg:inline-block'>Hello Tahir</span>
+                  </div>
                 
                 </div>
-                <div className='laungugage_box mx-2'>
-                    <select name="launguage" id="launguage">
-
-                      <option value="az">AZ</option>
-                      <option value="az">Ru</option>
-                      <option value="az">EN</option>
-                    </select>
-                  </div>
              
-                  <div className="ml-15 block lg:hidden">
+             
+                  <div className="ml-15 block lg:hidden col-start-2">
                     <button type='button' onClick={ToggleMenu}>
                     <MenuOutlinedIcon/>
                     </button>
                   </div>
               </div>
             </div>
+         
           </div>
         </div>
       </div>
 
-      <div className={`main_header_area transition-all overflow-hidden h-0 lg:h-[150px] ${visible?'h-auto':'h-0'}`}>
+      <div className={`main_header_area transition-all duration-500 overflow-hidden  h-0 lg:h-[150px] ${visible?'h-[350px]':'h-0'}`}>
         <div className="container h-full mx-auto">
           <div className="flex h-full">
             <div className="w-full lg:flex lg:justify-between text-center">
@@ -158,6 +167,7 @@ console.log(visible)
                     </ul>
                   </div>
                 </nav>
+               
               </div>
 
               <div className="help-line">
