@@ -4,9 +4,11 @@ import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import Image from "next/image";
 import Slider from "react-slick";
 import ProductCart from "../ProductCart/ProductCart";
+import { useEffect, useRef, useState } from "react";
 
 const ProductDetail:React.FC<ProductType>=(Product:ProductType)=>{
-const baseUrl:string="";
+
+
 const settings1 = {
  
     dots: true,
@@ -15,14 +17,28 @@ const settings1 = {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1
-  }; const settings2 = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 3,
-    arrows:false
-  };
+  }; 
+  const [countItem,SetCountItem]=useState<number>(0);
+  const [sizeItem,SetSizeItem]=useState<number>(0)
+  const countRef=useRef<HTMLInputElement>(null);
+  
+  function CountPlus(){
+    if (countRef.current) {
+        countRef.current.valueAsNumber++
+        SetCountItem(countRef.current.valueAsNumber)
+        console.log(countItem,sizeItem);
+    }
+  }
+  function CountMinus(){
+    if (countRef.current) {
+        if (countRef.current.valueAsNumber>0) {
+            
+            countRef.current.valueAsNumber--
+            SetCountItem(countRef.current.valueAsNumber)
+        }
+    }
+  }
+
     return(
         <section className="single_product_details_area section_padding_0_100">
         <div className="w-4/5 mx-auto">
@@ -64,7 +80,7 @@ const settings1 = {
                                 <ul>
                                     {
                                         Product.size?.map((size, index) => (
-                                            <li key={index}><a className="cursor-pointer">{size}</a></li>
+                                            <li key={index}><a onClick={()=>SetSizeItem(size)} className="cursor-pointer">{size}</a></li>
                                         ))
                                     }
                                
@@ -76,9 +92,11 @@ const settings1 = {
               
                         <form className="cart clearfix mb-50 flex" method="post">
                             <div className="quantity">
-                                <span className="qty-minus" ><i className="fa fa-minus" aria-hidden="true"></i></span>
-                                <input type="number" className="qty-text" id="qty" step="1" min="1" max="12" name="quantity" value="1"/>
-                                <span className="qty-plus"><i className="fa fa-plus" aria-hidden="true"></i></span>
+
+                                <span onClick={CountMinus} className="qty-minus cursor-pointer">-</span>
+                                <input ref={countRef} type="number" className="qty-text" id="qty" step="1" min="1"name="quantity"disabled/>
+                            <span className="qty-plus cursor-pointer" onClick={CountPlus}>+</span>
+                           
                             </div>
                             <button type="submit" name="addtocart" value="5" className="btn cart-submit block">Add to cart</button>
                         </form>
@@ -108,19 +126,19 @@ const settings1 = {
                     </div>
                 </div>
 
-<div className="slider-container">
-      <Slider {...settings2}>
+<div className="slider-container grid grid-cols-2 md:grid-cols-3 gap-3">
+    
       
 
         {Product.relatedProducts?.map((product,index)=>(
 <div className="px-2">
 
-    <ProductCart product={product} key={index}/>
+    <ProductCart product={product} key={index} index={index}/>
 </div>
         ))}
         
        
-      </Slider>
+  
     </div>
 </div>
         </div>

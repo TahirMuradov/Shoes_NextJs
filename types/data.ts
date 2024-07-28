@@ -9,7 +9,7 @@ import Product6 from "../public/img/product-img/product-6.jpg";
 import Product7 from "../public/img/product-img/product-7.jpg";
 import Product8 from "../public/img/product-img/product-8.jpg";
 
-import  Product  from './Product';
+import  Product  from './Product.type';
 import { ProductDetail } from "./ProductDetail.type";
 
 export const products: Product[] = [

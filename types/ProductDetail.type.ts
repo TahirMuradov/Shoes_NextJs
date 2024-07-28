@@ -1,4 +1,4 @@
-import Product from "./Product";
+import Product from "./Product.type";
 
 export  interface ProductDetail{
     id:string|null|undefined,

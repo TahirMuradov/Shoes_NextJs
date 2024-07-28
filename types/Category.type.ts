@@ -1,7 +1,7 @@
 
 
 export default interface Category {
-  id:number;
-    name: string;
+  id:number|null|undefined;
+    name: string|null|undefined;
   }
   

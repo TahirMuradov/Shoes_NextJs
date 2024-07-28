@@ -1,5 +1,5 @@
 import Image from "next/image";
-import  Product  from "@/types/Product";
+import  Product  from "@/types/Product.type";
 import Link from "next/link";
 import Slider from "react-slick";
 import { useRef } from "react";
@@ -8,17 +8,20 @@ import { useRef } from "react";
 
 interface ProductCardProps {
     product: Product;
+    index: number;
 
   }
-const ProductCart:React.FC<ProductCardProps>=({product})=>{
-    const baseUrl='http://localhost:3000/img/product-img';
-    let sliderRef = useRef(null);
+const ProductCart:React.FC<ProductCardProps>=({product,index})=>{
+    const baseUrl='http://localhost:3000';
+ 
     const settings = {
 
         customPaging: function(i:number) {
+         
+        
           return (
             <a>
-              <img src={`${baseUrl}/product-${i + 1}.jpg`} />
+              <img width={100} height={100} src={`${baseUrl}/${product.imgUrls[i]}`} alt={`${product.description}`}/>
             </a>
           );
         },
@@ -36,12 +39,12 @@ const ProductCart:React.FC<ProductCardProps>=({product})=>{
       };
     return(
       
-        <div className="single_gallery_item women wow animate-fadeIn cursor-pointer" data-wow-delay="0.2s">
+        <div className="single_gallery_item women wow animate-fadeIn" data-wow-delay="0.2s">
      
         <div className="product-img">
             <div className="slider-container">
 
-        <Slider {...settings} ref={(slider:any)=>(sliderRef = slider)}>
+        <Slider {...settings} >
             {
                 product.imgUrls.map(Url=>(
                     <div>
@@ -56,7 +59,7 @@ const ProductCart:React.FC<ProductCardProps>=({product})=>{
           
        
         </div>
-        <Link href={`/${product.id}`}>
+        <Link href={`/productdetail/${product.id}`}>
         <div className="product-description">
             <h4 className="product-price">{product.price}</h4>
             <p>{product.description}</p>

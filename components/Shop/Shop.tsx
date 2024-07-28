@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {Accordion, AccordionDetails, AccordionSummary, Box, List, ListItemButton, ListItemText, Pagination, Slider, Typography } from "@mui/material";
-import Product from "@/types/Product";
+import Product from "@/types/Product.type";
 import { products as Data } from "@/types/data";
 
 import ProductCart from "../ProductCart/ProductCart";
@@ -11,14 +11,14 @@ import ProductCart from "../ProductCart/ProductCart";
 
 
 const Shop:React.FC=()=>{
-    const [products,SetProducts]=useState<Product[]>(Data)
+    const [products,SetProducts]=useState<Product[]>([])
     const [categoryFilter,SetCategoryFilter]=useState<String>("All");
     const [priceFilter,SetPriceFilter]=useState<number[]>([0,300]);
     const [sizeFilter,SetSizeFilter]=useState<Number>(0);
     const [page, setPage] = useState<number>(1);
 
    useEffect(()=>{
-     const filteredProducts=products.filter((product)=>true)
+     const filteredProducts=Data.filter((product)=>true)
 SetProducts(filteredProducts)
    },[categoryFilter,priceFilter])
 
@@ -264,12 +264,13 @@ SetProducts(filteredProducts)
                     </div>
 
                     <div className="md:col-span-2 lg:col-span-3">
+                    
                         <div className="shop_grid_product_area">
                             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 
                            {
                             products.map((product, index) => (
-                            <ProductCart product={product}  key={index}/>
+                            <ProductCart product={product}  key={index} index={index}/>
                             ))
                            }
                             
