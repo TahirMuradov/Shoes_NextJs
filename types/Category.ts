@@ -3,36 +3,47 @@ import  Category  from "./Category.type";
 
 export  const categories: Category[] = [
   {
-    name: "All",
+    id: 1,
+    name: "All"
   },
   {
-    name: "Women",
+    id: 2,
+    name: "Women"
   },
   {
-    name: "Men",
+    id: 3,
+    name: "Men"
   },
   {
-    name: "Accessories",
+    id: 4,
+    name: "Accessories"
   },
   {
-    name: "Shoes",
+    id: 5,
+    name: "Shoes"
   },
   {
-    name: "Kids",
+    id: 6,
+    name: "Kids"
   },
   {
-    name: "Dresses",
+    id: 7,
+    name: "Dresses"
   },
   {
-    name: "Jackets",
+    id: 8,
+    name: "Jackets"
   },
   {
-    name: "T-Shirts",
+    id: 9,
+    name: "T-Shirts"
   },
   {
-    name: "Blouses",
+    id: 10,
+    name: "Blouses"
   },
   {
-    name: "Sportswear",
-  },
+    id: 11,
+    name: "Sportswear"
+  }
 ];

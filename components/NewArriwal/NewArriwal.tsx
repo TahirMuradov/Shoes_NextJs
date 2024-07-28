@@ -55,7 +55,7 @@ const NewArrival: React.FC = () => {
                 <div className="w-4/5 mx-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 karl-new-arrivals">
                         {productsList.map((product) => (
-                            <ProductCart product={product} key={product.id} category={product.category} />
+                            <ProductCart product={product} key={product.id} />
                         ))}
                     </div>
                 </div>

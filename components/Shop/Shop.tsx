@@ -1,25 +1,36 @@
 'use client'
-import { useState } from "react"
-
-import { Box, Pagination, Slider } from "@mui/material";
+import { useEffect, useState } from "react"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {Accordion, AccordionDetails, AccordionSummary, Box, List, ListItemButton, ListItemText, Pagination, Slider, Typography } from "@mui/material";
 import Product from "@/types/Product";
-import { products } from "@/types/data";
+import { products as Data } from "@/types/data";
+
+import ProductCart from "../ProductCart/ProductCart";
 
 
-interface Products{
-    products: Product[]
-}
+
+
 const Shop:React.FC=()=>{
-    const [products,SetProducts]=useState<Products>()
+    const [products,SetProducts]=useState<Product[]>(Data)
     const [categoryFilter,SetCategoryFilter]=useState<String>("All");
     const [priceFilter,SetPriceFilter]=useState<number[]>([0,300]);
     const [sizeFilter,SetSizeFilter]=useState<Number>(0);
     const [page, setPage] = useState<number>(1);
 
+   useEffect(()=>{
+     const filteredProducts=products.filter((product)=>true)
+SetProducts(filteredProducts)
+   },[categoryFilter,priceFilter])
+
     function valuePricetext(value: number) {
         return `${value} ₼`;
       }
 
+      const handleSelection = (value:string) => {
+        SetCategoryFilter(value);
+        console.log("Selected Item:", value);
+      };
+    
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value); 
         
@@ -27,8 +38,8 @@ const Shop:React.FC=()=>{
   const handlePriceChange = (event: Event, newValue: number | number[]) => {
     console.log(newValue)
     SetPriceFilter(newValue as number[]);
+
   
-   
 
   };
 
@@ -44,62 +55,159 @@ const Shop:React.FC=()=>{
                                 <div className="nav-side-menu">
                                     <h6 className="mb-0">Catagories</h6>
                                     <div className="menu-list">
-                                        <ul id="menu-content2" className="menu-content collapse out">
-                                        
-                                            <li data-toggle="collapse" data-target="#women2">
-                                                <a href="#">Woman wear</a>
-                                                <ul className="sub-menu collapse show" id="women2">
-                                                    <li><a href="#">Midi Dresses</a></li>
-                                                    <li><a href="#">Maxi Dresses</a></li>
-                                                    <li><a href="#">Prom Dresses</a></li>
-                                                    <li><a href="#">Little Black Dresses</a></li>
-                                                    <li><a href="#">Mini Dresses</a></li>
-                                                </ul>
-                                            </li>
-                                        
-                                            <li data-toggle="collapse" data-target="#man2" className="collapsed">
-                                                <a href="#">Man Wear</a>
-                                                <ul className="sub-menu collapse" id="man2">
-                                                    <li><a href="#">Man Dresses</a></li>
-                                                    <li><a href="#">Man Black Dresses</a></li>
-                                                    <li><a href="#">Man Mini Dresses</a></li>
-                                                </ul>
-                                            </li>
-                                          
-                                            <li data-toggle="collapse" data-target="#kids2" className="collapsed">
-                                                <a href="#">Children</a>
-                                                <ul className="sub-menu collapse" id="kids2">
-                                                    <li><a href="#">Children Dresses</a></li>
-                                                    <li><a href="#">Mini Dresses</a></li>
-                                                </ul>
-                                            </li>
-                                       
-                                            <li data-toggle="collapse" data-target="#bags2" className="collapsed">
-                                                <a href="#">Bags &amp; Purses</a>
-                                                <ul className="sub-menu collapse" id="bags2">
-                                                    <li><a href="#">Bags</a></li>
-                                                    <li><a href="#">Purses</a></li>
-                                                </ul>
-                                            </li>
-                                        
-                                            <li data-toggle="collapse" data-target="#eyewear2" className="collapsed">
-                                                <a href="#">Eyewear</a>
-                                                <ul className="sub-menu collapse" id="eyewear2">
-                                                    <li><a href="#">Eyewear Style 1</a></li>
-                                                    <li><a href="#">Eyewear Style 2</a></li>
-                                                    <li><a href="#">Eyewear Style 3</a></li>
-                                                </ul>
-                                            </li>
-                                        
-                                            <li data-toggle="collapse" data-target="#footwear2" className="collapsed">
-                                                <a href="#">Footwear</a>
-                                                <ul className="sub-menu collapse" id="footwear2">
-                                                    <li><a href="#">Footwear 1</a></li>
-                                                    <li><a href="#">Footwear 2</a></li>
-                                                    <li><a href="#">Footwear 3</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
+                                    <div id="menu-content2">
+      {/* Women Wear */}
+      <Accordion defaultExpanded>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="women2-content"
+          id="women2-header"
+        >
+          <Typography>Woman Wear</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List component="div" disablePadding>
+            <ListItemButton onClick={() => handleSelection("Midi Dresses")}>
+              <ListItemText primary="Midi Dresses" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Maxi Dresses")}>
+              <ListItemText primary="Maxi Dresses" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Prom Dresses")}>
+              <ListItemText primary="Prom Dresses" />
+            </ListItemButton>
+            <ListItemButton
+              onClick={() => handleSelection("Little Black Dresses")}
+            >
+              <ListItemText primary="Little Black Dresses" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Mini Dresses")}>
+              <ListItemText primary="Mini Dresses" />
+            </ListItemButton>
+          </List>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Man Wear */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="man2-content"
+          id="man2-header"
+        >
+          <Typography>Man Wear</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List component="div" disablePadding>
+            <ListItemButton onClick={() => handleSelection("Man Dresses")}>
+              <ListItemText primary="Man Dresses" />
+            </ListItemButton>
+            <ListItemButton
+              onClick={() => handleSelection("Man Black Dresses")}
+            >
+              <ListItemText primary="Man Black Dresses" />
+            </ListItemButton>
+            <ListItemButton
+              onClick={() => handleSelection("Man Mini Dresses")}
+            >
+              <ListItemText primary="Man Mini Dresses" />
+            </ListItemButton>
+          </List>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Children */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="kids2-content"
+          id="kids2-header"
+        >
+          <Typography>Children</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List component="div" disablePadding>
+            <ListItemButton
+              onClick={() => handleSelection("Children Dresses")}
+            >
+              <ListItemText primary="Children Dresses" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Mini Dresses")}>
+              <ListItemText primary="Mini Dresses" />
+            </ListItemButton>
+          </List>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Bags & Purses */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="bags2-content"
+          id="bags2-header"
+        >
+          <Typography>Bags & Purses</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List component="div" disablePadding>
+            <ListItemButton onClick={() => handleSelection("Bags")}>
+              <ListItemText primary="Bags" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Purses")}>
+              <ListItemText primary="Purses" />
+            </ListItemButton>
+          </List>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Eyewear */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="eyewear2-content"
+          id="eyewear2-header"
+        >
+          <Typography>Eyewear</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List component="div" disablePadding>
+            <ListItemButton onClick={() => handleSelection("Eyewear Style 1")}>
+              <ListItemText primary="Eyewear Style 1" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Eyewear Style 2")}>
+              <ListItemText primary="Eyewear Style 2" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Eyewear Style 3")}>
+              <ListItemText primary="Eyewear Style 3" />
+            </ListItemButton>
+          </List>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Footwear */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon/>}
+          aria-controls="footwear2-content"
+          id="footwear2-header"
+        >
+          <Typography>Footwear</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List component="div" disablePadding>
+            <ListItemButton onClick={() => handleSelection("Footwear 1")}>
+              <ListItemText primary="Footwear 1" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Footwear 2")}>
+              <ListItemText primary="Footwear 2" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleSelection("Footwear 3")}>
+              <ListItemText primary="Footwear 3" />
+            </ListItemButton>
+          </List>
+        </AccordionDetails>
+      </Accordion>
+    </div>
                                     </div>
                                 </div>
                             </div>
@@ -159,167 +267,22 @@ const Shop:React.FC=()=>{
                         <div className="shop_grid_product_area">
                             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 
-                           
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.2s">
-                               
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-1.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                   
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                                      
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
+                           {
+                            products.map((product, index) => (
+                            <ProductCart product={product}  key={index}/>
+                            ))
+                           }
+                            
 
                         
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.3s">
-                                   
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-2.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                 
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
                               
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                           
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.4s">
-                               
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-3.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                               
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                                      
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                           
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.5s">
-                                  
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-4.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                  
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                                    
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
+                          
 
                          
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.6s">
-                              
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-5.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                              
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
+                          
 
                           
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.7s">
-                                
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-6.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                  
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                                       
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                             
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.8s">
-                                 
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-7.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                   
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                                   
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                           
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="0.9s">
-                             
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-8.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                  
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                        
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                           
-                                <div className="single_gallery_item wow wow animate-fadeIn" data-wow-delay="1s">
-                              
-                                    <div className="product-img">
-                                        <img src="img/product-img/product-9.jpg" alt=""/>
-                                        <div className="product-quicview">
-                                            <a href="#" data-toggle="modal" data-target="#quickview"><i className="ti-plus"></i></a>
-                                        </div>
-                                    </div>
-                                 
-                                    <div className="product-description">
-                                        <h4 className="product-price">$39.90</h4>
-                                        <p>Jeans midi cocktail dress</p>
-                                   
-                                        <a href="#" className="add-to-cart-btn">ADD TO CART</a>
-                                    </div>
-                                </div>
+                            
                             </div>
                         </div>
 

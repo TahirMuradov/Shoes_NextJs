@@ -5,6 +5,14 @@
 @import "slick-carousel/slick/slick.css";
 @import "slick-carousel/slick/slick-theme.css";
 
+
+
+  
+  .slider-container {
+    margin: 0 auto;
+    max-width: 800px; /* Slider genişliğini sınırlamak için isteğe bağlı */
+  }
+  
 /* ------------- Index of Stylesheet -------------
 :: 1.0 Import Web Fonts
 :: 2.0 Import All CSS
@@ -1070,9 +1078,13 @@ height: 0;
 .product-img {
     position: relative;
     z-index: 1;
-    overflow: hidden
-}
 
+}
+.product-img .slick-slide{
+    height: auto !important;
+    
+    
+  }
 .product-img > img {
     width: 100%;
     -webkit-transition-duration: 500ms;
@@ -1691,7 +1703,7 @@ height: 0;
 
 .single_product_desc .cart .quantity {
     display: inline-block;
-    float: left;
+
     position: relative;
     z-index: 1;
 }
