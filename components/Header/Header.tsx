@@ -12,10 +12,16 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import Link from 'next/link';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { PhoneCallback } from '@mui/icons-material';
+import { useAppSelector } from '@/hooks/hooks';
+import CartType from '@/types/CartTypes/Cart.type';
+
+
 
 
 const Header:React.FC = () => {
   const [visible,SetVisible]=useState<Boolean>(false);
+  let cartInfo:CartType=useAppSelector((state)=>state);
+ 
   function CartListToogle(){
     document.body.classList.toggle("cart-data-open")
   }
@@ -47,48 +53,38 @@ visible?SetVisible(false):SetVisible(true);
                 <div className="header-cart-menu flex items-center">
                   <div className="cart mx-2">
                     <a type='button' id="header-cart-btn" className='cursor-pointer' onClick={CartListToogle}>
-                      <span className="cart_quantity">2</span>{' '}
+                      <span className="cart_quantity">{cartInfo.totalQuantity}</span>{' '}
                      <ShoppingBagOutlinedIcon/> 
                      <span className='hidden lg:inline-block'>
-                      Your Bag $20
+                      Your Bag ${cartInfo.totalAmount.toFixed(2)}
                       </span> 
                     </a>
 
                     <ul className="cart-list z-50">
-                      <li>
-                        <a href="#" className="image">
-                          <Image src={product10} className="cart-thumb" alt="Product 10" />
-                        </a>
-                        <div className="cart-item-desc">
-                          <h6>
-                            <a href="#">Women's Fashion</a>
-                          </h6>
-                          <p>
-                            1x - <span className="price">$10</span>
-                          </p>
-                        </div>
-                        <span className="dropdown-product-remove">
-                          <i className="icon-cross"></i>
-                        </span>
-                      </li>
-                      <li>
-                        <a href="#" className="image">
-                          <Image src={product11} className="cart-thumb" alt="Product 11" />
-                        </a>
-                        <div className="cart-item-desc">
-                          <h6>
-                            <a href="#">Women's Fashion</a>
-                          </h6>
-                          <p>
-                            1x - <span className="price">$10</span>
-                          </p>
-                        </div>
-                        <span className="dropdown-product-remove">
-                          <i className="icon-cross"></i>
-                        </span>
-                      </li>
+                      {
+                        cartInfo.items.map((item, index) => (
+                          <li key={index}>
+                          <a href="#" className="image">
+                            <Image src={`${item.imgUrl}`} width={100} height={100} className="cart-thumb" alt="Product 10" />
+                          </a>
+                          <div className="cart-item-desc">
+                            <h6>
+                              <a href="#">{item.name}</a>
+                            </h6>
+                            <p>
+                              {item.count}x - {item.size} -<span className="price">{item.price.toFixed(2)}</span>
+                            </p>
+                          </div>
+                          <span className="dropdown-product-remove">
+                            <i className="icon-cross"></i>
+                          </span>
+                        </li>
+                        ))
+                      }
+                   
+                    
                       <li className="total">
-                        <span className="pull-right">Total: $20.00</span>
+                        <span className="pull-right">Total: ${cartInfo.totalAmount.toFixed(2)}</span>
                         <a href="cart.html" className="font-bold py-2 mx-2 px-4 rounded btn-cart">
                           Cart
                         </a>

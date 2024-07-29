@@ -2,7 +2,7 @@ import Image from "next/image";
 import  Product  from "@/types/Product.type";
 import Link from "next/link";
 import Slider from "react-slick";
-import { useRef } from "react";
+
 
 
 
@@ -12,7 +12,7 @@ interface ProductCardProps {
 
   }
 const ProductCart:React.FC<ProductCardProps>=({product,index})=>{
-    const baseUrl='http://localhost:3000';
+    const baseUrl=process.env.baseUrl;
  
     const settings = {
 
@@ -21,7 +21,7 @@ const ProductCart:React.FC<ProductCardProps>=({product,index})=>{
         
           return (
             <a>
-              <img width={100} height={100} src={`${baseUrl}/${product.imgUrls[i]}`} alt={`${product.description}`}/>
+              <img width={100} height={100} src={`${baseUrl}${product.imgUrls[i]}`} alt={`${product.description}`}/>
             </a>
           );
         },

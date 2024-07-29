@@ -4,11 +4,17 @@ import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import Image from "next/image";
 import Slider from "react-slick";
 import ProductCart from "../ProductCart/ProductCart";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { cartSlice } from "@/redux/cartSlice";
+
+
 
 const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
+const dispatch=useAppDispatch();
+
   const settings1 = {
     dots: true,
     dotsClass: "slick-dots slick-thumb",
@@ -18,33 +24,46 @@ const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
     slidesToScroll: 1,
   };
 
-  const [countItem, setCountItem] = useState<number>(1); 
+  const [countItem, setCountItem] = useState<number>(1);
   const [sizeItem, setSizeItem] = useState<number>(0);
-  const addToCartBtn = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     console.log(countItem, sizeItem);
   }, [countItem, sizeItem]);
 
-
   function CountPlus() {
     setCountItem((prevCount) => prevCount + 1);
   }
 
-
   function CountMinus() {
-    setCountItem((prevCount) => Math.max(0, prevCount - 1)); 
+    setCountItem((prevCount) => Math.max(0, prevCount - 1));
   }
-
 
   function SelectSize(e: React.MouseEvent<HTMLAnchorElement>, size: number) {
     setSizeItem(size);
-
 
     document.querySelectorAll(".widget-desc a").forEach((element) => {
       element.classList.remove("aClick");
     });
     (e.currentTarget as HTMLAnchorElement).classList.add("aClick");
+  }
+
+  function AddToCart(id: string, title: string, imgUrl: string, price: number) {
+    if (sizeItem==0||countItem==0) {
+      alert("Məhsulun ölçüsünü vəya sayını seçin")
+    }else{
+
+     dispatch(cartSlice.actions.addToCart({
+      Id: id,
+      name: title,
+      imgUrl: imgUrl,
+      price: price,
+      size: sizeItem,
+      count: countItem,
+    }))
+      alert("Məhsul səbətə əlavə edildi")
+    }
+    
   }
 
   return (
@@ -92,7 +111,7 @@ const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
                     {Product.size?.map((size, index) => (
                       <li key={index}>
                         <a
-                          onClick={(e) => SelectSize(e, size)} 
+                          onClick={(e) => SelectSize(e, size)}
                           className="cursor-pointer"
                         >
                           {size}
@@ -119,7 +138,7 @@ const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
                     min="1"
                     name="quantity"
                     value={countItem}
-                    readOnly 
+                    readOnly
                     disabled
                   />
                   <span className="qty-plus cursor-pointer" onClick={CountPlus}>
@@ -127,8 +146,16 @@ const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
                   </span>
                 </div>
                 <button
-                  ref={addToCartBtn}
-                  type="submit"
+                  onClick={() =>
+                    AddToCart(
+                      Product.id ?? " ",
+                      Product.description?? " ",
+                      Product.imgUrl?Product.imgUrl[0]: " ",
+                      Product.price??0,
+
+                    )
+                  }
+                  type="button" // "submit" yerine "button" olmalı
                   name="addtocart"
                   value="5"
                   className="btn cart-submit block"
@@ -138,7 +165,10 @@ const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
               </form>
 
               <Accordion>
-                <AccordionSummary id="panel-header" aria-controls="panel-content">
+                <AccordionSummary
+                  id="panel-header"
+                  aria-controls="panel-content"
+                >
                   Information
                 </AccordionSummary>
                 <AccordionDetails>{Product.information}</AccordionDetails>
@@ -169,4 +199,5 @@ const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
     </section>
   );
 };
+
 export default ProductDetail;

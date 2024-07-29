@@ -4,6 +4,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import CartItemUpdate from '@/types/CartTypes/CartItemUpdate.type'
 import CartItemDelete from '@/types/CartTypes/CartItemDelete.type'
+import { RootState } from './store'
 
 
 
@@ -13,18 +14,20 @@ totalAmount:0,
 totalQuantity:0
 }
 
-export const counterSlice = createSlice({
+export const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
     addToCart: (state,action:PayloadAction<CartItemType>) => {
 const checkedData:CartItemType|null|undefined=state.items.find(x=>x.Id==action.payload.Id&&x.size==action.payload.size);
 if (checkedData) {
-   checkedData.count=action.payload.count;
+   checkedData.count+=action.payload.count;
    state.totalAmount+=checkedData.count*checkedData.price;
-   state.totalQuantity+=checkedData.count;
+   state.totalQuantity+=action.payload.count;
 }else{
     state.items.push(action.payload);
+    state.totalAmount+=action.payload.price*action.payload.count;
+    state.totalQuantity+=action.payload.count
 }
      
     },
@@ -54,6 +57,7 @@ if (checkedData) {
 })
 
 
-export const { addToCart, deleteProduct, updateCart } = counterSlice.actions
-
-export default counterSlice.reducer
+export const { addToCart, deleteProduct, updateCart } = cartSlice.actions
+// Other code such as selectors can use the imported `RootState` type
+export const selectCount = (state: RootState) => state
+export default cartSlice.reducer
