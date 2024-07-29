@@ -6,7 +6,9 @@
 @import "slick-carousel/slick/slick-theme.css";
 
 
-
+.addToCartHidden{
+    opacity: 0;
+}
   
   .slider-container {
     margin: 0 auto;
@@ -1447,6 +1449,10 @@ height: 0;
 
 .widget.size .widget-desc a:hover,
 .widget.size .widget-desc a:focus {
+    background-color: #ff084e;
+    color: #fff;
+}
+.single_product_desc .widget.size .widget-desc .aClick{
     background-color: #ff084e;
     color: #fff;
 }
