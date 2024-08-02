@@ -190,7 +190,7 @@ const dispatch=useAppDispatch();
           <div className="slider-container grid grid-cols-2 md:grid-cols-3 gap-3">
             {Product.relatedProducts?.map((product, index) => (
               <div className="px-2" key={index}>
-                <ProductCart product={product} index={index} />
+                <ProductCart product={product} key={index} />
               </div>
             ))}
           </div>

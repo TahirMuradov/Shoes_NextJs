@@ -2,7 +2,7 @@
 
 
 export default interface Product {
-    id: number|null|undefined;
+    id: number;
     imgUrls: string[];
     price: string|null|undefined;
     description: string|null|undefined;

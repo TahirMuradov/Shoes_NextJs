@@ -6,7 +6,10 @@ import TopCategory from "@/components/TopCategory/TopCategory";
 import DisCountArea from "@/components/TopDiscountArea/DisCountArea";
 
 
+
+
 export default function Home() {
+
   return (
     <main className="">
       <DisCountArea/>

@@ -1,4 +1,3 @@
-// data.ts
 
 import Product1 from "../public/img/product-img/product-1.jpg";
 import Product2 from "../public/img/product-img/product-2.jpg";
@@ -8,7 +7,6 @@ import Product5 from "../public/img/product-img/product-5.jpg";
 import Product6 from "../public/img/product-img/product-6.jpg";
 import Product7 from "../public/img/product-img/product-7.jpg";
 import Product8 from "../public/img/product-img/product-8.jpg";
-
 import  Product  from './Product.type';
 import { ProductDetail } from "./ProductDetail.type";
 

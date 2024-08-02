@@ -152,8 +152,14 @@ visible?SetVisible(false):SetVisible(true);
                       </li>
 
                       <li className="mx-3">
-                        <Link className="" href="/">
+                        <Link className="" href="/contact">
                           Contact
+                        </Link>
+                      </li>
+                      
+                      <li className="mx-3">
+                        <Link className="" href="/cart">
+                       Cart Detail
                         </Link>
                       </li>
                     </ul>
@@ -163,8 +169,8 @@ visible?SetVisible(false):SetVisible(true);
               </div>
 
               <div className="help-line">
-                <a href="tel:+346573556778">
-                 <PhoneCallback/> +34 657 3556 778
+                <a href="tel:+994552784344">
+                 <PhoneCallback/> +994 55 278 43 44
                 </a>
               </div>
             </div>

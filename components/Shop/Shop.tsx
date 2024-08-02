@@ -270,7 +270,7 @@ SetProducts(filteredProducts)
 
                            {
                             products.map((product, index) => (
-                            <ProductCart product={product}  key={index} index={index}/>
+                            <ProductCart product={product}  key={index}/>
                             ))
                            }
                             

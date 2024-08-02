@@ -1,10 +1,17 @@
 'use client'
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Slider from "react-slick";
 import bg1 from '../../public/img/bg-img/bg-1.jpg';
 import bg2 from '../../public/img/bg-img/bg-2.jpg';
 import bg3 from '../../public/img/bg-img/bg-3.jpg';
 import bg4 from '../../public/img/bg-img/bg-4.jpg';
+import { getCartCookie, setCartCookie } from '@/utils/cookies';
+import { products } from '@/types/data';
+import CartType from '@/types/CartTypes/Cart.type';
+
+
+
+
 
 const slidesData = [
   {
@@ -36,7 +43,13 @@ const slidesData = [
     backgroundImage: bg4
   }
 ];
-
+const data:CartType={
+  items:[],
+  totalAmount:0,
+  totalQuantity:0
+}
+setCartCookie(data)
+console.log(getCartCookie())
 const HomeSlider: React.FC = () => {
 
 

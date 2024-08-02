@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import ProductCart from "../ProductCart/ProductCart";
 import { products } from "../../types/data";
-import Product from "@/types/Product";
-import Category from "@/types/Category.type";
+import Product from "@/types/Product.type";
+
 import { categories } from "@/types/Category";
 
 const NewArrival: React.FC = () => {

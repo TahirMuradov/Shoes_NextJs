@@ -8,10 +8,10 @@ import Slider from "react-slick";
 
 interface ProductCardProps {
     product: Product;
-    index: number;
+
 
   }
-const ProductCart:React.FC<ProductCardProps>=({product,index})=>{
+const ProductCart:React.FC<ProductCardProps>=({product})=>{
     const baseUrl=process.env.baseUrl;
  
     const settings = {
@@ -21,7 +21,7 @@ const ProductCart:React.FC<ProductCardProps>=({product,index})=>{
         
           return (
             <a>
-              <img width={100} height={100} src={`${baseUrl}${product.imgUrls[i]}`} alt={`${product.description}`}/>
+              <img width={100} height={100} src={`${product.imgUrls[i]}`} alt={`${product.description}`}/>
             </a>
           );
         },

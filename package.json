@@ -13,8 +13,13 @@
     "@mui/material": "^5.16.4",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@reduxjs/toolkit": "^2.2.7",
+    "@types/cookie": "^0.6.0",
     "@types/react-redux": "^7.1.33",
+    "cookies-next": "^4.2.1",
+    "jose": "^5.6.3",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.5",
+    "node-jose": "^2.2.0",
     "react": "^18",
     "react-dom": "^18",
     "react-redux": "^9.1.2",
@@ -23,6 +28,7 @@
     "styled-components": "^6.1.12"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

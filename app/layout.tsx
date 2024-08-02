@@ -6,6 +6,7 @@ import Head from "next/head";
 import Footer from "@/components/Footer/Footer";
 import Provider from "./Provider";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
      <Head>
