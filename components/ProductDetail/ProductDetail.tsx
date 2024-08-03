@@ -27,9 +27,9 @@ const dispatch=useAppDispatch();
   const [countItem, setCountItem] = useState<number>(1);
   const [sizeItem, setSizeItem] = useState<number>(0);
 
-  useEffect(() => {
-    console.log(countItem, sizeItem);
-  }, [countItem, sizeItem]);
+  // useEffect(() => {
+  //   console.log(countItem, sizeItem);
+  // }, [countItem, sizeItem]);
 
   function CountPlus() {
     setCountItem((prevCount) => prevCount + 1);

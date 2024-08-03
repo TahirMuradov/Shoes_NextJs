@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../../public/İSTANBUL.png';
 import product1 from '../../public/img/product-img/product-1.jpg';
 import product10 from '../../public/img/product-img/product-10.jpg';
@@ -12,16 +12,27 @@ import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import Link from 'next/link';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import { PhoneCallback } from '@mui/icons-material';
-import { useAppSelector } from '@/hooks/hooks';
+import {  useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import CartType from '@/types/CartTypes/Cart.type';
+import { fetchInitialState } from '@/redux/cartSlice';
+
+
+
 
 
 
 
 const Header:React.FC = () => {
   const [visible,SetVisible]=useState<Boolean>(false);
-  let cartInfo:CartType=useAppSelector((state)=>state);
+  let cartInfo:CartType=useAppSelector((state)=>state.cart);
+  let dispatch=useAppDispatch();
+  useEffect(() => {
+   
+    dispatch(fetchInitialState());
+  }, [dispatch]);
  
+
+
   function CartListToogle(){
     document.body.classList.toggle("cart-data-open")
   }
