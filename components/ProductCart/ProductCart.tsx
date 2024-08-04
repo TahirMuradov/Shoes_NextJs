@@ -6,6 +6,7 @@ import Slider from "react-slick";
 
 
 
+
 interface ProductCardProps {
     product: Product;
 
@@ -47,7 +48,7 @@ const ProductCart:React.FC<ProductCardProps>=({product})=>{
         <Slider {...settings} >
             {
                 product.imgUrls.map(Url=>(
-                    <div>
+                    <div key={Url}>
                     <Image src={`${Url}`}  width={1000} height={1444} alt={`${product.description}`} />
         </div>
                 ))

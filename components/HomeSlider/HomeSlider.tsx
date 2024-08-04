@@ -67,9 +67,9 @@ const HomeSlider: React.FC = () => {
     <section className="welcome_area overflow-hidden w-full">
       <Slider {...settings} className="welcome_slides owl-carousel">
         {slidesData.map(slide => (
-          <div>
+          <div key={slide.id}>
 
-          <div key={slide.id} className="single_slide h-[800px] bg-img background-overlay" style={{ backgroundImage: `url(${slide.backgroundImage.src})` }}>
+          <div  className="single_slide h-[800px] bg-img background-overlay" style={{ backgroundImage: `url(${slide.backgroundImage.src})` }}>
             <div className="container m-auto my-auto h-full">
               <div className="flex h-full items-center justify-center">
                 <div className="w-full" >
