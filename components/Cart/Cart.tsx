@@ -9,7 +9,7 @@ import { Alert } from "@mui/material";
 
 
 const Cart:React.FC=()=>{
-    const cartItems:CartType=useAppSelector((state)=>state);
+    const cartItems:CartType=useAppSelector((state)=>state.cart);
     const dispatch=useAppDispatch();
     
     function UpdateItem(id:string,size:number,count:number){
@@ -71,7 +71,7 @@ if (cartItems.items.length!=0) {
                         </div>
                         <div className="update-checkout w-50 text-right">
                             <a href="#">clear cart</a>
-                            <a href="#">Update cart</a>
+                          
                         </div>
                     </div>
 

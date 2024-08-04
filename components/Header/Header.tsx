@@ -1,9 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import logo from '../../public/İSTANBUL.png';
-import product1 from '../../public/img/product-img/product-1.jpg';
-import product10 from '../../public/img/product-img/product-10.jpg';
-import product11 from '../../public/img/product-img/product-11.jpg';
 import Image from 'next/image';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -15,6 +12,7 @@ import { PhoneCallback } from '@mui/icons-material';
 import {  useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import CartType from '@/types/CartTypes/Cart.type';
 import { fetchInitialState } from '@/redux/cartSlice';
+import LocaleSwitcher from '../locale-switcher/Locale-switcher';
 
 
 
@@ -47,12 +45,7 @@ visible?SetVisible(false):SetVisible(true);
         <div className="w-[80%] mx-auto h-full">
           <div className="lg:flex h-full lg:items-center lg:justify-end grid grid-cols-4">
           <div className='laungugage_box lg: w-1/4 col-span-1'>
-                    <select name="launguage" id="launguage">
-
-                      <option value="az">AZ</option>
-                      <option value="az">Ru</option>
-                      <option value="az">EN</option>
-                    </select>
+                  <LocaleSwitcher/>
                   </div>
             <div className="w-full lg:w-3/4 col-span-3">
               <div className="top_single_area grid grid-cols-2 gap-3 lg:flex lg:items-center lg:justify-between">
