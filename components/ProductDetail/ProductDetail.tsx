@@ -9,10 +9,16 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { cartSlice } from "@/redux/cartSlice";
+import { Locale } from "@/i18n-config";
+import { ProductDetailLaunguage } from "@/types/DictionaryTypes/Dictionary";
 
+interface ProductDetailParams{
+  Product:ProductType|null|undefined,
+  lang:Locale,
+  dictionary:ProductDetailLaunguage
+}
 
-
-const ProductDetail: React.FC<ProductType> = (Product: ProductType) => {
+const ProductDetail: React.FC<ProductDetailParams> = (params) => {
 const dispatch=useAppDispatch();
 
   const settings1 = {
@@ -78,13 +84,13 @@ const dispatch=useAppDispatch();
                 data-ride="carousel"
               >
                 <Slider {...settings1}>
-                  {Product.imgUrl?.map((url, index) => (
+                  {params?.Product?.imgUrl?.map((url, index) => (
                     <div key={index}>
                       <Image
                         src={url}
                         width={585}
                         height={400}
-                        alt={`${Product.description}`}
+                        alt={`${params.Product?.description}`}
                         objectFit="cover"
                       />
                     </div>
@@ -96,19 +102,17 @@ const dispatch=useAppDispatch();
 
           <div>
             <div className="single_product_desc">
-              <h4 className="title">{Product.description}</h4>
+              <h4 className="title">{params.Product?.description}</h4>
 
-              <h4 className="price">$ {Product.price}</h4>
+              <h4 className="price">$ {params.Product?.price}</h4>
 
-              <p className="available">
-                Available: <span className="text-muted">In Stock</span>
-              </p>
+           
 
               <div className="widget size mb-50">
                 <h6 className="widget-title">Size</h6>
                 <div className="widget-desc">
                   <ul>
-                    {Product.size?.map((size, index) => (
+                    {params.Product?.size?.map((size, index) => (
                       <li key={index}>
                         <a
                           onClick={(e) => SelectSize(e, size)}
@@ -148,10 +152,10 @@ const dispatch=useAppDispatch();
                 <button
                   onClick={() =>
                     AddToCart(
-                      Product.id ?? " ",
-                      Product.description?? " ",
-                      Product.imgUrl?Product.imgUrl[0]: " ",
-                      Product.price??0,
+                      params.Product?.id ?? " ",
+                     params.Product?.description?? " ",
+                    params.Product?.imgUrl?params.Product?.imgUrl[0]: " ",
+                      params.Product?.price??0,
 
                     )
                   }
@@ -171,7 +175,7 @@ const dispatch=useAppDispatch();
                 >
                   Information
                 </AccordionSummary>
-                <AccordionDetails>{Product.information}</AccordionDetails>
+                <AccordionDetails>{params.Product?.information}</AccordionDetails>
               </Accordion>
             </div>
           </div>
@@ -188,9 +192,9 @@ const dispatch=useAppDispatch();
           </div>
 
           <div className="slider-container grid grid-cols-2 md:grid-cols-3 gap-3">
-            {Product.relatedProducts?.map((product, index) => (
+            {params.Product?.relatedProducts?.map((product, index) => (
               <div className="px-2" key={index}>
-                <ProductCart product={product} key={index} />
+                <ProductCart lang={params.lang} product={product} key={index} />
               </div>
             ))}
           </div>

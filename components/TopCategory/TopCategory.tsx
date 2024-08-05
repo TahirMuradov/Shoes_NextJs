@@ -1,6 +1,12 @@
 import bg_img1 from "../../public/img/bg-img/bg-3.jpg"
 import bg_img2 from "../../public/img/bg-img/bg-2.jpg"
-const TopCategory:React.FC=()=>{
+import { Locale } from "@/i18n-config"
+import { HomeCategoryTopLaunguage } from "@/types/DictionaryTypes/Dictionary"
+interface TopCategoryParams{
+    locale:Locale,
+    dictinory:HomeCategoryTopLaunguage
+}
+const TopCategory:React.FC<TopCategoryParams>=(params)=>{
 
     return(
 
@@ -10,7 +16,7 @@ const TopCategory:React.FC=()=>{
             <div className="catagory-content">
                 <h6>On Accesories</h6>
                 <h2>Sale 30%</h2>
-                <a href="#" className="btn karl-btn">SHOP NOW</a>
+                <a href="#" className="btn karl-btn">{params.dictinory.Button}</a>
             </div>
         </div>
        
@@ -18,7 +24,7 @@ const TopCategory:React.FC=()=>{
             <div className="catagory-content">
                 <h6>in Bags excepting the new collection</h6>
                 <h2>Designer bags</h2>
-                <a href="#" className="btn karl-btn">SHOP NOW</a>
+                <a href="#" className="btn karl-btn">{params.dictinory.Button}</a>
             </div>
         </div>
     </section>

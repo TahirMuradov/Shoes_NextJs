@@ -1,5 +1,127 @@
-{
-    "products": {
-      "cart": "Səbətə Əlavə Et"
-    }
+ {
+  "LayoutLanguage":{
+
+   "header": {
+     
+     "logoAltText": "Logo",
+     "LaunguageSwitcher":{
+      "LaunguageChanger": "Dil"
+       },
+     "cart": {
+       "yourBag": "Sizin Səbət",
+       "cart": "Səbət",
+       "checkout": "Çıxış",
+       "total":"Cəmi"
+     },
+     "account": {
+       "greeting": "Salam, Tahir"
+     },
+     "menu": {
+       "home": "Ana Səhifə",
+       "shop": "Mağaza",
+       "contact": "Əlaqə",
+       "cartDetail": "Səbət Təfərrüatları"
+     },
+     "social": {
+       "facebook": "Facebook səhifəsinə keçid",
+       "instagram": "Instagram səhifəsinə keçid"
+     },
+     "helpLine": {
+       "callUs": "Bizə zəng edin",
+       "phoneNumber": "+994 55 278 43 44"
+     }
+   },
+   "footer": {
+   "copywriteText": "Müəllif hüquqları &copy;{{year}} Bütün hüquqlar qorunur ",
+   "menu": {
+    "home": "Ana Səhifə",
+    "shop": "Mağaza",
+    "contact": "Əlaqə",
+    "cartDetail": "Səbət Təfərrüatları"
   }
+ }
+ }
+  ,
+
+  "Home":{
+"Slider":{
+  "button":"Ətraflı Bax"
+},
+"Category_Top":{
+  "Button":"indi alış-veriş edin"
+},
+"NewArrivals":{
+  "All":"Hamısı",
+  "NewProduct":"Yeni Məhsullar"
+}
+  },
+"Shop":{
+"Filter":{
+"Categories":"Kateqoriyalar",
+"Priceİnterval":"Qiymət Aralığı",
+"Price":"Qiymət",
+"FilterBySize":"Ölçüyə görə axtarış"
+}
+},
+"Contact":{
+"ContactUs":"Bizimlə əlaqə saxlayin",
+"Adress":"Ünvan: Bakı şəhəri Lökbatana dairəsi Binə ticarət mərkəzi Mağaza No 1-1-55 (1 mərtəbə)",
+"PhoneNumber": "Əlaqə Nömrəsi: 055-673-54-78"
+},
+"ProductDetail":{
+  "Information":"Məhsul Haqqında Məlumat",
+  "AddToCart":"Səbətə Əlavə et",
+  "AddToCartErrorMesage":"Məhsulun ölçüsünü vəya sayını seçin!",
+  "AddToCartSuccessMesage":"Məhsulun səbətə əlavə olundu",
+  "RelatedProducts":"Oxşar Məhsullar"
+
+},
+"CheckOut":{
+"BillingAddress":"Alıcı Məlumatları",
+"FirstName":"Ad",
+"LastName":"Soyad",
+"PhoneNumber":"Əlaqə Nömrəsi",
+"PhoneNumberDescription":"Əmakdaşımızın əlaqə saxlmağı üçün",
+"Email":"E-Poçt Ünvanı",
+"EmailDescription":"Elektron şəkildə çekinizi göndərməyimiz üçün",
+"Adress":"Ünvan",
+"AdressDescription":"Ünvanı ətraflı şəkildə qeyd edin.",
+"order":{
+"OrderName":"Elektron Çek",
+"Content":"Məzmunu",
+"ProductName":"Məhsul Adı",
+"ProductSize":"Ölçüsü",
+"ProductCount":"Miqdarı",
+"ProductPrice":"Ədəd Qiyməti",
+"Total":"Cəmi",
+"Shipping":"Çatdirilma",
+"FinalTotal":"Yekun Cəm",
+"Button":"Ödəniç Et"
+}
+
+
+
+},
+"Cart": {
+  "product": "Məhsul",
+  "price": "Qiymət",
+  "size": "Ölçü",
+  "quantity": "Miqdar",
+  "total": "Cəmi",
+  "continueShopping": "Alış-verişə davam et",
+  "clearCart": "Səbəti təmizlə",
+  "shippingMethod": "Çatdırılma üsulu",
+  "cartTotal": "Səbət cəmi",
+  "finalInfo": "Son məlumat",
+  "subtotal": "Cəm",
+  "shipping": "Çatdırılma",
+  "proceedToCheckout": "Ödənişə keçin",
+  "emptyCart": "Sizin səbətiniz boşdur!"
+},
+"NotFound":{
+  "ReturnHome":"Ana Səhifəyə Qayıt"
+}
+
+  }
+  
+  

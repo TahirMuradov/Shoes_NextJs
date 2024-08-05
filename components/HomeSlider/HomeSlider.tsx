@@ -8,6 +8,8 @@ import bg4 from '../../public/img/bg-img/bg-4.jpg';
 import { getCartCookie, setCartCookie } from '@/utils/cookies';
 import { products } from '@/types/data';
 import CartType from '@/types/CartTypes/Cart.type';
+import { Locale } from '@/i18n-config';
+import { HomeLaunguage, HomeSliderLaunguage } from '@/types/DictionaryTypes/Dictionary';
 
 
 
@@ -48,9 +50,12 @@ const data:CartType={
   totalAmount:0,
   totalQuantity:0
 }
-setCartCookie(data)
-console.log(getCartCookie())
-const HomeSlider: React.FC = () => {
+
+interface HomeSliderParasm{
+  local:Locale,
+  dictinory:HomeSliderLaunguage
+}
+const HomeSlider: React.FC<HomeSliderParasm> = (params:HomeSliderParasm) => {
 
 
   const settings = {
@@ -87,7 +92,7 @@ const HomeSlider: React.FC = () => {
                       data-delay="1s"
                       data-duration="500ms"
                     >
-                      {slide.buttonText}
+                     {params.dictinory.button}
                     </a>
                   </div>
                 </div>

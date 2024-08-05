@@ -2,10 +2,7 @@ import  Category  from "./Category.type";
 
 
 export  const categories: Category[] = [
-  {
-    id: 1,
-    name: "All"
-  },
+
   {
     id: 2,
     name: "Women"

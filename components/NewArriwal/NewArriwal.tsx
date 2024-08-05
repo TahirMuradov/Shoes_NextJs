@@ -3,10 +3,16 @@ import { useEffect, useState } from "react";
 import ProductCart from "../ProductCart/ProductCart";
 import { products } from "../../types/data";
 import Product from "@/types/Product.type";
-
 import { categories } from "@/types/Category";
+import { Locale } from "@/i18n-config";
+import {HomeNewArriwalsLaunguage } from "@/types/DictionaryTypes/Dictionary";
 
-const NewArrival: React.FC = () => {
+interface NewArriwalParams{
+    locale:Locale,
+    dictinory:HomeNewArriwalsLaunguage
+}
+
+const NewArrival: React.FC<NewArriwalParams> = (params) => {
     const [filter, setFilter] = useState<string>("All");
     const [productsList, setProductsList] = useState<Product[]>(products);
 
@@ -31,7 +37,7 @@ const NewArrival: React.FC = () => {
                     <div className="grid grid-cols-1">
                         <div className="">
                             <div className="section_heading text-center">
-                                <h2>New Arrivals</h2>
+                                <h2>{params.dictinory.NewProduct}</h2>
                             </div>
                         </div>
                     </div>
@@ -39,6 +45,14 @@ const NewArrival: React.FC = () => {
 
                 <div className="karl-projects-menu mb-10">
                     <div className="text-center portfolio-menu">
+                    <button
+                                key="All"
+                                onClick={() => filteredData("All")}
+                                className={`btn ${"All" === filter ? 'active' : ''}`}
+                                data-filter={`All`}
+                            >
+                             {params.dictinory.All}
+                            </button>
                         {categories.map((category) => (
                             <button
                                 key={category.name}
@@ -55,7 +69,7 @@ const NewArrival: React.FC = () => {
                 <div className="w-4/5 mx-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 karl-new-arrivals">
                         {productsList.map((product) => (
-                            <ProductCart product={product} key={product.id} />
+                            <ProductCart product={product} lang={params.locale} key={product.id} />
                         ))}
                     </div>
                 </div>

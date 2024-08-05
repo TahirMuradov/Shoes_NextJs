@@ -6,9 +6,15 @@ import CartType from "@/types/CartTypes/Cart.type"
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { cartSlice } from "@/redux/cartSlice";
 import { Alert } from "@mui/material";
+import Link from "next/link";
+import { Locale } from "@/i18n-config";
+import { CartLanguage } from "@/types/DictionaryTypes/Dictionary";
+interface CartParasm{
+    lang:Locale,
+    dictinoary:CartLanguage
+}
 
-
-const Cart:React.FC=()=>{
+const Cart:React.FC<CartParasm>=({lang,dictinoary})=>{
     const cartItems:CartType=useAppSelector((state)=>state.cart);
     const dispatch=useAppDispatch();
     
@@ -32,11 +38,11 @@ if (cartItems.items.length!=0) {
                         <table className="table-auto">
                             <thead>
                                 <tr>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Size</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
+                                    <th>{dictinoary.product}</th>
+                                    <th>{dictinoary.price}</th>
+                                    <th>{dictinoary.size}</th>
+                                    <th>{dictinoary.quantity}</th>
+                                    <th>{dictinoary.total}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -44,7 +50,7 @@ if (cartItems.items.length!=0) {
     cartItems.items.map((item, index) => (
         <tr key={index}>
         <td className="cart_product_img flex items-center">
-            <a href="#"><Image width={100} height={100} src={`${item.imgUrl}`} alt={`${item.name}`}/></a>
+            <Link href={`/${lang}/productdetail/${item.Id}`}><Image width={100} height={100} src={`${item.imgUrl}`} alt={`${item.name}`}/></Link>
             <h6>{item.name}</h6>
         </td>
         <td className="price"><span>${item.price}</span></td>
@@ -67,10 +73,10 @@ if (cartItems.items.length!=0) {
 
                     <div className="cart-footer d-flex mt-30">
                         <div className="back-to-shop w-50">
-                            <a href="shop-grid-left-sidebar.html">Continue shooping</a>
+                            <Link href={`/${lang}/shop`}>{dictinoary.continueShopping}</Link>
                         </div>
                         <div className="update-checkout w-50 text-right">
-                            <a href="#">clear cart</a>
+                            <a href="#">{dictinoary.clearCart}</a>
                           
                         </div>
                     </div>
@@ -80,7 +86,7 @@ if (cartItems.items.length!=0) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div className="">
-                    <div className="coupon-code-area mt-70">
+                    {/* <div className="coupon-code-area mt-70">
                         <div className="cart-page-heading">
                             <h5>Cupon code</h5>
                             <p>Enter your cupone code</p>
@@ -89,13 +95,13 @@ if (cartItems.items.length!=0) {
                             <input type="search" name="search" placeholder="#569ab15"/>
                             <button type="submit">Apply</button>
                         </form>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="">
                     <div className="shipping-method-area mt-70">
                         <div className="cart-page-heading">
-                            <h5>Shipping method</h5>
-                            <p>Select the one you want</p>
+                            <h5>{dictinoary.shippingMethod}</h5>
+                   
                         </div>
 
                         <div className="custom-control custom-radio mb-30">
@@ -117,16 +123,16 @@ if (cartItems.items.length!=0) {
                 <div className="">
                     <div className="cart-total-area mt-70">
                         <div className="cart-page-heading">
-                            <h5>Cart total</h5>
-                            <p>Final info</p>
+                            <h5>{dictinoary.cartTotal}</h5>
+                            <p>{dictinoary.finalInfo}</p>
                         </div>
 
                         <ul className="cart-total-chart">
-                            <li><span>Subtotal</span> <span>$59.90</span></li>
-                            <li><span>Shipping</span> <span>Free</span></li>
-                            <li><span><strong>Total</strong></span> <span><strong>$59.90</strong></span></li>
+                            <li><span>{dictinoary.subtotal}</span> <span>$59.90</span></li>
+                            <li><span>{dictinoary.shipping}</span> <span>Free</span></li>
+                            <li><span><strong>{dictinoary.total}</strong></span> <span><strong>$59.90</strong></span></li>
                         </ul>
-                        <a href="checkout.html" className="btn karl-checkout-btn">Proceed to checkout</a>
+                        <a href="checkout.html" className="btn karl-checkout-btn">{dictinoary.proceedToCheckout}</a>
                     </div>
                 </div>
             </div>
@@ -138,7 +144,7 @@ if (cartItems.items.length!=0) {
     <div className="w-4/5 mx-auto my-2">
 
     <Alert variant="outlined" severity="info">
-       Sizin səbətiniz boşdur!
+       {dictinoary.emptyCart}
       </Alert>
     </div>
       )

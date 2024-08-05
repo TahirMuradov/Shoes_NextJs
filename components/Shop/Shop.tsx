@@ -6,11 +6,16 @@ import Product from "@/types/Product.type";
 import { products as Data } from "@/types/data";
 
 import ProductCart from "../ProductCart/ProductCart";
+import { ShopLaunguage } from "@/types/DictionaryTypes/Dictionary";
+import { Locale } from "@/i18n-config";
+
+interface ShopParams{
+  dictinory:ShopLaunguage,
+  lang:Locale
+}
 
 
-
-
-const Shop:React.FC=()=>{
+const Shop:React.FC<ShopParams>=(params)=>{
     const [products,SetProducts]=useState<Product[]>([])
     const [categoryFilter,SetCategoryFilter]=useState<String>("All");
     const [priceFilter,SetPriceFilter]=useState<number[]>([0,300]);
@@ -53,7 +58,7 @@ SetProducts(filteredProducts)
                             <div className="widget catagory mb-10">
                              
                                 <div className="nav-side-menu">
-                                    <h6 className="mb-0">Catagories</h6>
+                                    <h6 className="mb-0">{params.dictinory.Filter.Categories}</h6>
                                     <div className="menu-list">
                                     <div id="menu-content2">
       {/* Women Wear */}
@@ -213,7 +218,7 @@ SetProducts(filteredProducts)
                             </div>
 
                             <div className="widget price mb-50">
-                                <h6 className="widget-title mb-30">Filter by Price</h6>
+                                <h6 className="widget-title mb-30">{params.dictinory.Filter.Priceİnterval}</h6>
                                 <div className="widget-desc w-1/2">
                                 <Box sx={{ width: 250 }}>
       <Slider
@@ -227,7 +232,7 @@ SetProducts(filteredProducts)
         color='error'
       />
     </Box>
-    <div className="range-price">Price:<span className="interval">  {priceFilter[0]} - {priceFilter[1]} ₼   </span> </div>
+    <div className="range-price">{params.dictinory.Filter.Price}:<span className="interval">  {priceFilter[0]} - {priceFilter[1]} ₼   </span> </div>
                                 </div>
 
                             </div>
@@ -247,7 +252,7 @@ SetProducts(filteredProducts)
                             </div> */}
 
                             <div className="widget size mb-52">
-                                <h6 className="widget-title mb-32">Filter by Size</h6>
+                                <h6 className="widget-title mb-32">{params.dictinory.Filter.FilterBySize}</h6>
                                 <div className="widget-desc">
                                     <ul className="flex justify-between">
                                         <li><a href="#">XS</a></li>
@@ -270,7 +275,7 @@ SetProducts(filteredProducts)
 
                            {
                             products.map((product, index) => (
-                            <ProductCart product={product}  key={index}/>
+                            <ProductCart product={product} lang={params.lang}  key={index}/>
                             ))
                            }
                             

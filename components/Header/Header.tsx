@@ -13,14 +13,21 @@ import {  useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import CartType from '@/types/CartTypes/Cart.type';
 import { fetchInitialState } from '@/redux/cartSlice';
 import LocaleSwitcher from '../locale-switcher/Locale-switcher';
+import { Locale } from '@/i18n-config';
+import  { HeaderLaunguage } from '@/types/DictionaryTypes/Dictionary';
 
 
 
 
 
+interface HeaderParams{
+  Locale:Locale,
+  dictionary:HeaderLaunguage,
+}
 
 
-const Header:React.FC = () => {
+const Header:React.FC<HeaderParams> = (HeaderParams) => {
+ 
   const [visible,SetVisible]=useState<Boolean>(false);
   let cartInfo:CartType=useAppSelector((state)=>state.cart);
   let dispatch=useAppDispatch();
@@ -45,13 +52,13 @@ visible?SetVisible(false):SetVisible(true);
         <div className="w-[80%] mx-auto h-full">
           <div className="lg:flex h-full lg:items-center lg:justify-end grid grid-cols-4">
           <div className='laungugage_box lg: w-1/4 col-span-1'>
-                  <LocaleSwitcher/>
+                  <LocaleSwitcher lang={HeaderParams.Locale} dictionary={HeaderParams.dictionary.LaunguageSwitcher}/>
                   </div>
             <div className="w-full lg:w-3/4 col-span-3">
               <div className="top_single_area grid grid-cols-2 gap-3 lg:flex lg:items-center lg:justify-between">
                 <div className="top_logo col-span-1">
                   <a href="#">
-                    <Image src={logo} alt="Logo" />
+                    <Image src={logo} alt={HeaderParams.dictionary.logoAltText} />
                   </a>
                 </div>
                 <div className="header-cart-menu flex items-center">
@@ -60,7 +67,7 @@ visible?SetVisible(false):SetVisible(true);
                       <span className="cart_quantity">{cartInfo.totalQuantity}</span>{' '}
                      <ShoppingBagOutlinedIcon/> 
                      <span className='hidden lg:inline-block'>
-                      Your Bag ${cartInfo.totalAmount.toFixed(2)}
+                  {HeaderParams.dictionary.cart.yourBag} ${cartInfo.totalAmount.toFixed(2)}
                       </span> 
                     </a>
 
@@ -89,12 +96,12 @@ visible?SetVisible(false):SetVisible(true);
                     
                       <li className="total">
                         <span className="pull-right">Total: ${cartInfo.totalAmount.toFixed(2)}</span>
-                        <a href="cart.html" className="font-bold py-2 mx-2 px-4 rounded btn-cart">
-                          Cart
-                        </a>
-                        <a href="checkout-1.html" className="font-bold py-2 px-4 rounded btn-checkout">
-                          Checkout
-                        </a>
+                        <Link href={`/${HeaderParams.Locale}/cartdetail`} className="font-bold py-2 mx-2 px-4 rounded btn-cart">
+                        {HeaderParams.dictionary.cart.cart}
+                        </Link>
+                        <Link href={`/${HeaderParams.Locale}/checkout`} className="font-bold py-2 px-4 rounded btn-checkout">
+                        {HeaderParams.dictionary.cart.checkout}
+                        </Link>
                       </li>
                     </ul>
                   </div>
@@ -144,26 +151,26 @@ visible?SetVisible(false):SetVisible(true);
                   >
                     <ul className="animated lg:flex z-40" id="nav">
                       <li className="mx-3">
-                        <Link className="nav-link" href="/">
-                          Home
+                        <Link className="nav-link" href={`/${HeaderParams.Locale}/`}>
+                       {HeaderParams.dictionary.menu.home}
                         </Link>
                       </li>
                      
                       <li className="mx-3">
-                        <Link className="" href="/shop">
-                          Shop
+                        <Link className="" href={`/${HeaderParams.Locale}/shop`}>
+                    {HeaderParams.dictionary.menu.shop}
                         </Link>
                       </li>
 
                       <li className="mx-3">
-                        <Link className="" href="/contact">
-                          Contact
+                      <Link className="" href={`/${HeaderParams.Locale}/contact`}>
+                      {HeaderParams.dictionary.menu.contact}
                         </Link>
                       </li>
                       
                       <li className="mx-3">
-                        <Link className="" href="/cart">
-                       Cart Detail
+                      <Link className="" href={`/${HeaderParams.Locale}/cart`}>
+                      {HeaderParams.dictionary.menu.cartDetail}
                         </Link>
                       </li>
                     </ul>

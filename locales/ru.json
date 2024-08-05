@@ -1,5 +1,120 @@
 {
-    "products": {
-      "cart": "добавить в корзину"
+  "LayoutLanguage":{
+
+    "header": {
+      "LaunguageSwitcher":{
+        "LaunguageChanger": "язык"
+      },
+      "logoAltText": "Логотип",
+      "cart": {
+        "yourBag": "Ваша сумка",
+        "cart": "Сумка",
+        "checkout": "Оформить заказ",
+        "total":"Общий"
+      },
+      "account": {
+        "greeting": "Здравствуйте, Тахир"
+      },
+      "menu": {
+        "home": "Главная",
+        "shop": "Магазин",
+        "contact": "Контакты",
+        "cartDetail": "Детали корзины"
+      },
+      "social": {
+        "facebook": "Ссылка на страницу Facebook",
+        "instagram": "Ссылка на страницу Instagram"
+      },
+      "helpLine": {
+        "callUs": "Позвоните нам",
+        "phoneNumber": "+994 55 278 43 44"
+      }
+    },
+    "footer": {
+      "copywriteText": "Авторское право &copy;{{year}} Все права защищены",
+      "menu": {
+        "home": "Главная",
+        "shop": "Магазин",
+        "contact": "Контакт",
+        "cartDetail": "Детали Корзины"
+      }
     }
-  }
+  },
+
+  "Home": {
+    "Slider": {
+      "button": "Подробнее"
+    },
+    "Category_Top": {
+      "Button": "Купить сейчас"
+    },
+ "NewArrivals": {
+  "All": "Все",
+  "NewProduct": "Новые продукты"
+}
+
+  },
+  "Shop": {
+    "Filter": {
+      "Categories": "Категории",
+      "Priceİnterval": "Ценовой интервал",
+      "Price": "Цена",
+      "FilterBySize": "Фильтр по размеру"
+    }
+  },
+  "Contact": {
+    "ContactUs": "Свяжитесь с нами",
+    "Adress": "Адрес: Торговый центр Бине, Магазин № 1-1-55 (1-й этаж), Баку",
+    "PhoneNumber": "Контактный номер: 055-673-54-78"
+  },
+  "ProductDetail": {
+    "Information": "Информация о товаре",
+    "AddToCart": "Добавить в корзину",
+    "AddToCartErrorMesage": "Пожалуйста, выберите размер или количество товара!",
+    "AddToCartSuccessMesage": "Товар добавлен в корзину",
+    "RelatedProducts": "Похожие товары"
+  },
+  "CheckOut": {
+    "BillingAddress": "Платежная информация",
+    "FirstName": "Имя",
+    "LastName": "Фамилия",
+    "PhoneNumber": "Телефонный номер",
+    "PhoneNumberDescription": "Для связи с нашим представителем",
+    "Email": "Электронная почта",
+    "EmailDescription": "Для отправки вашего чека по электронной почте",
+    "Adress": "Адрес",
+    "AdressDescription": "Пожалуйста, укажите свой адрес подробно.",
+    "order": {
+      "OrderName": "Электронный чек",
+      "Content": "Содержание",
+      "ProductName": "Название товара",
+      "ProductSize": "Размер",
+      "ProductCount": "Количество",
+      "ProductPrice": "Цена за единицу",
+      "Total": "Итого",
+      "Shipping": "Доставка",
+      "FinalTotal": "Окончательная сумма",
+      "Button": "Оплатить"
+    }
+  },
+  "Cart": {
+    "product": "Продукт",
+    "price": "Цена",
+    "size": "Размер",
+    "quantity": "Количество",
+    "total": "Итого",
+    "continueShopping": "Продолжить покупки",
+    "clearCart": "Очистить корзину",
+    "shippingMethod": "Способ доставки",
+    "cartTotal": "Сумма корзины",
+    "finalInfo": "Итоговая информация",
+    "subtotal": "Промежуточный итог",
+    "shipping": "Доставка",
+    "proceedToCheckout": "Перейти к оформлению",
+    "emptyCart": "Ваша корзина пуста!"
+  },
+  "NotFound": {
+  "ReturnHome": "Вернуться на главную"
+}
+
+}

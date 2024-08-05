@@ -1,5 +1,120 @@
 {
-    "products": {
-      "cart": "Add to Cart"
+  "LayoutLanguage":{
+
+    "header": {
+      "LaunguageSwitcher":{
+        "LaunguageChanger": "Language"
+      },
+      "logoAltText": "Logo",
+      "cart": {
+        "yourBag": "Your Bag",
+        "cart": "Bag",
+        "checkout": "Checkout",
+         "total":"Total"
+      },
+      "account": {
+        "greeting": "Hello, Tahir"
+      },
+      "menu": {
+        "home": "Home",
+        "shop": "Shop",
+        "contact": "Contact",
+        "cartDetail": "Cart Detail"
+      },
+      "social": {
+        "facebook": "Facebook page link",
+        "instagram": "Instagram page link"
+      },
+      "helpLine": {
+        "callUs": "Call us",
+        "phoneNumber": "+994 55 278 43 44"
+      }
+    },
+    "footer": {
+      "copywriteText": "Copyright &copy;{{year}} All rights reserved",
+      "menu": {
+        "home": "Home",
+        "shop": "Shop",
+        "contact": "Contact",
+        "cartDetail": "Cart Details"
+      }
     }
   }
+  ,
+
+  "Home": {
+    "Slider": {
+      "button": "Learn More"
+    },
+    "Category_Top": {
+      "Button": "Shop Now"
+    },
+ "NewArrivals":{
+  "All":"Hamısı",
+  "NewProduct":"Yeni Məhsullar"
+}
+  },
+  "Shop": {
+    "Filter": {
+      "Categories": "Categories",
+      "Priceİnterval": "Price Interval",
+      "Price": "Price",
+      "FilterBySize": "Filter by Size"
+    }
+  },
+  "Contact": {
+    "ContactUs": "Contact Us",
+    "Adress": "Address: Binə Trade Center, Store No 1-1-55 (1st Floor), Baku",
+    "PhoneNumber": "Contact Number: 055-673-54-78"
+  },
+  "ProductDetail": {
+    "Information": "Product Information",
+    "AddToCart": "Add to Cart",
+    "AddToCartErrorMesage": "Please select the size or quantity of the product!",
+    "AddToCartSuccessMesage": "Product added to the cart",
+    "RelatedProducts": "Related Products"
+  },
+  "CheckOut": {
+    "BillingAddress": "Billing Information",
+    "FirstName": "First Name",
+    "LastName": "Last Name",
+    "PhoneNumber": "Phone Number",
+    "PhoneNumberDescription": "For our representative to contact you",
+    "Email": "Email Address",
+    "EmailDescription": "For sending your receipt electronically",
+    "Adress": "Address",
+    "AdressDescription": "Please provide your address in detail.",
+    "order": {
+      "OrderName": "Electronic Receipt",
+      "Content": "Content",
+      "ProductName": "Product Name",
+      "ProductSize": "Size",
+      "ProductCount": "Quantity",
+      "ProductPrice": "Unit Price",
+      "Total": "Total",
+      "Shipping": "Shipping",
+      "FinalTotal": "Final Total",
+      "Button": "Make Payment"
+    }
+  },
+  "Cart":{
+    "product": "Product",
+  "price": "Price",
+  "size": "Size",
+  "quantity": "Quantity",
+  "total": "Total",
+  "continueShopping": "Continue shopping",
+  "clearCart": "Clear cart",
+  "shippingMethod": "Shipping method",
+  "cartTotal": "Cart total",
+  "finalInfo": "Final info",
+  "subtotal": "Subtotal",
+  "shipping": "Shipping",
+  "proceedToCheckout": "Proceed to checkout",
+  "emptyCart": "Your cart is empty!"
+  },
+  "NotFound": {
+  "ReturnHome": "Return to Home"
+}
+
+}

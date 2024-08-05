@@ -2,17 +2,19 @@ import Image from "next/image";
 import  Product  from "@/types/Product.type";
 import Link from "next/link";
 import Slider from "react-slick";
+import { Locale } from "@/i18n-config";
 
 
 
 
 
 interface ProductCardProps {
-    product: Product;
+    product: Product,
+    lang:Locale
 
 
   }
-const ProductCart:React.FC<ProductCardProps>=({product})=>{
+const ProductCart:React.FC<ProductCardProps>=({product,lang})=>{
     const baseUrl=process.env.baseUrl;
  
     const settings = {
@@ -60,7 +62,7 @@ const ProductCart:React.FC<ProductCardProps>=({product})=>{
           
        
         </div>
-        <Link href={`/productdetail/${product.id}`}>
+        <Link href={`/${lang}/productdetail/${product.id}`}>
         <div className="product-description">
             <h4 className="product-price">{product.price}</h4>
             <p>{product.description}</p>
