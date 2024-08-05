@@ -26,6 +26,7 @@ export default async function RootLayout({
   return (
     <html lang={lang}>
      <Head>
+     <meta name="google-site-verification" content="Jhn1fxL5T9d68sryBVg3rsqdIHBChNEbCb6532yeRpE" />
      <link
   rel="stylesheet"
   type="text/css"
