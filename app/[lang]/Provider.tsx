@@ -1,6 +1,6 @@
 "use client"
-import React, { Dispatch, useEffect } from "react"
-import store, { AppDispatch } from '@/redux/store'; 
+
+import store from '@/redux/store'; 
 import { Provider as ReduxProvider } from 'react-redux';
 
 

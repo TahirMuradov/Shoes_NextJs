@@ -74,7 +74,7 @@ export async function getCartCookie(): Promise<CartType | null> {
   const cookies = getCookie('cart');
 
   if (!cookies) {
-    console.error('No cookies found in the request.');
+    
     return null;
   }
 

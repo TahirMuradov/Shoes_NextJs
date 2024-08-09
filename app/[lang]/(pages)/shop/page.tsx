@@ -7,7 +7,8 @@ import { ShopLaunguage } from "@/types/DictionaryTypes/Dictionary"
 
 const page:React.FC<{params:{lang:Locale}}>=async ({params:{lang}})=>{
     const dictionary:ShopLaunguage= (await getDictionary(lang)).Shop
-    return (<>
+    return (
+    <>
  
     <Shop dictinory={dictionary} lang={lang}/>
     </>

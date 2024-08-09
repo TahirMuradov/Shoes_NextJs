@@ -1,18 +1,20 @@
 import Image from "next/image"
 import logo from '../../public/İSTANBUL.png'
 import { FooterLaunguage } from "@/types/DictionaryTypes/Dictionary";
+import { getDictionary } from '@/get-dictionary'
 import { Locale } from "@/i18n-config";
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import Link from "next/link";
 interface FooterParams{
-    dictionary:FooterLaunguage,
+    // dictionary:FooterLaunguage,
     lang:Locale
     
 }
-const Footer:React.FC<FooterParams>=( {dictionary,lang} )=>{
+const Footer:React.FC<FooterParams>=async ( {lang} )=>{
     const currentYear = new Date().getFullYear();
+    const dictionary = (await getDictionary(lang)).LayoutLanguage.footer;
   return   (
 
     <footer className="footer_area">
@@ -31,16 +33,16 @@ const Footer:React.FC<FooterParams>=( {dictionary,lang} )=>{
 
         <div className="">
           <div className="single_footer_area">
-            <ul className="footer_widget_menu">
+          <ul className="footer_widget_menu">
          
           
            
              
-              <li><Link href={`/${lang}`}>{dictionary.menu.home}</Link></li>
-              <li><Link href={`/${lang}/shop`}>{dictionary.menu.shop}</Link></li>
-              <li><Link href={`/${lang}/cart`}>{dictionary.menu.cartDetail}</Link></li>
-              <li><Link href={`/${lang}/contact`}>{dictionary.menu.contact}</Link></li>
-            </ul>
+         <li><Link href={`/${lang}`}>{dictionary.menu.home}</Link></li>
+         <li><Link href={`/${lang}/shop`}>{dictionary.menu.shop}</Link></li>
+         <li><Link href={`/${lang}/cart`}>{dictionary.menu.cartDetail}</Link></li>
+         <li><Link href={`/${lang}/contact`}>{dictionary.menu.contact}</Link></li>
+       </ul>
           </div>
         </div>
 {/* 
