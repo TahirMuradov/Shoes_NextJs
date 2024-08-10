@@ -94,16 +94,16 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
                     <Link href={`/${lang}/checkout`} className="font-bold py-2 px-4 rounded btn-checkout">
                     {dictionary.cart.checkout}
                     </Link>
-                    <Link href="/az/dashboard">
-                    Dashboard
-                    </Link>
+                   
                   </li>
                 </ul> 
               </div>
               <div className='mx-2 p-2'>
 
               <AccountCircleOutlinedIcon/>
-              <span className='font-sans hidden lg:inline-block'>Hello Tahir</span>
+              <span className='font-sans hidden lg:inline-block'><Link href={"/auth/login"}>
+              Login
+              </Link></span>
               </div>
             
             </div>
@@ -168,11 +168,7 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
                   {dictionary.menu.cartDetail}
                     </Link>
                   </li>
-                  <li className="mx-3">
-                  <Link className="" href={`/${lang}/dashboard`}>
-                 Dasboard
-                    </Link>
-                  </li>
+              
                 </ul>
               </div>
             </nav>
