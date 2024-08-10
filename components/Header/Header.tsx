@@ -16,11 +16,14 @@ import { fetchInitialState } from '@/redux/cartSlice';
 import LocaleSwitcher from '../locale-switcher/Locale-switcher';
 
 import { HeaderLaunguage } from "@/types/DictionaryTypes/Dictionary";
-import { getDictionary } from "@/get-dictionary";
+import HeaderUserBox from "../HeaderUserBox/HeaderUserBox";
+
+
 const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictionary}) => {
 
   const [visible,SetVisible]=useState<Boolean>(false);
     let cartInfo:CartType=useAppSelector((state)=>state.cart);
+   
     let dispatch=useAppDispatch();
     useEffect(() => {
      
@@ -101,9 +104,10 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
               <div className='mx-2 p-2'>
 
               <AccountCircleOutlinedIcon/>
-              <span className='font-sans hidden lg:inline-block'><Link href={"/auth/login"}>
-              Login
-              </Link></span>
+        
+              <span className='font-sans hidden lg:inline-block'>
+                <HeaderUserBox/>
+              </span>
               </div>
             
             </div>
