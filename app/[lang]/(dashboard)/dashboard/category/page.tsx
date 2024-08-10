@@ -75,7 +75,7 @@ export default function CustomizedTables() {
                 </span> </StyledTableCell>
               
               <StyledTableCell align="right">{row.subCategoryName?.map((subCategory)=>(
-                <span>{subCategory},</span>
+                <span key={subCategory}>{subCategory},</span>
               ))}</StyledTableCell>
                     <StyledTableCell align="right">
                     <Button variant='contained' color="warning">Secondary</Button>
