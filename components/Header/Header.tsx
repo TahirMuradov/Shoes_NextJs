@@ -8,7 +8,7 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import Link from 'next/link';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+
 import { PhoneCallback } from '@mui/icons-material';
 import {  useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import CartType from '@/types/CartTypes/Cart.type';
@@ -101,24 +101,22 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
                   </li>
                 </ul> 
               </div>
-              <div className='mx-2 p-2'>
-
-              <AccountCircleOutlinedIcon/>
-        
-              <span className='font-sans hidden lg:inline-block'>
-                <HeaderUserBox/>
-              </span>
-              </div>
+           
             
             </div>
          
          
+              <div className='mx-2 p-2'>
+
+<HeaderUserBox/>
+
+</div>
               <div className="ml-15 block lg:hidden col-start-2">
                 <button type='button' onClick={ToggleMenu}>
                 <MenuOutlinedIcon/>
                 </button>
-              </div>
           </div>
+              </div>
         </div>
      
       </div>
