@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 
 const handler = NextAuth({
-  secret:process.env._API_KEY,
+  secret:process.env.SECRET_KEY,
   session: {
     strategy: 'jwt',
       },
@@ -85,7 +85,7 @@ const handler = NextAuth({
  
       session.user=session.user
    session.user=role;
-   console.log(session.user)
+  //  console.log(session.user)
       return session;
     },
   },
