@@ -8,12 +8,25 @@ const LoginForm:React.FC=()=>{
    const [email, setEmail] = useState<string>('');
  const [password, setPassword] = useState<string>('');
  function login(){
-    
+
     
         signIn('credentials', {
             email,
             password,
+            redirect: false,
+        }) .then(async (response) => {
+if(response?.ok){
+if (useSession().data?.user.role=="admin") {
+  
+  await router.push("/dashboard/category");
+}
+}else{
+  alert(response?.error)
+}
         })
+        .catch((e) => {
+        alert(e);
+        });
     
 }
    

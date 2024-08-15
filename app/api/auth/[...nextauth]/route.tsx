@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 
 const handler = NextAuth({
+  
   secret:process.env.SECRET_KEY,
   session: {
     strategy: 'jwt',
@@ -11,9 +12,10 @@ const handler = NextAuth({
     // process.env.VERCEL_ENV === "preview",
     CredentialsProvider({
       name: "Credentials",
+      
       credentials: {
-        email: { label: "email", type: "email", placeholder: "Enter your email" },
-        password: { label: "Password", type: "password" }
+        email: {},
+        password: {}
       },
       async authorize(credentials, req) {
     //karlFashionApi
@@ -44,18 +46,17 @@ const handler = NextAuth({
               expiresInMins: 30,             
             })
           });
-
-          if (res.ok) {
+       if (res.ok) {
             const user = await res.json();
             
             return user;
           } else {
             console.error("Fetch request failed with status:", res.status);
-            return null;
+           throw new Error(res.statusText) ;
           }
         } catch (error) {
           console.error("An error occurred:", error);
-          return null;
+          throw new Error("Sifre veya Email sehvdir!") ;
         }
       },
     }),
@@ -64,6 +65,7 @@ const handler = NextAuth({
     signIn: '/auth/login',
     error: '/auth/error'
   },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
