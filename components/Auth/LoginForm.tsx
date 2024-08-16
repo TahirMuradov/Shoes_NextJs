@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 const LoginForm:React.FC=()=>{
@@ -16,10 +16,8 @@ const LoginForm:React.FC=()=>{
             redirect: false,
         }) .then(async (response) => {
 if(response?.ok){
-
-
-  console.log(response.url)
- await router.push("/dashboard/category");
+  
+  await router.push("/dashboard/category");
 
 }else{
   alert(response?.error)
