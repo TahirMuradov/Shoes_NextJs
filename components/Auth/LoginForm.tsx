@@ -16,10 +16,11 @@ const LoginForm:React.FC=()=>{
             redirect: false,
         }) .then(async (response) => {
 if(response?.ok){
-if (useSession().data?.user.role=="admin") {
-  
-  await router.push("/dashboard/category");
-}
+
+
+  console.log(response.url)
+ await router.push("/dashboard/category");
+
 }else{
   alert(response?.error)
 }
