@@ -1,6 +1,6 @@
 import NextAuth, { User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { use } from "react";
+
 
 const handler = NextAuth({
   secret: process.env.SECRET_KEY,
@@ -74,13 +74,14 @@ const handler = NextAuth({
       if (user) {
         console.log("jwt user",user)
         console.log("jwt token",token)
+        
         return {  ...user,...token };
       }
       return token;
     },
     async session({ session, token }) {
 
-console.log("session",session)
+
       return {...session,token};
     },
     async signIn({ user, account, profile, email, credentials}) {
