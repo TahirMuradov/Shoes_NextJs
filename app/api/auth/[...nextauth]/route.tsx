@@ -83,18 +83,19 @@ const handler = NextAuth({
 
 
       return {...session,token};
-    },
-    async signIn({ user, account, profile, email, credentials}) {
+    }
+    // ,
+    // async signIn({ user, account, profile, email, credentials}) {
      
 
-      if (user.role == "admin") {
-        console.log("user in admin")
-        return true;
-      } else {
-        console.log("user in user")
-        return false;
-      }
-    }
+    //   if (user.role == "admin") {
+    //     console.log("user in admin")
+    //     return true;
+    //   } else {
+    //     console.log("user in user")
+    //     return false;
+    //   }
+    // }
   
   },
 

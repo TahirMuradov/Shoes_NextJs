@@ -21,14 +21,15 @@ function getLocale(request: NextRequest): string | undefined {
 
 
 
+  negotiatorHeaders['accept-language']='en;q=0.7,ru;q=0.8,az;q=0.9';
+
 // @ts-ignore locales are readonly
 
   const locales: string[] = i18n.locales;
 
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
 
-
-
+console.log(languages)
 const locale = matchLocale(languages, locales, i18n.defaultLocale);
 
   return locale;
