@@ -13,14 +13,13 @@ export function withAuthMiddleware(middleware: CustomMiddleware): CustomMiddlewa
   return async (request: NextRequest, event: NextFetchEvent, response: NextResponse) => {
 
     const token = await getToken({ req: request, secret:process.env.SECRET_KEY });
- 
-
-    if (request.url.split("/")[4]=="dashboard"&&token?.role!="admin") {
+let pathname:string[]=request.nextUrl.pathname.split("/");
+    if (pathname[2]=="dashboard"&&token?.role!="admin") {
 
       return NextResponse.redirect(new URL('/api/auth/signin', request.url));
 
     }
-    if (request.url.split("/")[4]=="auth"&&token) {
+    if (pathname[2]=="auth"&&token) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 

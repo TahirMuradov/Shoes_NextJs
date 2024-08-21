@@ -32,7 +32,7 @@ const handler = NextAuth({
         // const data = await response.json();
         // console.log(data);
         try {
-          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+          // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
           const res = await fetch('https://dummyjson.com/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -64,6 +64,7 @@ const handler = NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: '/auth/login',
     error: '/auth/error'
@@ -72,8 +73,7 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        console.log("jwt user",user)
-        console.log("jwt token",token)
+  
         
         return {  ...user,...token };
       }
