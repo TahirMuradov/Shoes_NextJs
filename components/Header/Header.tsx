@@ -91,7 +91,7 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
                 
                   <li className="total">
                     <span className="pull-right">Total: ${cartInfo.totalAmount.toFixed(2)}</span>
-                    <Link href={`/${lang}/cartdetail`} className="font-bold py-2 mx-2 px-4 rounded btn-cart">
+                    <Link href={`/${lang}/cart`} className="font-bold py-2 mx-2 px-4 rounded btn-cart">
                     {dictionary.cart.cart}
                     </Link>
                     <Link href={`/${lang}/checkout`} className="font-bold py-2 px-4 rounded btn-checkout">
