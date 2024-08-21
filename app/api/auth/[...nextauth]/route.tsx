@@ -33,7 +33,7 @@ const handler = NextAuth({
         // console.log(data);
         try {
           // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-          const res = await fetch('https://dummyjson.com/auth/login', {
+          const res = await fetch(`${process.env.API_URL}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -44,7 +44,7 @@ const handler = NextAuth({
           });
           if (res.ok) {
             const user = await res.json();
-            const responseUserData = await fetch('https://dummyjson.com/auth/me', {
+            const responseUserData = await fetch(`${process.env.API_URL}`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${user.token}`,
