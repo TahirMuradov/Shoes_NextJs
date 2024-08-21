@@ -1,6 +1,6 @@
 import NextAuth, { User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
+import jwt from "jsonwebtoken"
 
 const handler = NextAuth({
   secret: process.env.SECRET_KEY,
@@ -33,7 +33,7 @@ const handler = NextAuth({
         // console.log(data);
         try {
           // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-          const res = await fetch(`${process.env.API_URL}`, {
+          const res = await fetch('https://dummyjson.com/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -44,7 +44,7 @@ const handler = NextAuth({
           });
           if (res.ok) {
             const user = await res.json();
-            const responseUserData = await fetch(`${process.env.API_URL}`, {
+            const responseUserData = await fetch('https://dummyjson.com/auth/me', {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${user.token}`,
