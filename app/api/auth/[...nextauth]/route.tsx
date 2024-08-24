@@ -33,7 +33,9 @@ const handler = NextAuth({
         // console.log(data);
         try {
           // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-          const res = await fetch('https://dummyjson.com/auth/login', {
+          const res = 
+          // await fetch('https://dummyjson.com/http/404/Hello_Peter');
+          await fetch('https://dummyjson.com/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -55,11 +57,11 @@ const handler = NextAuth({
             return responseUserData;
           } else {
             console.error("Fetch request failed with status:", res.status);
-            throw new Error(res.statusText);
+            throw new Error(`${res.status}`);
           }
         } catch (error) {
           console.error("An error occurred:", error);
-          throw new Error("Sifre veya Email sehvdir!");
+          throw new Error(`Sifre veya Email sehvdir!${error}`);
         }
       },
     }),

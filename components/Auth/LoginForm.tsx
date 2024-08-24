@@ -22,10 +22,11 @@ if(response?.ok){
 }else{
   alert(response?.error)
 }
-        })
-        .catch((e) => {
-        alert(e);
         });
+      
+        
+      
+        
     
 }
    
