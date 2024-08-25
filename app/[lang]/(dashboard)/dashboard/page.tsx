@@ -51,6 +51,7 @@ const page =async  ({params:{lang}}:{params:{lang:Locale}}) => {
           'Content-Type': 'application/json',
           'langCode': 'az'  // You can dynamically set this value based on user selection or other logic
         },
+        cache:"no-store",
         method: "GET",
       });
   
@@ -63,7 +64,7 @@ const page =async  ({params:{lang}}:{params:{lang:Locale}}) => {
       const data = await response.json();
   
       // Log the data to the console (or handle it as needed)
-      console.log(data);
+      console.log(data.response);
       
       return data; // Return the data if you need to use it elsewhere
     } catch (error) {
@@ -72,7 +73,7 @@ const page =async  ({params:{lang}}:{params:{lang:Locale}}) => {
     }
   }
   
-
+GetAllCategory();
 async function GetCategory(){
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const data = await fetch('https://localhost:7115/api/Category/GetCategory?Id=edfb5ffc-6a4b-4d72-a779-08dcc477a2a0',{
