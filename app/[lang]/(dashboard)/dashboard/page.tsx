@@ -73,7 +73,7 @@ const page =async  ({params:{lang}}:{params:{lang:Locale}}) => {
     }
   }
   
-GetAllCategory();
+
 async function GetCategory(){
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const data = await fetch('https://localhost:7115/api/Category/GetCategory?Id=edfb5ffc-6a4b-4d72-a779-08dcc477a2a0',{
@@ -92,8 +92,7 @@ async function GetCategory(){
 
   return (
     <nav><ul>
-    <li><Link href="/az">Home</Link></li>
-  
+    <li><Link href="/az">Home</Link></li>  
   </ul></nav>
   )
 }
