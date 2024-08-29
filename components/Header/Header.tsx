@@ -14,7 +14,6 @@ import {  useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import CartType from '@/types/CartTypes/Cart.type';
 import { fetchInitialState } from '@/redux/cartSlice';
 import LocaleSwitcher from '../locale-switcher/Locale-switcher';
-
 import { HeaderLaunguage } from "@/types/DictionaryTypes/Dictionary";
 import HeaderUserBox from "../HeaderUserBox/HeaderUserBox";
 
@@ -22,11 +21,14 @@ import HeaderUserBox from "../HeaderUserBox/HeaderUserBox";
 const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictionary}) => {
 
   const [visible,SetVisible]=useState<Boolean>(false);
+  // const [IsTheme,SetIsTheme]=useState<Boolean>(false);
+
     let cartInfo:CartType=useAppSelector((state)=>state.cart);
-   
+ 
     let dispatch=useAppDispatch();
+
     useEffect(() => {
-     
+
       dispatch(fetchInitialState());
     }, [dispatch]);
    
@@ -41,7 +43,7 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
   }
 
   return (
-     <header className="header_area">
+     <header className="header_area dark:bg-black">
 
     <div className="top_header_area">
     <div className="w-[80%] mx-auto h-full">

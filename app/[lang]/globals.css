@@ -2022,16 +2022,8 @@ height: 0;
     padding: 40px;
 }
 
-.order-details-confirmation .order-details-form li {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: justify;
-    -ms-flex-pack: justify;
-    justify-content: space-between;
+.order-details-confirmation .order-details-form table {
+ 
     margin-bottom: 20px;
     font-size: 12px;
     text-transform: uppercase;
@@ -2039,10 +2031,11 @@ height: 0;
     border-bottom: 2px solid #ebebeb;
 }
 
-.order-details-confirmation .card-header h6 a {
-    display: block;
+.order-details-confirmation thead tr th {
+    text-align: center;
     font-size: 12px;
     text-transform: uppercase;
+    font-weight: bold;
 }
 
 .order-details-confirmation .card-header h6 a i {

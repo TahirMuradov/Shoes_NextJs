@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Logo from "@/public/İSTANBUL.png";
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { FormControlLabel, Paper, Radio, RadioGroup, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { pink } from '@mui/material/colors';
 import { Locale } from '@/i18n-config';
 import { getDictionary } from '@/get-dictionary';
@@ -101,32 +101,101 @@ const page = async ({ params }: { params: { lang: Locale } }) => {
                   <Image src={Logo} width={200} height={100} alt='İstanbul Shoes Logo'/>
                 </div>
               </div>
+              <div className='order-details-form mb-4'>
 
-              <ul className="order-details-form mb-4">
-                <li>
-                  <span>{dictionary.order.ProductName}</span>
-                  <span>{dictionary.order.ProductSize}</span>
-                  <span>{dictionary.order.ProductCount}</span>
-                  <span>{dictionary.order.ProductPrice}</span>
-                  <span>{dictionary.order.Total}</span>
-                </li>
-                <li>
-                  <span>Cocktail Yellow dress</span>
-                  <span>36</span>
-                  <span>1</span>
-                  <span>36$</span>
-                  <span>36$</span>
-                </li>
-                <li>
-                  <span>{dictionary.order.Total}</span> <span>$36.00</span>
-                </li>
-                <li>
-                  <span>{dictionary.order.Shipping}</span> <span>Pulsuz</span>
-                </li>
-                <li>
-                  <span>{dictionary.order.FinalTotal}</span> <span>$36.00</span>
-                </li>
-              </ul>
+              <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Məhsul Kodu</TableCell>
+            <TableCell align="right">Məhsul adı</TableCell>
+            <TableCell align="right">Ölçü</TableCell>
+            <TableCell align="right">Say</TableCell>
+            <TableCell align="right">Qiymət</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+         
+            <TableRow
+              key={1}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+               Name
+              </TableCell>
+              <TableCell align="right">calories</TableCell>
+              <TableCell align="right">fat</TableCell>
+              <TableCell align="right">carbs</TableCell>
+              <TableCell align="right">protein</TableCell>
+            </TableRow>
+           
+            <TableRow
+              key={1}
+              sx={{ '&:last-child td, &:last-child th': { border: 1 } }}
+            >
+              <TableCell component="th" scope="row">
+               Name
+              </TableCell>
+              <TableCell align="right">calories</TableCell>
+              <TableCell align="right">fat</TableCell>
+              <TableCell align="right">carbs</TableCell>
+              <TableCell align="right">protein</TableCell>
+            </TableRow>   
+            <TableRow
+              key={1}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+               Name
+              </TableCell>
+              <TableCell align="right">calories</TableCell>
+              <TableCell align="right">fat</TableCell>
+              <TableCell align="right">carbs</TableCell>
+              <TableCell align="right">protein</TableCell>
+            </TableRow>   
+            <TableRow
+              key={1}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+               Name
+              </TableCell>
+              <TableCell align="right">calories</TableCell>
+              <TableCell align="right">fat</TableCell>
+              <TableCell align="right">carbs</TableCell>
+              <TableCell align="right">protein</TableCell>
+            </TableRow> 
+            <TableRow
+              key={1}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell ></TableCell>
+              <TableCell ></TableCell>
+              <TableCell component="th" scope="row">
+              Catdirilma 
+              </TableCell>
+              <TableCell ></TableCell>
+              <TableCell align="right">10 Azn</TableCell>
+             
+            </TableRow>  
+            <TableRow
+              key={1}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+              <TableCell ></TableCell>
+              <TableCell ></TableCell>
+              <TableCell component="th" scope="row">
+              Cəmi
+              </TableCell>
+              <TableCell ></TableCell>
+              <TableCell align="right">110 Azn</TableCell>
+             
+            </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+              </div>
+           
 
               <RadioGroup
                 aria-labelledby="demo-controlled-radio-buttons-group"
