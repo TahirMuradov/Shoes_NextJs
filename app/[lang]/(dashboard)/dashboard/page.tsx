@@ -39,39 +39,7 @@ const page =async  ({params:{lang}}:{params:{lang:Locale}}) => {
     }
   };
 
-  async function GetAllCategory() {
-    try {
-      // This line should be placed at the very top of your file
-      process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-  
-      // Fetch data from the API
-      const response = await fetch('https://localhost:7115/api/Category/GetAllCategory?page=1', {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'langCode': 'az'  // You can dynamically set this value based on user selection or other logic
-        },
-        cache:"no-store",
-        method: "GET",
-      });
-  
-      // Check if the response is OK (status 200-299)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      // Parse the JSON data from the response
-      const data = await response.json();
-  
-      // Log the data to the console (or handle it as needed)
-      console.log(data.response);
-      
-      return data; // Return the data if you need to use it elsewhere
-    } catch (error) {
-      // Log any errors that occur during the fetch
-      console.error('Error fetching data:', error);
-    }
-  }
+
   
 
 async function GetCategory(){

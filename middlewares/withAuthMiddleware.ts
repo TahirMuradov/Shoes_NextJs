@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import type { NextFetchEvent, NextRequest } from 'next/server';
 
 import { CustomMiddleware } from './chain';
-import { i18n } from '@/i18n-config';
+
 
 export function withAuthMiddleware(middleware: CustomMiddleware): CustomMiddleware {
 
