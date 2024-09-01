@@ -1,95 +1,47 @@
-"use client"
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Button } from '@mui/material';
+import Result from '@/types/ApiResultType'
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
+import GetCategoryAllDashboard from '@/types/CategoryTypes/GetALLCategory'
+import PaginatedList from '@/types/Paginated.type'
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
+import CategoryTable from './CategoryTable'
+import { Locale } from '@/i18n-config'
 
-function createData(
-  id:string,
-  name: string,
-  isFeatured: boolean,
-  subCategoryName: string[]|null|undefined,
-  
-) {
-  return { id, name, isFeatured, subCategoryName };
+const page:React.FC<{ params: { lang: Locale } }>  = async ({ params }) => {
+   
+        try {
+          // This line should be placed at the very top of your file
+          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    
+          // Fetch data from the API
+          const response = await fetch('https://localhost:7115/api/Category/GetAllCategory?page=1', {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'langCode': `${params.lang}`  // You can dynamically set this value based on user selection or other logic
+            },
+            cache:"no-store",
+            method: "GET",
+          });
+    
+          // Check if the response is OK (status 200-299)
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+    
+          // Parse the JSON data from the response
+          const data:Result< PaginatedList<GetCategoryAllDashboard> >= await response.json();
+          return (
+            <CategoryTable categories={data} lang={params.lang}/>
+           )
+        
+        } catch (error) {
+          // Log any errors that occur during the fetch
+          console.error('Error fetching data:', error);
+        }
+      
+      
+   
+
 }
 
-const rows = [
-  createData('123', "Yay", true, ["cekeley"]),
-  createData('123', "Qis", false, ["Saposka"]),
-  createData('123', "Payiz", true,null),
-
-];
-
-export default function CustomizedTables() {
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Category Name</StyledTableCell>
-            <StyledTableCell align="right">Category Id</StyledTableCell>
-            <StyledTableCell align="right">IsFeatured</StyledTableCell>
-       
-            <StyledTableCell align="right">SubCategories</StyledTableCell>
-            <StyledTableCell align="right">Actions</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <StyledTableRow key={row.name}>
-              
-              <StyledTableCell component="th" scope="row">
-                {row.name}
-              </StyledTableCell>
-              <StyledTableCell align="right">{row.id}</StyledTableCell>
-           
-              <StyledTableCell align="right"><span>
-                {row.isFeatured?"true":"false"}
-                </span> </StyledTableCell>
-              
-              <StyledTableCell align="right">{row.subCategoryName?.map((subCategory)=>(
-                <span key={subCategory}>{subCategory},</span>
-              ))}</StyledTableCell>
-                    <StyledTableCell align="right">
-                    <Button variant='contained' color="warning">Secondary</Button>
-<Button variant="contained" color="success" className='mx-2'>
-  Success
-</Button>
-<Button variant="contained" color="error">
-  Error
-</Button>
-                    </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
+export default page 

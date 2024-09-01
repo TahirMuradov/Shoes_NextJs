@@ -1,5 +1,8 @@
 import LocaleSwitcher from "@/components/locale-switcher/Locale-switcher"
 import { Locale } from "@/i18n-config"
+import Result from "@/types/ApiResultType";
+import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
+import PaginatedList from "@/types/Paginated.type";
 
 import Link from "next/link"
 
@@ -39,8 +42,6 @@ const page =async  ({params:{lang}}:{params:{lang:Locale}}) => {
     }
   };
 
-
-  
 
 async function GetCategory(){
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
