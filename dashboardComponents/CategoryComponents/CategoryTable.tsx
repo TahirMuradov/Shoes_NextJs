@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { Locale } from '@/i18n-config';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
+import Loader from '../common/Loader';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -44,8 +45,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function CategoryTable({categories,lang}:{categories:Result<PaginatedList<GetCategoryAllDashboard>>,lang:Locale}) {
   const router=useRouter();
- 
+ const [loader,SetLoader]=React.useState<boolean>(false)
   function CategoryDelete(id:string){
+    SetLoader(true)
    fetch(`https://localhost:7115/api/Category/DeleteCategory?Id=${id}`, {
       headers: {
         'Accept': 'application/json',
@@ -63,7 +65,7 @@ export default function CategoryTable({categories,lang}:{categories:Result<Pagin
             confirmButtonText: 'Cool'
         }).then((res) => {
             if (res.isConfirmed) {
-               
+              SetLoader(false)
                 router.refresh();// Clear the form
             }
         })
@@ -75,7 +77,7 @@ export default function CategoryTable({categories,lang}:{categories:Result<Pagin
         confirmButtonText: 'Cool'
     }).then((res) => {
         if (res.isConfirmed) {
-           
+          SetLoader(false)
             router.push("/category")// Clear the form
         }
     })
@@ -84,6 +86,9 @@ export default function CategoryTable({categories,lang}:{categories:Result<Pagin
   })
     
     ;
+  }
+  if (loader) {
+    return <Loader/>
   }
   return (
     <TableContainer component={Paper}>

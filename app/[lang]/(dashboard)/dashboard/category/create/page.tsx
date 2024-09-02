@@ -3,34 +3,29 @@ import { i18n, Locale } from "@/i18n-config";
 import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2'
 import { useState } from "react";
+import Loader from "@/dashboardComponents/common/Loader";
 
 const Page: React.FC<{params:{lang:Locale}}> = ({params:{lang}}) => {
     const router=useRouter();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
-    
+    const[loader,SetLoader]=useState<boolean>(false)
 
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        SetLoader(true);
+
         const form = new FormData(e.currentTarget);
         const newItems: { key: string, value: string | null }[] = [];
 
         for (const key of i18n.locales) {
             const inputValue = form.get(`CategoryName${key}`);
+
             if (inputValue !== null) {
                 newItems.push({
                     key,
                     value: inputValue as string,
                 });
-                Swal.fire({
-                    title: 'success!',
-                    text: 'Category Elave Edildi!!',
-                    icon: 'success',
-                    confirmButtonText: 'Cool'
-                  }).then((res)=>{
-if (res.isConfirmed) {
-    setItems([]);
-}
-                  })
+       
             } else {
                 Swal.fire({
                     title: 'Error!',
@@ -39,7 +34,7 @@ if (res.isConfirmed) {
                     confirmButtonText: 'Cool'
                   }).then(res=>{
                     if (res.isConfirmed) {
-                        
+                        setItems([]);
                         router.refresh(); // Reload the page if the locale doesn't match
                     }
                   })
@@ -71,6 +66,7 @@ if (res.isConfirmed) {
                     confirmButtonText: 'Cool'
                 }).then((res) => {
                     if (res.isConfirmed) {
+                        SetLoader(false)
                         setItems([]); 
                     
                         router.push("/dashboard/category")// Clear the form
@@ -82,19 +78,34 @@ if (res.isConfirmed) {
                     text: result.message || 'Failed to add category!',
                     icon: 'error',
                     confirmButtonText: 'Cool'
+                }).then((res)=>{
+if (res.isConfirmed) {
+    SetLoader(false)
+    setItems([]);
+    router.refresh();
+}
                 });
             }
         })
         .catch(error => {
+
             Swal.fire({
                 title: 'Error!',
                 text: 'An unexpected error occurred!',
                 icon: 'error',
                 confirmButtonText: 'Cool'
+            }).then((res)=>{
+if (res.isConfirmed) {
+    SetLoader(false)
+    setItems([]);
+    router.refresh();
+}
             });
         });
     }
-
+if (loader) {
+    return <Loader/>
+}
     return (
         <form id="addCategoryForm" onSubmit={HandleSubmit}>
             <div className="grid grid-cols-4 gap-6 mb-6">
