@@ -46,6 +46,7 @@ const AddPictureForm = () => {
       const response = await fetch('https://localhost:7115/api/Product/AddProduct', {
         method: 'POST',
         body: formData,
+        
         headers: {
           'LangCode': langCode,
         },

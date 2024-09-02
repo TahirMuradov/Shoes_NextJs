@@ -7,6 +7,7 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./dashboardComponents/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+     "./node_modules/flowbite/**/*.js"
   ],
   theme: {
     fontFamily: {
@@ -32,7 +33,9 @@ const config: Config = {
    
     },
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+  ],
 };
 
 export default config;

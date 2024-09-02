@@ -8,12 +8,15 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { Button } from '@mui/material';
+
 import Result from '@/types/ApiResultType';
 import PaginatedList from '@/types/Paginated.type';
 import GetCategoryAllDashboard from '@/types/CategoryTypes/GetALLCategory';
 import Link from 'next/link';
 import { Locale } from '@/i18n-config';
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -40,6 +43,48 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 export default function CategoryTable({categories,lang}:{categories:Result<PaginatedList<GetCategoryAllDashboard>>,lang:Locale}) {
+  const router=useRouter();
+ 
+  function CategoryDelete(id:string){
+   fetch(`https://localhost:7115/api/Category/DeleteCategory?Id=${id}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+      },
+     method: "DELETE",
+    }).then(response=>response.json())
+    .then(responsData=>{
+      if (responsData.isSuccess) {
+        Swal.fire({
+            title: 'Success!',
+            text: 'Category delete successfully!',
+            icon: 'success',
+            confirmButtonText: 'Cool'
+        }).then((res) => {
+            if (res.isConfirmed) {
+               
+                router.refresh();// Clear the form
+            }
+        })
+    }else{
+      Swal.fire({
+        title: 'Error!',
+     
+        icon: 'error',
+        confirmButtonText: 'Cool'
+    }).then((res) => {
+        if (res.isConfirmed) {
+           
+            router.push("/category")// Clear the form
+        }
+    })
+    }
+  
+  })
+    
+    ;
+  }
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -65,11 +110,11 @@ export default function CategoryTable({categories,lang}:{categories:Result<Pagin
             
            
                     <StyledTableCell align="center">
-                    <Button variant='contained' color="warning">Secondary</Button>
-<Button variant="contained" color="success" className='mx-2'>
-  Success
-</Button>
-<Link href={`${lang}/dashboard/category/edit/${row.id}`} className='p-2 btn-info'>
+                    
+<button onClick={()=>CategoryDelete(row.id)} className=" mx-3 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+  Delete
+</button>
+<Link locale={lang} href={`/dashboard/category/edit/${row.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
   Edit
 </Link>
                     </StyledTableCell>

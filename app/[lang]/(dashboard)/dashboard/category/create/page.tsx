@@ -72,7 +72,8 @@ if (res.isConfirmed) {
                 }).then((res) => {
                     if (res.isConfirmed) {
                         setItems([]); 
-                        router.push("/category")// Clear the form
+                    
+                        router.push("/dashboard/category")// Clear the form
                     }
                 });
             } else {
