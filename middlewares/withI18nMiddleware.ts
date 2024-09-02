@@ -29,7 +29,7 @@ function getLocale(request: NextRequest): string | undefined {
 
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
 
-console.log(languages)
+
 const locale = matchLocale(languages, locales, i18n.defaultLocale);
 
   return locale;

@@ -15,7 +15,7 @@ export function withAuthMiddleware(middleware: CustomMiddleware): CustomMiddlewa
     const token = await getToken({ req: request, secret:process.env.SECRET_KEY });
 
 let pathname:string[]=request.nextUrl.pathname.split("/");
-pathname.forEach(i=>console.log(i))
+
     if (pathname[2]=="dashboard"&&token?.role!="admin") {
 
       return NextResponse.redirect(new URL('/auth/signin', request.url));
