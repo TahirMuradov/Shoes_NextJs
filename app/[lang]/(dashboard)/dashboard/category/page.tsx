@@ -3,7 +3,7 @@ import Result from '@/types/ApiResultType'
 import GetCategoryAllDashboard from '@/types/CategoryTypes/GetALLCategory'
 import PaginatedList from '@/types/Paginated.type'
 
-import CategoryTable from './CategoryTable'
+import CategoryTable from '../../../../../dashboardComponents/CategoryComponents/CategoryTable'
 import { Locale } from '@/i18n-config'
 
 const page:React.FC<{ params: { lang: Locale } }>  = async ({ params }) => {

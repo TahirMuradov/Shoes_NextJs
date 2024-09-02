@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 
-const page = ({ params }: { params: { lang: Locale,id:string } }) => {
+const Page:React.FC<{ params: { lang: Locale,id:string } }> = ({ params }) => {
   const router=useRouter();
   const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
   const [category,setCategory]=useState<Result<GetCategoryForUpdate>|null>(null);
@@ -180,4 +180,4 @@ if (res.isConfirmed) {
   )
 }
 
-export default page
+export default Page

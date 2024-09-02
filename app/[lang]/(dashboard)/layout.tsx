@@ -21,7 +21,7 @@ export default function DashboardLayout({
     {loading ? <Loader /> : children}
       </DefaultLayout>
 
-      <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
+    
   </div>
   )
    
