@@ -13,7 +13,7 @@ const page:React.FC<{ params: { lang: Locale } }>  = async ({ params }) => {
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     
           // Fetch data from the API
-          const response = await fetch('https://localhost:7115/api/Category/GetAllCategory?page=1', {
+          const response = await fetch('https://localhost:7115/api/Category/GetAllCategoryForTable?page=1', {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',

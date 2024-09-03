@@ -16,7 +16,7 @@ const Page:React.FC<{ params: { lang: Locale,id:string } }> = ({ params }) => {
   const [category,setCategory]=useState<Result<GetCategoryForUpdate>|null>(null);
   const[loader,SetLoader]=useState<boolean>(false)
 useEffect(()=>{
-  fetch(`https://localhost:7115/api/Category/GetCtegoryForUpdte?Id=${params.id}`, {
+  fetch(`https://localhost:7115/api/Category/GetCategoryForUpdate?Id=${params.id}`, {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
