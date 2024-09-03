@@ -91,7 +91,7 @@ export default function CategoryTable({categories,lang}:{categories:Result<Pagin
     return <Loader/>
   }
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} >
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
