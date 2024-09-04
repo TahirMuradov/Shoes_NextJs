@@ -1,19 +1,19 @@
 import Result from '@/types/ApiResultType'
-
 import GetCategoryAllDashboard from '@/types/CategoryTypes/GetALLCategory'
 import PaginatedList from '@/types/Paginated.type'
-
-import CategoryTable from '../../../../../dashboardComponents/CategoryComponents/CategoryTable'
+import CategoryTable from '../../../../../../dashboardComponents/CategoryComponents/CategoryTable'
 import { Locale } from '@/i18n-config'
 
-const page:React.FC<{ params: { lang: Locale } }>  = async ({ params }) => {
+const page:React.FC<{ params: { lang: Locale,page:number } }>  = async ({ params }) => {
    
         try {
           // This line should be placed at the very top of your file
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    
+    if (params.page<1) {
+     params.page=1
+    }
           // Fetch data from the API
-          const response = await fetch('https://localhost:7115/api/Category/GetAllCategoryForTable?page=1', {
+          const response = await fetch(`https://localhost:7115/api/Category/GetAllCategoryForTable?page=${params.page}`, {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',

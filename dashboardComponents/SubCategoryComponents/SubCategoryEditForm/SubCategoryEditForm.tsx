@@ -15,7 +15,6 @@ const SubCategoryEditForm:React.FC<{lang:Locale,Subcategory:GetSubCategoryForUpd
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true);
-
         const form = new FormData(e.currentTarget);
         const newItems: { key: string, value: string | null }[] = [];
 
