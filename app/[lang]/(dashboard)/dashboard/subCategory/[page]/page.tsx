@@ -13,7 +13,7 @@ const page:React.FC<{params:{lang:Locale,page:number}}> = async ({params:{lang,p
 page=1
   }
         // Fetch data from the API
-        const response = await fetch(`https://localhost:7115/api/SubCategory/GetAllSubCategory?page=${page}`, {
+        const response = await fetch(`https://localhost:7115/api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

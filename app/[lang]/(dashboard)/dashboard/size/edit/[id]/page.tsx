@@ -2,7 +2,7 @@
 import SizeUpdateForm from "@/dashboardComponents/SizeComponents/SizeUpdateForm";
 import { Locale } from "@/i18n-config"
 import Result from "@/types/ApiResultType";
-import GetSizeForUpdate from "@/types/SizeTypes/GetSizeForUpdate";
+import GetSizeForUpdate from "@/types/SizeTypes/GetSize";
 
 
 const page = async ({params:{lang,id}}:{params:{lang:Locale,id:string}}) => {

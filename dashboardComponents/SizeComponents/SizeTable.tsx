@@ -1,7 +1,7 @@
 "use client"
 import { Locale } from "@/i18n-config";
 import PaginatedList from "@/types/Paginated.type";
-import GetSize from "@/types/SizeTypes/GetSize";
+import GetSize from "@/types/SizeTypes/GetAllSize";
 
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";

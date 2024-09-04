@@ -8,7 +8,7 @@ import Loader from "@/dashboardComponents/common/Loader";
 const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories}}) => {
 
     const router=useRouter();
-    const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
+    // const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
     const[loader,SetLoader]=useState<boolean>(false)
 
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -35,7 +35,7 @@ const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategory
                     confirmButtonText: 'Cool'
                   }).then(res=>{
                     if (res.isConfirmed) {
-                        setItems([]);
+                        // setItems([]);
                         router.refresh(); // Reload the page if the locale doesn't match
                     }
                   })
@@ -43,7 +43,7 @@ const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategory
             }
         }
 
-        setItems(newItems); // Update state with the new items
+        // setItems(newItems); // Update state with the new items
         fetch('https://localhost:7115/api/SubCategory/AddSubCategory', {
             method: 'POST',
             headers: {
@@ -69,7 +69,7 @@ const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategory
                 }).then((res) => {
                     if (res.isConfirmed) {
                         SetLoader(false)
-                        setItems([]); 
+                        // setItems([]); 
                     
                         router.push("/dashboard/subcategory/1")// Clear the form
                     }
@@ -83,7 +83,7 @@ const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategory
                 }).then((res)=>{
 if (res.isConfirmed) {
     SetLoader(false)
-    setItems([]);
+    // setItems([]);
     router.refresh();
 }
                 });
@@ -99,7 +99,7 @@ if (res.isConfirmed) {
             }).then((res)=>{
 if (res.isConfirmed) {
     SetLoader(false)
-    setItems([]);
+    // setItems([]);
     router.refresh();
 }
             });

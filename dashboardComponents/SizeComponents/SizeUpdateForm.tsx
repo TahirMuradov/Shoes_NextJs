@@ -1,7 +1,7 @@
 "use client"
 import { i18n, Locale } from "@/i18n-config"
 import Result from "@/types/ApiResultType";
-import GetSizeForUpdate from "@/types/SizeTypes/GetSizeForUpdate";
+import GetSize from "@/types/SizeTypes/GetSize";
 
 import { useRouter } from "next/navigation";
 
@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 
 
-const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,Size:GetSizeForUpdate}}> = ({params:{id,lang,Size}}) => {
+const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,Size:GetSize}}> = ({params:{id,lang,Size}}) => {
     const router=useRouter();
 function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
  if (Number.parseInt( e.target.value)<1) {

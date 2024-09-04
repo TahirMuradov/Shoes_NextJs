@@ -2,7 +2,7 @@ import SizeTable from "@/dashboardComponents/SizeComponents/SizeTable";
 import { Locale } from "@/i18n-config"
 import Result from "@/types/ApiResultType";
 import PaginatedList from "@/types/Paginated.type";
-import GetSize from "@/types/SizeTypes/GetSize";
+import GetSize from "@/types/SizeTypes/GetAllSize";
 
 const page:React.FC<{params:{lang:Locale,page:number}}> = async ({params:{lang,page}}) => {
   try {
@@ -12,7 +12,7 @@ if (page<1) {
 page=1
 }
     // Fetch data from the API
-    const response = await fetch(`https://localhost:7115/api/Size/GetAllSize?page=${page}`, {
+    const response = await fetch(`https://localhost:7115/api/Size/GetAllSizeForTable?page=${page}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
