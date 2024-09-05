@@ -6,9 +6,9 @@ import { useState } from "react";
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import Loader from "@/dashboardComponents/common/Loader";
 const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories}}) => {
-
     const router=useRouter();
     // const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
+
     const[loader,SetLoader]=useState<boolean>(false)
 
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -114,7 +114,8 @@ if (res.isConfirmed) {
                 <label htmlFor="productCode" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                    Sub Category Name:
                 </label>
-                {i18n.locales.map((locale) => (
+                {
+                i18n.locales.map((locale) => (
                     <input
                         key={locale}
                         placeholder={`SubCategory Name in ${locale} Language`}

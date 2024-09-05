@@ -15,7 +15,7 @@ export default function DashboardLayout({
     setTimeout(() => setLoading(false), 2000);
   }, []);
   return (
-    <div className={`${darkMode?"dark":""} dark:bg-boxdark-2 dark:text-bodydark w-full h-[100vh]  dark:text-slate-400 dark:bg-slate-800`}>
+    <div className={`${darkMode?"dark":""} dark:bg-boxdark-2 dark:text-bodydark w-full min-h-[100vh]  dark:text-slate-400 dark:bg-slate-800`}>
          <DefaultLayout>
      
     {loading ? <Loader /> : children}

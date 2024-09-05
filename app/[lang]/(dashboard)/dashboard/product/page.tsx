@@ -16,23 +16,27 @@ const page:React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
 
     // Fetch data from the API
     const responseSize = await fetch('https://localhost:7115/api/Size/GetAllSize', {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'langCode': `${lang}`  
-      },
-      cache:"no-store",
+        cache:"no-store",
       method: "GET",
     });
-
+    const responseSubCategory = await fetch('https://localhost:7115/api/SubCategory/GetAllSubCategory', {
+      headers:{
+        'LangCode':`${lang}`
+      },
+      cache:"no-store",
+    method: "GET",
+  });
     // Check if the response is OK (status 200-299)
     if (!responseSize.ok) {
       throw new Error(`HTTP error! status: ${responseSize.status}`);
     }
 
     // Parse the JSON data from the response
-    const dataSize:Result< GetSize[]>= await responseSize.json();
-    const dataSubCategory:Result< GetSubCategory[]>= await responseSize.json();
+    const dataSize:Result<GetSize[]>= await responseSize.json();
+ 
+    const dataSubCategory:Result< GetSubCategory[]>= await responseSubCategory.json();
+  
+
     return (
       <ProductCreateForm key={1} lang={lang}sizes={dataSize.response} subcategories={dataSubCategory.response} />
      )

@@ -1,23 +1,28 @@
 "use client"
-import { Locale } from "@/i18n-config"
+import { i18n, Locale } from "@/i18n-config"
 import GetSize from "@/types/SizeTypes/GetSize"
 import GetSubCategory from "@/types/SubCategoriesType/GetSubCategory"
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ChangeEvent, useState } from "react";
+import Swal from "sweetalert2";
 
 const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetSubCategory[]}>=({lang,sizes,subcategories})=>{
-    const [size, setSize] = useState<{key:string,value:number}[]>([]); 
-  const [subCategories, setSubCategories] = useState<string[]>([]);
-  
 
-  const handleSizeChange = (size: string, value: number) => {
-    setSize((prevSize) => ({
-      ...prevSize,
-      [size]: value,
-    }));
-  };
+  const [subCategories, setSubCategories] = useState<string[]>([]);
+  const router=useRouter();
+  function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
+    if (Number.parseFloat(e.target.value) < 1) {
+      e.target.value = "";
+    }
+  }
+
+
+ 
+
+
 
   const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
     setSubCategories(selectedOptions);
   };
 
@@ -27,49 +32,151 @@ const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetS
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Sizes
-    Object.entries(sizes).forEach(([key, value]) => {
-      formData.append(`Size[${key}]`, value.toString());
-    });
+//size   
+ const Size: { key: string, value: number | null }[] = [];
 
-    // SubCategories
-    subCategories.forEach((category) => {
-      formData.append("SubCategory", category);
-    });
-
-    const picturesInput = form.querySelector<HTMLInputElement>("#pictures");
-    if (picturesInput?.files) {
-      Array.from(picturesInput.files).forEach((file) => {
-        formData.append("Pictures", file);
-      });
+    for (const size of sizes) {
+      const sizeInput = document.getElementById(`${size.id}`) as HTMLInputElement | null;
+      if (sizeInput) {
+        const sizeValue = sizeInput.value;
+        if (Number.parseInt( sizeValue) <= 0) {
+          formData.delete(`SizeId-${size.id}`);
+          continue;
+        }
+     Size.push({
+      key: size.id,
+      value: Number.parseInt(sizeValue),
+     })
+  
+    
+        formData.delete(`SizeId-${size.id}`);
+      }
     }
+    formData.append("Sizes",JSON.stringify(Size))
+    //productName
+    const productName: { key: string, value: string | null }[] = [];
+    const productDescription: { key: string, value: string | null }[] = [];
 
+    for (const key of i18n.locales) {
+        const inputNameValue = (form.querySelector(`input[name="Name${key}"]`) as HTMLInputElement).value;
+        formData.delete(`Name${key}`);
+      
+        const inputDescriptionValue =  (form.querySelector(`input[name="Description${key}"]`) as HTMLInputElement).value;
+        formData.delete(`Description${key}`);
+
+        if (inputNameValue !== null) {
+          productName.push({
+                key,
+                value: inputNameValue as string,
+            });
+   
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Inspect de duzelis etme datalar duzgun gelmir!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+              }).then(res=>{
+                if (res.isConfirmed) {
+                    // setItems([]);
+                    router.refresh(); // Reload the page if the locale doesn't match
+                }
+              })
+            return;
+        }
+        if (inputDescriptionValue !== null) {
+          productDescription.push({
+                key,
+                value: inputDescriptionValue as string,
+            });
+   
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Inspect de duzelis etme datalar duzgun gelmir!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+              }).then(res=>{
+                if (res.isConfirmed) {
+                    // setItems([]);
+                    router.refresh(); // Reload the page if the locale doesn't match
+                }
+              })
+            return;
+        }
+    }
+    formData.append("Description",JSON.stringify(productDescription))
+formData.append("ProductName",JSON.stringify( productName))
+
+
+     
+    Array.from(formData.entries()).forEach(([key, value]) => {
+      console.log(`Key: ${key}, Value: ${value}`);
+    });
     try {
-      const response = await fetch('https://localhost:7115/api/Product/AddProduct', {
-        method: 'POST',
+      const response = await fetch("https://localhost:7115/api/Product/AddProduct", {
+        method: "POST",
         body: formData,
-        
         headers: {
-          'LangCode': lang,
+          'LangCode': `${lang}`,
         },
       });
 
       if (response.ok) {
-        console.log("Success!",response);
+        console.log("Success!", response);
       } else {
         const errorData = await response.json();
         console.log("BadRequest Data:", errorData);
-        console.log("Failed!",response);
+        console.log("Failed!", response);
       }
     } catch (error) {
       console.error("Error:", error);
     }
   };
-   
     return(
         <form id="addPictureForm" onSubmit={handleSubmit} encType="multipart/form-data">
 
         <div className="grid grid-cols-4 gap-6 mb-6">
+        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
+                <label htmlFor="productCode" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Product Name:
+                </label>
+                {
+                i18n.locales.map((locale) => (
+                    <input
+                        key={locale}
+                        placeholder={`Product  Name in ${locale} Language`}
+                        type="text"
+                        id={locale}
+                        name={`Name${locale}`}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                                   focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
+                                   dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required
+                    />
+                ))}
+            </div>
+            <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
+                <label htmlFor="productCode" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  Product Description:
+                </label>
+                {
+                i18n.locales.map((locale) => (
+                    <input
+                        key={locale}
+                        placeholder={`Product  Description in ${locale} Language`}
+                        type="text"
+                        id={locale}
+                        name={`Description${locale}`}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                                   focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
+                                   dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
+                                   dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required
+                    />
+                ))}
+            </div>
           <div className="col-span-4">
             <label htmlFor="productCode" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Product Code:
@@ -91,6 +198,7 @@ const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetS
               Discount Price:
             </label>
             <input
+            onChange={(e)=>NumberInputCheckedValue(e)}
               type="number"
               id="discountPrice"
               name="DiscountPrice"
@@ -108,6 +216,7 @@ const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetS
               Price:
             </label>
             <input
+             onChange={(e)=>NumberInputCheckedValue(e)}
               type="number"
               id="price"
               name="Price"
@@ -124,22 +233,28 @@ const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetS
             <label htmlFor="sizes" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Sizes:
             </label>
-            <div id="sizes" className="grid grid-cols-2 gap-4">
+            <div id="sizes" className="grid grid-cols-3 gap-4">
 {
     sizes.map((size)=>(
 
-              <div className="grid grid-cols-2 gap-2">
-                <label htmlFor={size.id} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{size.size}</label>
+              <div className="">
+                <label htmlFor={size.id} className="text-sm font-medium text-gray-900 dark:text-white">№ {size.size}</label>
                 <input
-                
+                id={size.id}
+                name={`SizeId-${size.id}`}
                   type="number"
-                  placeholder="Size 36 Quantity"
-                  onChange={(e) => handleSizeChange(size.id, Number(e.target.value))}
+                  placeholder={`Size ${size.size} Quantity`}
+                  onChange={(e) =>{
+                    if (Number.parseInt(e.target.value)<1) {
+                      e.target.value=''
+                    }
+                   
+                    }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                              dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
                              dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required
+                 
                 />
               </div>
     ))
@@ -154,7 +269,7 @@ const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetS
             </label>
             <select
               id="subCategory"
-              name="SubCategory"
+              name="SubCategories"
               multiple
               onChange={handleSubCategoryChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
