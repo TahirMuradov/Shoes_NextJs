@@ -13,7 +13,7 @@ import Loader from "../common/Loader";
 import ProductAddedImage from "./ProductAddedImage";
 
 
-const ProductUpdateForm:React.FC<{lang:Locale,backUrl:string|undefined,sizes:GetSize[],subcategories:GetSubCategory[],Product:GetProductForUpdate}>=({lang,sizes,subcategories,Product,backUrl})=>{
+const ProductUpdateForm:React.FC<{lang:Locale,apiDomen:string|undefined,sizes:GetSize[],subcategories:GetSubCategory[],Product:GetProductForUpdate}>=({lang,sizes,subcategories,Product,apiDomen})=>{
     const[loader,SetLoader]=useState<boolean>(false);
     const [newPhotos, setNewPhotos] = useState<File[]>([]);
     const PictureinputRef = useRef<HTMLInputElement | null>(null);
@@ -146,7 +146,7 @@ formData.append("Id",Product.id)
     //   console.log(`Key: ${key}, Value: ${value}`);
     // });
     try {
-      fetch("https://localhost:7115/api/Product/UpdateProduct", {
+      fetch(`${apiDomen}api/Product/UpdateProduct`, {
         method: "PUT",
         body: formData,
         headers: {
@@ -398,12 +398,12 @@ formData.append("Id",Product.id)
         {
 
             Product.pictureUrls.map((x)=>{
-   return  <ProductAddedImage backUrl={backUrl??"https://localhost:7115/"} Photo={null}  CurrentPictureUrl={x} onPhotoDelete={NewPhotoDelete}/>
+   return  <ProductAddedImage apiDomen={apiDomen??"https://localhost:7115/"} Photo={null}  CurrentPictureUrl={x} onPhotoDelete={NewPhotoDelete}/>
 })
             
         }{
           newPhotos.map((x,index)=>{
-            return <ProductAddedImage backUrl={backUrl??"https://localhost:7115/"} CurrentPictureUrl={null} Photo={x} key={Product.pictureUrls.length+index} onPhotoDelete={NewPhotoDelete}/>
+            return <ProductAddedImage apiDomen={apiDomen??"https://localhost:7115/"} CurrentPictureUrl={null} Photo={x} key={Product.pictureUrls.length+index} onPhotoDelete={NewPhotoDelete}/>
           })
         }
 </div>

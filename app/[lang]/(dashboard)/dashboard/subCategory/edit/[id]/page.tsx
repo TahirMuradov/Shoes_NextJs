@@ -9,9 +9,9 @@ const page:React.FC<{ params: { lang: Locale,id:string } }> = async ({ params })
  try {
           // This line should be placed at the very top of your file
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    
+          const apiDomen = process.env.apiDomen;
           // Fetch data from the API
-          const responseSubCategory = await fetch(`https://localhost:7115/api/SubCategory/GetSubCategoryForUpdate?Id=${params.id}`, {
+          const responseSubCategory = await fetch(`${apiDomen}api/SubCategory/GetSubCategoryForUpdate?Id=${params.id}`, {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ const page:React.FC<{ params: { lang: Locale,id:string } }> = async ({ params })
             cache:"no-store",
             method: "GET",
           });
-          const responseCategory = await fetch(`https://localhost:7115/api/Category/GetAllCategory`, {
+          const responseCategory = await fetch(`${apiDomen}api/Category/GetAllCategory`, {
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ const page:React.FC<{ params: { lang: Locale,id:string } }> = async ({ params })
           const SubCategory:Result<GetSubCategoryForUpdate>= await responseSubCategory.json();
           const Category:Result<GetCategoryAllDashboard[]>= await responseCategory.json();
           return (
-            <SubCategoryEditForm key={1} lang={params.lang} Categories={Category.response} Subcategory={SubCategory.response}/>
+            <SubCategoryEditForm key={1}apiDomen={apiDomen} lang={params.lang} Categories={Category.response} Subcategory={SubCategory.response}/>
            )
         
         } catch (error) {

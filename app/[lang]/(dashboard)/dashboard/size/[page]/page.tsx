@@ -8,6 +8,7 @@ const page:React.FC<{params:{lang:Locale,page:number}}> = async ({params:{lang,p
   try {
     // This line should be placed at the very top of your file
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    const apiDomen = process.env.apiDomen;
 if (page<1) {
 page=1
 }
@@ -15,7 +16,7 @@ page=1
     // Parse the JSON data from the response
 
     return (
-      <SizeTable key={1} params={{lang:lang,page:page}}/>
+      <SizeTable key={1} params={{lang:lang,page:page,apiDomen:apiDomen}}/>
      )
   
   } catch (error) {

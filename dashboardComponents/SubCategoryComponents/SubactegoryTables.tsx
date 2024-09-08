@@ -29,13 +29,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       border: 0,
     },
   }));
-const SubCategoryTable:React.FC<{Lang:string,page:number}>=({Lang,page})=>{
+const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
     const [loader,SetLoader]=useState<boolean>(false)
     const [SubCategory,SetSubCategory]=useState<Result<PaginatedList<GetSubCategory>>>();
     const router=useRouter();
     useEffect(()=>{
 
-      fetch(`https://localhost:7115/api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
+      fetch(`${apiDomen}api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ const SubCategoryTable:React.FC<{Lang:string,page:number}>=({Lang,page})=>{
     },[])
     function SubCategoryDelete(id:string){
         SetLoader(true)
-       fetch(`https://localhost:7115/api/SubCategory/DeleteSubCategory?Id=${id}`, {
+       fetch(`${apiDomen}api/SubCategory/DeleteSubCategory?Id=${id}`, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',

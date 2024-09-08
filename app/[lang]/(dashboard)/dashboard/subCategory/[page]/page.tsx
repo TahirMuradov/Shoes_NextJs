@@ -9,6 +9,7 @@ const page:React.FC<{params:{lang:Locale,page:number}}> = async ({params:{lang,p
     try {
         // This line should be placed at the very top of your file
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+        const apiDomen = process.env.apiDomen;
   if(!Number.isInteger(page)||page<1){
 page=1
   }
@@ -17,7 +18,7 @@ page=1
    
        
         return (
-          <SubCategoryTable key={1}  Lang={lang} page={page}/>
+          <SubCategoryTable key={1} apiDomen={apiDomen} Lang={lang} page={page}/>
          )
       
       } catch (error) {

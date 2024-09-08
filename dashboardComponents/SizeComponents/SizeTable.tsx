@@ -29,13 +29,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       border: 0,
     },
   }));
-const SizeTable:React.FC<{params:{lang:Locale,page:number}}>=({params:{lang,page}})=>{
+const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefined}}>=({params:{lang,page,apiDomen}})=>{
     const [loader,SetLoader]=useState<boolean>(false)
     const [size,SetSizes]=useState<Result<PaginatedList<GetSize>>>()
     const router=useRouter();
     useEffect(()=>{
 
-      fetch(`https://localhost:7115/api/Size/GetAllSizeForTable?page=${page}`, {
+      fetch(`${apiDomen}api/Size/GetAllSizeForTable?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number}}>=({params:{lang,page
     },[])
     function SizeDelete(id:string){
         SetLoader(true)
-        fetch(`https://localhost:7115/api/Size/DeleteSize?Id=${id}`, {
+        fetch(`${apiDomen}api/Size/DeleteSize?Id=${id}`, {
            headers: {
              'Accept': 'application/json',
              'Content-Type': 'application/json',

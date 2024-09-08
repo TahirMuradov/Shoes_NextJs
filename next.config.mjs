@@ -2,7 +2,7 @@ import { env } from 'process';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = { images: {
-  domains:[new URL(env.backUrl).hostname],
+  domains:[new URL(env.apiDomen).hostname],
     remotePatterns: [
       {
         protocol: 'https',
@@ -10,12 +10,12 @@ const nextConfig = { images: {
         port: '',
         pathname: '/icon/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'localhost',
-        port: '7115',
-        pathname: '/**',
-      },
+      // {
+      //   protocol: 'https',
+      //   hostname: 'localhost',
+      //   port: '7115',
+      //   pathname: '/**',
+      // },
     ],
   },};
 

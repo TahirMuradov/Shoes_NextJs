@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 
 
-const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,Size:GetSize}}> = ({params:{id,lang,Size}}) => {
+const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,Size:GetSize,apiDOmen:string|undefined}}> = ({params:{id,lang,Size,apiDOmen}}) => {
     const router=useRouter();
 function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
  if (Number.parseInt( e.target.value)<1) {
@@ -23,7 +23,7 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
         e.preventDefault();
         SetLoader(true)
         const form = new FormData(e.currentTarget);          
-        fetch('https://localhost:7115/api/Size/UpdateSize', {
+        fetch(`${apiDOmen}api/Size/UpdateSize`, {
             method:'PUT',
             headers: {
                 'Content-Type': 'application/json',

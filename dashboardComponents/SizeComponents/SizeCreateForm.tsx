@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 
-const SizeCreateForm:React.FC<{lang:Locale}>=({lang})=>{
+const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,apiDomen})=>{
     
     const[loader,SetLoader]=useState<boolean>(false)
      const router=useRouter();
@@ -19,7 +19,7 @@ const SizeCreateForm:React.FC<{lang:Locale}>=({lang})=>{
         e.preventDefault();
         SetLoader(true)
         const form = new FormData(e.currentTarget);          
-        fetch('https://localhost:7115/api/Size/AddSize', {
+        fetch(`${apiDomen}api/Size/AddSize`, {
             method:'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-const SubCategoryEditForm:React.FC<{lang:Locale,Subcategory:GetSubCategoryForUpdate,Categories:GetCategoryAllDashboard[]}>=({lang,Subcategory,Categories})=>{
+const SubCategoryEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,Subcategory:GetSubCategoryForUpdate,Categories:GetCategoryAllDashboard[]}>=({lang,Subcategory,Categories,apiDomen})=>{
     const router=useRouter();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
     const[loader,SetLoader]=useState<boolean>(false)
@@ -46,7 +46,7 @@ const SubCategoryEditForm:React.FC<{lang:Locale,Subcategory:GetSubCategoryForUpd
         setItems(newItems); 
         // Update state with the new items
         console.log(newItems)
-        fetch('https://localhost:7115/api/SubCategory/UpdateSubCategory', {
+        fetch(`${apiDomen}api/SubCategory/UpdateSubCategory`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

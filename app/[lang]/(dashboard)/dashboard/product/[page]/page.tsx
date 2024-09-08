@@ -14,10 +14,10 @@ const page:React.FC<{ params: { lang: Locale,page:number } }>  = async ({ params
       
           // Parse the JSON data from the response
         
-          const backUrl = process.env.backUrl;
+          const apiDomen = process.env.apiDomen;
 
           return (
-            < ProductsTable backUrl={backUrl}  Lang={lang} page={page} key={95}/>
+            < ProductsTable apiDomen={apiDomen}  Lang={lang} page={page} key={95}/>
            )
         
         } catch (error) {

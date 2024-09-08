@@ -3,8 +3,10 @@ import { Locale } from "@/i18n-config"
 
 
 const page:React.FC<{params:{lang:Locale}}> = ({params:{lang}}) => {
+  const apiDomen = process.env.apiDomen;
+
   return (
-  <SizeCreateForm lang={lang} key={1} />
+  <SizeCreateForm apiDomen={apiDomen} lang={lang} key={1} />
   )
 }
 

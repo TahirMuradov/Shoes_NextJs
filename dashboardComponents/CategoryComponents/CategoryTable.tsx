@@ -43,12 +43,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 
-export default function CategoryTable({lang,page}:{lang:Locale,page:number}) {
+export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:number,apiDomen:string|undefined}) {
   const router=useRouter();
 const [categories,SetCategories]=React.useState<Result<PaginatedList<GetCategoryAllDashboard>>>()
 React.useEffect(()=>{
 
-  fetch(`https://localhost:7115/api/Category/GetAllCategoryForTable?page=${page}`, {
+  fetch(`${apiDomen}api/Category/GetAllCategoryForTable?page=${page}`, {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ React.useEffect(()=>{
  const [loader,SetLoader]=React.useState<boolean>(false)
   function CategoryDelete(id:string){
     SetLoader(true)
-   fetch(`https://localhost:7115/api/Category/DeleteCategory?Id=${id}`, {
+   fetch(`${apiDomen}api/Category/DeleteCategory?Id=${id}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

@@ -10,20 +10,20 @@ const page:React.FC<{ params: { lang: Locale,id:string} }>  = async ({ params :{
         try {
           // This line should be placed at the very top of your file
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-   
+          const apiDomen = process.env.apiDomen;
           // Fetch data from the API
-          const responseSize = await fetch('https://localhost:7115/api/Size/GetAllSize', {
+          const responseSize = await fetch(`${apiDomen}api/Size/GetAllSize`, {
             cache:"no-store",
           method: "GET",
         });
-        const responseSubCategory = await fetch('https://localhost:7115/api/SubCategory/GetAllSubCategory', {
+        const responseSubCategory = await fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
           headers:{
             'LangCode':`${lang}`
           },
           cache:"no-store",
         method: "GET",
       });
-      const responseProduct = await fetch(`https://localhost:7115/api/Product/GetProductDetailDashboard?id=${id}`, {
+      const responseProduct = await fetch(`${apiDomen}api/Product/GetProductDetailDashboard?id=${id}`, {
         headers:{
           'LangCode':`${lang}`
         },
@@ -40,14 +40,14 @@ const page:React.FC<{ params: { lang: Locale,id:string} }>  = async ({ params :{
             throw new Error(`HTTP error! status: ${responseProduct.status}`);
           }
           // Parse the JSON data from the response
-          const backUrl = process.env.backUrl;
+    
     const dataSize:Result<GetSize[]>= await responseSize.json();
  const dataProduct:Result<GetProductForUpdate>=await responseProduct.json();
     const dataSubCategory:Result< GetSubCategory[]>= await responseSubCategory.json();
        
     
     return (
-            <ProductUpdateForm backUrl={backUrl} Product={dataProduct.response} lang={lang} sizes={dataSize.response} subcategories={dataSubCategory.response}/>
+            <ProductUpdateForm apiDomen={apiDomen} Product={dataProduct.response} lang={lang} sizes={dataSize.response} subcategories={dataSubCategory.response}/>
            )
         
         } catch (error) {

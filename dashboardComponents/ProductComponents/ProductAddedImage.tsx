@@ -5,15 +5,15 @@ const ProductAddedImage:React.FC<{
     Photo:File|null,
     onPhotoDelete: (name: string,dom:boolean) => void;
     CurrentPictureUrl:string|null,
-    backUrl:string
-  }> = ({Photo,onPhotoDelete,CurrentPictureUrl,backUrl}) => {
+    apiDomen:string
+  }> = ({Photo,onPhotoDelete,CurrentPictureUrl,apiDomen}) => {
  
     if(CurrentPictureUrl){
         return(
 
         <div className="flex flex-wrap text-center" id={CurrentPictureUrl}>
             <input type="hidden" value={CurrentPictureUrl} name="CurrentPictureUrls" />
-        <Image width={100} height={200} src={`${backUrl}${CurrentPictureUrl}`} alt={CurrentPictureUrl} />
+        <Image width={100} height={200} src={`${apiDomen}${CurrentPictureUrl}`} alt={CurrentPictureUrl} />
           <button 
           id={CurrentPictureUrl}
             type="button" 

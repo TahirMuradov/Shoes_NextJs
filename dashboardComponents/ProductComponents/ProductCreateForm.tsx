@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 
-const ProductCreateForm:React.FC<{lang:Locale,sizes:GetSize[],subcategories:GetSubCategory[]}>=({lang,sizes,subcategories})=>{
+const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,sizes:GetSize[],subcategories:GetSubCategory[]}>=({lang,sizes,subcategories,apiDomen})=>{
 
   const [subCategories, setSubCategories] = useState<string[]>([]);
   const router=useRouter();
@@ -114,7 +114,7 @@ formData.append("ProductName",JSON.stringify( productName))
       console.log(`Key: ${key}, Value: ${value}`);
     });
     try {
-      const response = await fetch("https://localhost:7115/api/Product/AddProduct", {
+      const response = await fetch(`${apiDomen}api/Product/AddProduct`, {
         method: "POST",
         body: formData,
         headers: {

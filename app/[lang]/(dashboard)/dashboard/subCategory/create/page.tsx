@@ -9,9 +9,9 @@ import Result from "@/types/ApiResultType";
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 
 const Page: React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
-  
+  const apiDomen = process.env.apiDomen;
        // Fetch data from the API
-       const response = await fetch('https://localhost:7115/api/Category/GetAllCategory', {
+       const response = await fetch(`${apiDomen}api/Category/GetAllCategory`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -21,12 +21,12 @@ const Page: React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
         method: "GET",
       });
   const resultData:Result<GetCategoryAllDashboard[]>=await response.json();
-  console.log(resultData)
+
 if (!response) {
     return <Loader/>
 }
     return (
-        <SubCategoryCreateForm params={{lang:lang,categories:resultData.response}}/>
+        <SubCategoryCreateForm params={{lang:lang,categories:resultData.response,apiDomen:apiDomen}}/>
     );
 };
 

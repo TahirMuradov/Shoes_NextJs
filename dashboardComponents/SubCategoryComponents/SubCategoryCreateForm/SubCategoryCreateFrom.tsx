@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { useState } from "react";
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import Loader from "@/dashboardComponents/common/Loader";
-const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories}}) => {
+const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories,apiDomen}}) => {
     const router=useRouter();
     // const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
 
@@ -44,7 +44,7 @@ const SubCategoryCreateForm:React.FC<{params:{lang:Locale,categories:GetCategory
         }
 
         // setItems(newItems); // Update state with the new items
-        fetch('https://localhost:7115/api/SubCategory/AddSubCategory', {
+        fetch(`${apiDomen}api/SubCategory/AddSubCategory`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

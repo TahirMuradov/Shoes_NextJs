@@ -34,12 +34,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       border: 0,
     },
   }));
-const ProductsTable:React.FC<{Lang:Locale,page:number,backUrl:string|undefined}>=({Lang,page,backUrl})=>{
+const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
       const [loader,SetLoader]=useState<boolean>(false)
     const [Products,SetProducts]=useState<Result<PaginatedList<GetProduct>>>();
     const router=useRouter();
     useEffect(()=>{
-      fetch(`https://localhost:7115/api/Product/GetAllProductDashboard?page=${page}`, {
+      fetch(`${apiDomen}api/Product/GetAllProductDashboard?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,backUrl:string|undefined}>
     function ProductDelete(id:string){
     
         SetLoader(true)
-       fetch(`https://localhost:7115/api/Product/DeleteProduct?id=${id}`, {
+       fetch(`${apiDomen}api/Product/DeleteProduct?id=${id}`, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,backUrl:string|undefined}>
                         <Image 
                         width={400}
                         height={400}
-                        src={`${backUrl}${x}`}
+                        src={`${apiDomen}${x}`}
                         alt={row.productTitle} />
                         
                 ))}

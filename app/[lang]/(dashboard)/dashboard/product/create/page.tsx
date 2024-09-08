@@ -13,13 +13,14 @@ const page:React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
   try {
     // This line should be placed at the very top of your file
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    const apiDomen = process.env.apiDomen;
 
     // Fetch data from the API
-    const responseSize = await fetch('https://localhost:7115/api/Size/GetAllSize', {
+    const responseSize = await fetch(`${apiDomen}api/Size/GetAllSize`, {
         cache:"no-store",
       method: "GET",
     });
-    const responseSubCategory = await fetch('https://localhost:7115/api/SubCategory/GetAllSubCategory', {
+    const responseSubCategory = await fetch(`${apiDomen}/api/SubCategory/GetAllSubCategory`, {
       headers:{
         'LangCode':`${lang}`
       },
@@ -38,7 +39,7 @@ const page:React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
   
 
     return (
-      <ProductCreateForm key={1} lang={lang}sizes={dataSize.response} subcategories={dataSubCategory.response} />
+      <ProductCreateForm apiDomen={apiDomen} key={1} lang={lang}sizes={dataSize.response} subcategories={dataSubCategory.response} />
      )
   
   } catch (error) {
