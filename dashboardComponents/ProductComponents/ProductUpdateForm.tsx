@@ -7,33 +7,16 @@ import GetSize from "@/types/SizeTypes/GetSize"
 import GetSubCategory from "@/types/SubCategoriesType/GetSubCategory"
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, SyntheticEvent, useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import ProductAddedImage from "./ProductAddedImage";
+
 
 const ProductUpdateForm:React.FC<{lang:Locale,backUrl:string|undefined,sizes:GetSize[],subcategories:GetSubCategory[],Product:GetProductForUpdate}>=({lang,sizes,subcategories,Product,backUrl})=>{
-    const[loader,SetLoader]=useState<boolean>(false)
-    function NewPhotoDelete(photoName: string) {
-
-        const fileInput = document.getElementById("photo") as HTMLInputElement;
-        if (!fileInput || !fileInput.files) return;
-    
-        const updatedFiles = fileInput.files;
-        const newFileList = new DataTransfer();
-    
-        for (let j = 0; j < updatedFiles.length; j++) {
-            if (updatedFiles[j].name !== photoName) {
-                newFileList.items.add(updatedFiles[j]);
-            }
-        }
-    
-        fileInput.files = newFileList.files;
-        const img_box = document.getElementById(photoName);
-    
-        if (img_box) {
-            img_box.remove();
-        }
-    }
+    const[loader,SetLoader]=useState<boolean>(false);
+    const [newPhotos, setNewPhotos] = useState<File[]>([]);
+    const PictureinputRef = useRef<HTMLInputElement | null>(null);
 
   const router=useRouter();
   function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
@@ -41,46 +24,40 @@ const ProductUpdateForm:React.FC<{lang:Locale,backUrl:string|undefined,sizes:Get
       e.target.value = "";
     }
   }
-  function currentPhotoDelete(id:string) {
-    let element = document.getElementById(id)as HTMLElement ;
-    element.remove();
-}
 
-function NewPhotoShow(e:React.ChangeEvent<HTMLInputElement>){
+function NewPhotoDelete(photoName: string,dom:boolean) {
+  
+if (dom) {
+  let element = document.getElementById(photoName) as HTMLElement;
+  element.remove();
+}else{
+  setNewPhotos(newPhotos.filter(x=>x.name!=photoName));
+
+}
+}
+function NewPhotoAdded(e:React.ChangeEvent<HTMLInputElement>){
 e.preventDefault()
 const files = e.currentTarget.files;
-console.log(files);
-if (files) {
-  const element = document.getElementById("pictures") as HTMLDivElement;
-  Array.from(files).forEach((file) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const imageDataUrl = reader.result as string;
-      element.innerHTML += `
-      <div className="flex flex-wrap text-center" id="${file.name}">
-        <Image width={300} height={300} src="${imageDataUrl}" id="photo" alt="" />
-        <button 
-        id='${file.name}'
-          type="button" 
-          
-          className="newPhotoDelete focus:outline-none
-            text-white bg-red-700
-             hover:bg-red-800 focus:ring-4 px-2
-             focus:ring-red-300 font-medium rounded-lg text-sm
-              me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
-              absolute">
-          x
-        </button>
-      </div>
-    `;
-    };
-    reader.readAsDataURL(file);
-  });
-} else {
+if (files) {  
+  const newFilesArray = Array.from(files);
+  setNewPhotos((prevPhotos) => [...prevPhotos, ...newFilesArray]);
+  } else {
   console.log("No files selected");
 }
 
+
 }
+useEffect(()=>{
+ console.log(newPhotos)
+  const newFileList = new DataTransfer();
+
+  newPhotos.forEach((file) => {
+    newFileList.items.add(file);
+  });
+  if (PictureinputRef.current) {
+    PictureinputRef.current.files = newFileList.files;
+  }
+},[newPhotos])
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     SetLoader(true)
     e.preventDefault();
@@ -233,10 +210,11 @@ formData.append("Id",Product.id)
         })
     }
   };
-  if (loader) {
-    <Loader/>
-  }
+  if (loader) 
+   return ( <Loader/>)
+  
     return(
+    
         <form id="addPictureForm" onSubmit={handleSubmit} encType="multipart/form-data">
 
         <div className="grid grid-cols-4 gap-6 mb-6">
@@ -403,7 +381,8 @@ formData.append("Id",Product.id)
              New Pictures:
             </label>
             <input
-            onChange={(e)=>NewPhotoShow(e)}
+            ref={PictureinputRef}
+            onChange={(e)=>NewPhotoAdded(e)}
               type="file"
               id="photo"
               name="NewPictures"
@@ -412,34 +391,20 @@ formData.append("Id",Product.id)
                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
+            
             />
 <div id="pictures">
 
         {
 
-            Product.pictureUrls.map(x=>(
-<div className="flex flex-wrap text-center" id={`${x}`}>
-
-<input type="hidden" value={`${x}`} name="CurrentPictureUrls"  />
-<Image width={300} height={300} src={`${backUrl}${x}`}  id="photo"   alt="" />
-
-<button 
-type="button" 
-onClick={()=>currentPhotoDelete(x)}
- className="focus:outline-none
-  text-white bg-red-700
-   hover:bg-red-800 focus:ring-4 px-2
-   focus:ring-red-300 font-medium rounded-lg text-sm
-    me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
-    absolute">
-    x
-    </button>
-
-
-
-</div>
-            ))
+            Product.pictureUrls.map((x)=>{
+   return  <ProductAddedImage backUrl={backUrl??"https://localhost:7115/"} Photo={null}  CurrentPictureUrl={x} onPhotoDelete={NewPhotoDelete}/>
+})
+            
+        }{
+          newPhotos.map((x,index)=>{
+            return <ProductAddedImage backUrl={backUrl??"https://localhost:7115/"} CurrentPictureUrl={null} Photo={x} key={Product.pictureUrls.length+index} onPhotoDelete={NewPhotoDelete}/>
+          })
         }
 </div>
           </div>
@@ -453,6 +418,8 @@ onClick={()=>currentPhotoDelete(x)}
           Submit
         </button>
       </form>
+     
+     
     )
 }
 export default ProductUpdateForm

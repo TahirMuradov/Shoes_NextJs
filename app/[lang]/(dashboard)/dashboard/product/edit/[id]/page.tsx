@@ -44,7 +44,7 @@ const page:React.FC<{ params: { lang: Locale,id:string} }>  = async ({ params :{
     const dataSize:Result<GetSize[]>= await responseSize.json();
  const dataProduct:Result<GetProductForUpdate>=await responseProduct.json();
     const dataSubCategory:Result< GetSubCategory[]>= await responseSubCategory.json();
-         console.log(dataProduct.response)
+       
     
     return (
             <ProductUpdateForm backUrl={backUrl} Product={dataProduct.response} lang={lang} sizes={dataSize.response} subcategories={dataSubCategory.response}/>

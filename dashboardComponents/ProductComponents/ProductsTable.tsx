@@ -41,6 +41,7 @@ const ProductsTable:React.FC<{Lang:Locale,products:PaginatedList<GetProduct>,pag
     const router=useRouter();
 
     function ProductDelete(id:string){
+      router.refresh();
         SetLoader(true)
        fetch(`https://localhost:7115/api/Product/DeleteProduct?id=${id}`, {
           headers: {
@@ -72,7 +73,7 @@ const ProductsTable:React.FC<{Lang:Locale,products:PaginatedList<GetProduct>,pag
         }).then((res) => {
             if (res.isConfirmed) {
               SetLoader(false)
-                router.push("/dashboard/product/1")// Clear the form
+                router.replace("/dashboard/product/1")// Clear the form
             }
         })
         }
@@ -82,7 +83,7 @@ const ProductsTable:React.FC<{Lang:Locale,products:PaginatedList<GetProduct>,pag
         ;
       }
       if (loader) {
-        return <Loader/>
+        return( <Loader/>)
       }
     return(
         <TableContainer component={Paper} >
@@ -108,14 +109,14 @@ const ProductsTable:React.FC<{Lang:Locale,products:PaginatedList<GetProduct>,pag
                   {row.id}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                    <div className="grid grid-cols-3 gap-1 overflow-x-scroll">
+                    <div className="grid grid-cols-1 max-h-20 gap-1 overflow-y-scroll">
 
                     {row.pictureUrls.map((x)=>(
                      
                         
                         <Image 
-                        width={200}
-                        height={200}
+                        width={400}
+                        height={400}
                         src={`${backUrl}${x}`}
                         alt={row.productTitle} />
                         

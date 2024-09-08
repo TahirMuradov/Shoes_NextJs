@@ -121,7 +121,7 @@ if (res.isConfirmed) {
                     setItems([]);
                 
                   
-                      router.push("/dashboard/category")// Clear the form
+                      router.push("/dashboard/category/1")// Clear the form
                   }
               });
           } else {

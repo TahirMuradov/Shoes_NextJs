@@ -92,7 +92,7 @@ export default function DefaultLayout({
 
                   <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Category</span>
                   <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
                   </svg>
             </button>
             <ul id="dropdown-example" className={`${isCategoryDropDown?"":"hidden"} py-2 space-y-2`}>
@@ -111,7 +111,7 @@ export default function DefaultLayout({
 
                   <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">SubCategory</span>
                   <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
                   </svg>
             </button>
             <ul id="dropdown-example" className={`${isSubCategoryDropDown?"":"hidden"} py-2 space-y-2`}>
@@ -137,7 +137,7 @@ export default function DefaultLayout({
 
                   <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Size</span>
                   <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
                   </svg>
             </button>
             <ul id="dropdown-example" className={`${isSizeDropDown?"":"hidden"} py-2 space-y-2`}>
@@ -161,7 +161,7 @@ export default function DefaultLayout({
 
          <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Product</span>
          <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
          </svg>
    </button>
    <ul id="dropdown-example" className={`${isProductDropDown?"":"hidden"} py-2 space-y-2`}>
