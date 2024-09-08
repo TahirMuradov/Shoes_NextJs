@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 import { useState } from "react";
 import Loader from "@/dashboardComponents/common/Loader";
 
+
 const Page: React.FC<{params:{lang:Locale}}> = ({params:{lang}}) => {
     const router=useRouter();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
@@ -68,8 +69,8 @@ const Page: React.FC<{params:{lang:Locale}}> = ({params:{lang}}) => {
                     if (res.isConfirmed) {
                         SetLoader(false)
                         setItems([]); 
-                    
-                        router.push("/dashboard/category")// Clear the form
+                       
+                        router.push("/dashboard/category/1")// Clear the form
                     }
                 });
             } else {

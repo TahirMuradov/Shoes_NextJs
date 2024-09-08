@@ -15,7 +15,7 @@ import GetCategoryAllDashboard from '@/types/CategoryTypes/GetALLCategory';
 import Link from 'next/link';
 import { Locale } from '@/i18n-config';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Loader from '../common/Loader';
 
 
@@ -43,8 +43,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 
 
-export default function CategoryTable({categories,lang}:{categories:Result<PaginatedList<GetCategoryAllDashboard>>,lang:Locale}) {
+export default function CategoryTable({lang,page}:{lang:Locale,page:number}) {
   const router=useRouter();
+const [categories,SetCategories]=React.useState<Result<PaginatedList<GetCategoryAllDashboard>>>()
+React.useEffect(()=>{
+
+  fetch(`https://localhost:7115/api/Category/GetAllCategoryForTable?page=${page}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+    },
+    cache:"no-store",
+    method: "GET",
+  }).then(res=>res.json()).then(x=>SetCategories(x));
+},[])
  const [loader,SetLoader]=React.useState<boolean>(false)
   function CategoryDelete(id:string){
     SetLoader(true)
@@ -104,7 +117,7 @@ export default function CategoryTable({categories,lang}:{categories:Result<Pagin
           </TableRow>
         </TableHead>
         <TableBody>
-          {categories.response.data.map((row) => (
+          {categories?.response.data.map((row) => (
             <StyledTableRow key={row.id}>
               
               <StyledTableCell align='center' component="th" scope="row">

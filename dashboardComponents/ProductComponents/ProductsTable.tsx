@@ -6,13 +6,13 @@ import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableCont
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import GetProduct from "@/types/ProductTypes/GetProduct";
 import Image from "next/image";
 import { Locale } from "@/i18n-config";
-import { env } from "process";
+
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -34,14 +34,24 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       border: 0,
     },
   }));
-const ProductsTable:React.FC<{Lang:Locale,products:PaginatedList<GetProduct>,page:number,backUrl:string|undefined}>=({Lang,products,page,backUrl})=>{
-  
-
-    const [loader,SetLoader]=useState<boolean>(false)
+const ProductsTable:React.FC<{Lang:Locale,page:number,backUrl:string|undefined}>=({Lang,page,backUrl})=>{
+      const [loader,SetLoader]=useState<boolean>(false)
+    const [Products,SetProducts]=useState<Result<PaginatedList<GetProduct>>>();
     const router=useRouter();
+    useEffect(()=>{
+      fetch(`https://localhost:7115/api/Product/GetAllProductDashboard?page=${page}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+        },
+        cache:"no-store",
+        method: "GET",
+      }).then(x=>x.json()).then(res=>SetProducts(res));
+    },[])
 
     function ProductDelete(id:string){
-      router.refresh();
+    
         SetLoader(true)
        fetch(`https://localhost:7115/api/Product/DeleteProduct?id=${id}`, {
           headers: {
@@ -102,7 +112,7 @@ const ProductsTable:React.FC<{Lang:Locale,products:PaginatedList<GetProduct>,pag
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.data.map((row) => (
+            {Products?.response.data.map((row) => (
               <StyledTableRow key={row.id}>
                 
                 <StyledTableCell align='center' component="th" scope="row">

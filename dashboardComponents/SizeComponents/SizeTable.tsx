@@ -6,9 +6,10 @@ import GetSize from "@/types/SizeTypes/GetAllSize";
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import Result from "@/types/ApiResultType";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -28,9 +29,22 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       border: 0,
     },
   }));
-const SizeTable:React.FC<{params:{lang:Locale,page:number,Sizes:PaginatedList<GetSize>}}>=({params:{lang,page,Sizes}})=>{
+const SizeTable:React.FC<{params:{lang:Locale,page:number}}>=({params:{lang,page}})=>{
     const [loader,SetLoader]=useState<boolean>(false)
+    const [size,SetSizes]=useState<Result<PaginatedList<GetSize>>>()
     const router=useRouter();
+    useEffect(()=>{
+
+      fetch(`https://localhost:7115/api/Size/GetAllSizeForTable?page=${page}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+        },
+        cache:"no-store",
+        method: "GET",
+      }).then(x=>x.json()).then(res=>SetSizes(res));
+    },[])
     function SizeDelete(id:string){
         SetLoader(true)
         fetch(`https://localhost:7115/api/Size/DeleteSize?Id=${id}`, {
@@ -87,7 +101,7 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,Sizes:PaginatedList<Ge
         </TableRow>
       </TableHead>
       <TableBody>
-        {Sizes.data.map((row) => (
+        {size?.response.data.map((row) => (
           <StyledTableRow key={row.id}>
             
             <StyledTableCell align='center' component="th" scope="row">

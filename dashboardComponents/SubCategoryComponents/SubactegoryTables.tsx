@@ -6,7 +6,7 @@ import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableCont
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 
@@ -29,9 +29,22 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
       border: 0,
     },
   }));
-const SubCategoryTable:React.FC<{Lang:string,SubCategories:Result<PaginatedList<GetSubCategory>>,page:number}>=({Lang,SubCategories,page})=>{
+const SubCategoryTable:React.FC<{Lang:string,page:number}>=({Lang,page})=>{
     const [loader,SetLoader]=useState<boolean>(false)
+    const [SubCategory,SetSubCategory]=useState<Result<PaginatedList<GetSubCategory>>>();
     const router=useRouter();
+    useEffect(()=>{
+
+      fetch(`https://localhost:7115/api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+        },
+        cache:"no-store",
+        method: "GET",
+      }).then(res=>res.json()).then(x=>SetSubCategory(x));
+    },[])
     function SubCategoryDelete(id:string){
         SetLoader(true)
        fetch(`https://localhost:7115/api/SubCategory/DeleteSubCategory?Id=${id}`, {
@@ -90,7 +103,7 @@ const SubCategoryTable:React.FC<{Lang:string,SubCategories:Result<PaginatedList<
             </TableRow>
           </TableHead>
           <TableBody>
-            {SubCategories.response.data.map((row) => (
+            {SubCategory?.response.data.map((row) => (
               <StyledTableRow key={row.id}>
                 
                 <StyledTableCell align='center' component="th" scope="row">
