@@ -1,4 +1,6 @@
 export default interface GetAllShippingMethod{
     id:string,
-    content:string
+    content:string,
+    disCount:number,
+    price:number
 }

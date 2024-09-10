@@ -1,4 +1,6 @@
 export default interface GetShippingMethodForUpdate{
     id:string,
-    content:{key:string,value:string}[]
+    langContent:{key:string,value:string}[],
+    price:number,
+    discountPrice:number
 }

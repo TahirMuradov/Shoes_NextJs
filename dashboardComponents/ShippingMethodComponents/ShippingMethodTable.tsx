@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
-import { Paper, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
-import styled from "styled-components";
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -80,6 +80,7 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
         }).then((res) => {
             if (res.isConfirmed) {
               SetLoader(false)
+              router.refresh();
                 router.push("/dashboard/shippingmethod/1")// Clear the form
             }
         })
@@ -108,13 +109,15 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
               </TableRow>
             </TableHead>
             <TableBody>
-              {shippingMethods?.response.data.map((row) => (
+              {shippingMethods?.response?.data.map((row) => (
                 <StyledTableRow key={row.id}>
                   
                   <StyledTableCell align='center' component="th" scope="row">
                     {row.id}
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.content}</StyledTableCell>
+                  <StyledTableCell align="center">{row.disCount}</StyledTableCell>
+                  <StyledTableCell align="center">{row.price}</StyledTableCell>
                
                 
                

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
+import Loader from "../common/Loader";
 
 const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,apiDomen})=>{
     
@@ -74,6 +75,9 @@ const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,ap
             });
         });
        
+    }
+    if (loader) {
+        return (<Loader/>)
     }
     return( <form id="addCategoryForm" onSubmit={HandleSubmit}>
         <div className="grid grid-cols-4 gap-6 mb-6">

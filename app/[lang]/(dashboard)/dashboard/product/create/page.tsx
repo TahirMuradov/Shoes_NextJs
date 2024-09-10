@@ -20,7 +20,7 @@ const page:React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
         cache:"no-store",
       method: "GET",
     });
-    const responseSubCategory = await fetch(`${apiDomen}/api/SubCategory/GetAllSubCategory`, {
+    const responseSubCategory = await fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
       headers:{
         'LangCode':`${lang}`
       },
