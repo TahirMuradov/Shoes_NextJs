@@ -1,24 +1,23 @@
 "use client"
 import { i18n, Locale } from "@/i18n-config";
 import Result from "@/types/ApiResultType"
-import GetShippingMethodForUpdate from "@/types/ShippingMethodType/GetShippingMethodForUpdate"
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import GetPaymentMethodForUpdate from "@/types/PaymentMethodTypes/GetPaymentMethodForUpdate";
 
 
-const ShippingMethodEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:string}>=({
+const UpdatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:string}>=({
     apiDomen,
     id,
-
     lang
 })=>{
-const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpdate>|null>(null);
+const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpdate>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
     const router=useRouter();
     useEffect(()=>{
-        fetch(`${apiDomen}api/ShippingMethod/GetShippingMethodForUpdate?Id=${id}`, {
+        fetch(`${apiDomen}api/PaymentMethod/GetPaymentMethoForUpdate?Id=${id}`, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -35,7 +34,7 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
           } else {
               Swal.fire({
                   title: 'Error!',
-                  text: result.message || 'Failed to add category!',
+                  text: result.message || 'Failed to Update Payment Method!',
                   icon: 'error',
                   confirmButtonText: 'Cool'
               });
@@ -51,12 +50,7 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
           });
       });
       },[])
-   function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
-       if (Number.parseInt( e.target.value)<1) {
-          e.target.value = '';
-       } 
-      
-      }
+
       function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
        e.preventDefault();
        SetLoader(true)
@@ -65,7 +59,7 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
        const newItems: { key: string, value: string | null }[] = [];
 
        for (const key of i18n.locales) {
-           const inputValue = form.get(`ShippingContent${key}`);
+           const inputValue = form.get(`PaymentMethodContent${key}`);
 
            if (inputValue !== null) {
                newItems.push({
@@ -88,20 +82,21 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                return;
            }
        }    
-       fetch(`${apiDomen}api/ShippingMethod/UpdateShippingMethod?Id=${id}`, {
+       console.log(form.get("isApi"))
+       fetch(`${apiDomen}api/PaymentMethod/UpdatePaymentMethod`, {
            method:'PUT',
            headers: {
                'Content-Type': 'application/json',
                'LangCode': `${lang}`, // Or whatever language code you want to send
            },
-           body: JSON.stringify({
-            Id:id,
-            discountPrice:form.get("discountPrice"),
-               price:form.get("price"),
-               Lang: newItems.reduce((acc, item) => {
-                   acc[item.key] = item.value;
-                   return acc;
-               }, {} as { [key: string]: string | null }),
+           body: JSON.stringify({         
+                id:id,          
+                isApi:form.get("isApi")=="on"?true:false,
+                lang:newItems.reduce((acc, item) => {
+                       acc[item.key] = item.value;
+                       return acc;
+                   }, {} as { [key: string]: string | null }),
+           
            }),
        })
        .then(response => response.json())
@@ -109,7 +104,7 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
            if (result.isSuccess) {
                Swal.fire({
                    title: 'Success!',
-                   text: 'Shipping Method updated successfully!',
+                   text: 'Payment Method updated successfully!',
                    icon: 'success',
                    confirmButtonText: 'Cool'
                }).then((res) => {
@@ -118,14 +113,14 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                    
                  
                    
-                       router.push("/dashboard/shippingmethod/1")
+                       router.push("/dashboard/paymentmethod/1")
                    }
                });
            } else {
           console.log(result)
                Swal.fire({
                    title: 'Error!',
-                   text: result.messages || 'Failed to added Shipping Method!',
+                   text: result.messages || 'Failed to updated Payment Method!',
                    icon: 'error',
                    confirmButtonText: 'Cool'
                }).then(res=>{
@@ -152,22 +147,22 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
    if (loader) {
        return(<Loader/>)
    }
-   return(<form id="addShippingMethod" onSubmit={HandleSubmit}>
-       <div className="grid grid-cols-4 gap-6 mb-6">
-       <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-                   <label htmlFor="productCode" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                       Shipping Content:
-                   </label>
-                   {
-            shippingMethod !== null && shippingMethod?.response?.langContent ? 
-            Object.entries(shippingMethod?.response.langContent).map(([key, value]) => (
+   return(<form id="addPaymentgMethod" onSubmit={HandleSubmit}>
+    <div className="grid grid-cols-4 gap-6 mb-6">
+    <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
+                <label htmlFor="productCode" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Payment Method Content:
+                </label>
+                {
+            shippingMethod !== null && shippingMethod?.response?.content ? 
+            Object.entries(shippingMethod?.response.content).map(([key, value]) => (
               i18n.locales.includes(key as Locale) ? (
                 <input
                   key={key}
-                  placeholder={`Shipping Content in ${key.toUpperCase()} Language`}
+                  placeholder={`Payment Method Content in ${key.toUpperCase()} Language`}
                   type="text"
                   id={key}
-                  name={`ShippingContent${key}`}
+                  name={`PaymentMethodContent${key}`}
                   defaultValue={`${value}` || ""}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                              focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
@@ -179,58 +174,29 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
             ))
           : null
              }
-               </div>
-               <div className="col-span-2">
-           <label htmlFor="discountPrice" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-             Discount Price:
-           </label>
-           <input
-           onChange={(e)=>CheckedSizeNumber(e)}
-             type="number"
-             id="discountPrice"
-             name="discountPrice"
-             defaultValue={shippingMethod?.response.discountPrice}
-             step="1"
-             min={0}
-             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                        dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                        dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-             required
-           />
-         </div>
- 
-         <div className="col-span-2">
-           <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-             Price:
-           </label>
-           <input
-            onChange={(e)=>CheckedSizeNumber(e)}
-             type="number"
-             id="price"
-             name="price"
-             step="1"
-             defaultValue={shippingMethod?.response.price}
-             min={0}
-             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                        dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                        dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-             required
-           />
-         </div>
-       </div>
+            </div>
+            <div className="col-span-2">
+            <div className="flex items-center">
+ {
+    shippingMethod?.response.isApi? <input defaultChecked  id="isApi" name="isApi" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>:<input  id="isApi"name="isApi" type="checkbox"  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+ } 
+<label htmlFor="isApi" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Is Online Payment</label>
+</div>
+      </div>
 
-       <button
-           type="submit"
-           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
-                      focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
-                      text-sm w-full sm:w-auto px-5 py-2.5 text-center 
-                      dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-           Submit
-       </button>
-   </form>)
+
+    </div>
+
+    <button
+        type="submit"
+        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 
+                   focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
+                   text-sm w-full sm:w-auto px-5 py-2.5 text-center 
+                   dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        Submit
+    </button>
+</form>)
 }
 
 
-export default ShippingMethodEditForm
+export default UpdatePaymentMethodForm

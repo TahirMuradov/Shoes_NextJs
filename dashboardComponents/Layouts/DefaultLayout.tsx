@@ -16,6 +16,7 @@ export default function DefaultLayout({
   const [isSizeDropDown,SetSizeDropDown]=useState<boolean>(false);
   const [isProductDropDown,SetProductDropDown]=useState<boolean>(false);
   const [isShippingMethod,SetShippingMethod]=useState<boolean>(false);
+  const [isPaymentMethod,SetPaymentMethod]=useState<boolean>(false);
   const [barsClick,setbarsClick]=useState<boolean>(false)
   return (
     <>
@@ -193,6 +194,29 @@ export default function DefaultLayout({
          </li>
          <li>
             <Link href="/dashboard/product/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Product Create</Link>
+         </li>
+      
+   </ul>
+</ul>
+<ul>
+
+<button onClick={()=>SetPaymentMethod(!isPaymentMethod)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+   <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 7.205c4.418 0 8-1.165 8-2.602C20 3.165 16.418 2 12 2S4 3.165 4 4.603c0 1.437 3.582 2.602 8 2.602ZM12 22c4.963 0 8-1.686 8-2.603v-4.404c-.052.032-.112.06-.165.09a7.75 7.75 0 0 1-.745.387c-.193.088-.394.173-.6.253-.063.024-.124.05-.189.073a18.934 18.934 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.073a10.143 10.143 0 0 1-.852-.373 7.75 7.75 0 0 1-.493-.267c-.053-.03-.113-.058-.165-.09v4.404C4 20.315 7.037 22 12 22Zm7.09-13.928a9.91 9.91 0 0 1-.6.253c-.063.025-.124.05-.189.074a18.935 18.935 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.074a10.163 10.163 0 0 1-.852-.372 7.816 7.816 0 0 1-.493-.268c-.055-.03-.115-.058-.167-.09V12c0 .917 3.037 2.603 8 2.603s8-1.686 8-2.603V7.596c-.052.031-.112.059-.165.09a7.816 7.816 0 0 1-.745.386Z"/>
+</svg>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Payment Methods</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${isPaymentMethod?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/paymentmethod/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL Payment method</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/paymentmethod/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Payment Method Create</Link>
          </li>
       
    </ul>
