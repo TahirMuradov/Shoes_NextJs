@@ -64,6 +64,15 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
                  confirmButtonText: 'Cool'
              }).then((res) => {
                  if (res.isConfirmed) {
+                  fetch(`${apiDomen}api/Size/GetAllSizeForTable?page=${page}`, {
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                    },
+                    cache:"no-store",
+                    method: "GET",
+                  }).then(x=>x.json()).then(res=>SetSizes(res));
                    SetLoader(false)
                      router.refresh();// Clear the form
                  }

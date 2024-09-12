@@ -64,6 +64,15 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
                 confirmButtonText: 'Cool'
             }).then((res) => {
                 if (res.isConfirmed) {
+                  fetch(`${apiDomen}api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+                    },
+                    cache:"no-store",
+                    method: "GET",
+                  }).then(res=>res.json()).then(x=>SetSubCategory(x));
                   SetLoader(false)
                     router.refresh();// Clear the form
                 }

@@ -69,6 +69,15 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
             }).then((res) => {
                 if (res.isConfirmed) {
                   SetLoader(false)
+                  fetch(`${apiDomen}api/PaymentMethod/GetAllPaymentMethod?page=${page}`, {
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                    },
+                    cache:"no-store",
+                    method: "GET",
+                  }).then(res=>res.json()).then(x=>SetPaymentMethods(x));
                     router.refresh();// Clear the form
                 }
             })

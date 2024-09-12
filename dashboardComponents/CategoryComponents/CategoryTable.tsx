@@ -79,7 +79,16 @@ React.useEffect(()=>{
         }).then((res) => {
             if (res.isConfirmed) {
               SetLoader(false)
-                router.refresh();// Clear the form
+              fetch(`${apiDomen}api/Category/GetAllCategoryForTable?page=${page}`, {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                },
+                cache:"no-store",
+                method: "GET",
+              }).then(res=>res.json()).then(x=>SetCategories(x));
+                
             }
         })
     }else{
@@ -91,7 +100,7 @@ React.useEffect(()=>{
     }).then((res) => {
         if (res.isConfirmed) {
           SetLoader(false)
-            router.push("/category")// Clear the form
+            router.push("/dashboard/category/1")// Clear the form
         }
     })
     }

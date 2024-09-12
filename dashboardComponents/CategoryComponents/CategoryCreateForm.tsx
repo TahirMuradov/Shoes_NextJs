@@ -68,8 +68,7 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                 }).then((res) => {
                     if (res.isConfirmed) {
                         SetLoader(false)
-                        setItems([]); 
-                       
+                        setItems([]);                        
                         router.push("/dashboard/category/1")// Clear the form
                     }
                 });

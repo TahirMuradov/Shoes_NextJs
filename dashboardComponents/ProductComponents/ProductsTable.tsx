@@ -70,6 +70,15 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
                 confirmButtonText: 'Cool'
             }).then((res) => {
                 if (res.isConfirmed) {
+                  fetch(`${apiDomen}api/Product/GetAllProductDashboard?page=${page}`, {
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                      'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+                    },
+                    cache:"no-store",
+                    method: "GET",
+                  }).then(x=>x.json()).then(res=>SetProducts(res));
                   SetLoader(false)
                     router.refresh();// Clear the form
                 }

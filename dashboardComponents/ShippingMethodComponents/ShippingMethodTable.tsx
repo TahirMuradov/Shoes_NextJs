@@ -79,9 +79,18 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
             confirmButtonText: 'Cool'
         }).then((res) => {
             if (res.isConfirmed) {
+              fetch(`${apiDomen}api/ShippingMethod/GetAllShippingMethod?page=${page}`, {
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                },
+                cache:"no-store",
+                method: "GET",
+              }).then(res=>res.json()).then(x=>SetShippingMethods(x));
               SetLoader(false)
-              router.refresh();
-                router.push("/dashboard/shippingmethod/1")// Clear the form
+              router.refresh(); // Clear the form
+
             }
         })
         }
