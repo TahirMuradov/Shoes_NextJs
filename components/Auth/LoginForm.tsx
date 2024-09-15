@@ -2,11 +2,20 @@
 import Link from "next/link"
 import { signIn, signOut } from 'next-auth/react'
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 const LoginForm:React.FC=()=>{
    let router= useRouter()
    const [email, setEmail] = useState<string>('');
  const [password, setPassword] = useState<string>('');
+ useEffect(()=>{
+
+  fetch('http://localhost:5000/api/auth', {
+    method: 'POST'
+})
+.then(response => response.json())
+.then(data => console.log('Success:', data))
+.catch(error => console.error('Error:', error));
+ },[])
  function login(){
 
     
