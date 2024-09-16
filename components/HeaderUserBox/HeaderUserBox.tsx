@@ -1,6 +1,7 @@
 "use client"
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import userProfile from "../../public/author.jpg"
 import React, { useState } from 'react'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -17,7 +18,7 @@ const HeaderUserBox = () => {
               <div>
                 <button onClick={()=>setUserDropdownOpen(!isUserDropdownOpen)} type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                   <span className="sr-only">Open user menu</span>
-                  <Image width={100} height={100} className="w-8 h-8 rounded-full" src={data.user.image} alt="user photo"/>
+                  <Image width={100} height={100} className="w-8 h-8 rounded-full" src={userProfile} alt="user photo"/>
                 </button>
               </div>
               <div
@@ -41,7 +42,7 @@ const HeaderUserBox = () => {
                 </div>
                 <ul className="py-1" role="none">
                     {
-                  data.user.role === 'admin' ? ( <li>
+                  data.user.role === 'SuperAdmin'||data.user.role === 'Admin' ? ( <li>
                     <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</Link>
                   </li>):(<></>)
                     }

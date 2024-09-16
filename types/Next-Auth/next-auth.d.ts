@@ -8,8 +8,6 @@ declare module "next-auth" {
     email: string;
     firstName: string;
     lastName: string;
-    gender: string;
-    image: string;
     role: string;
     token: string;
     refreshToken: string;
@@ -25,8 +23,6 @@ declare module "next-auth" {
     email: string;
     firstName: string;
     lastName: string;
-    gender: string;
-    image: string;
     role: string;
     token: string;
     refreshToken: string;

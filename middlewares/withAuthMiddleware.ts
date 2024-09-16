@@ -16,7 +16,7 @@ export function withAuthMiddleware(middleware: CustomMiddleware): CustomMiddlewa
 
 let pathname:string[]=request.nextUrl.pathname.split("/");
 
-    if (pathname[2]=="dashboard"&&token?.role!="admin") {
+    if (pathname[2]=="dashboard"&&(token?.role!="admin"||token?.role!="SuperAdmin")) {
 
       return NextResponse.redirect(new URL('/auth/signin', request.url));
 

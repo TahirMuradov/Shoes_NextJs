@@ -1,6 +1,5 @@
 "use client"
 import { i18n, Locale } from "@/i18n-config";
-
 import { useState } from "react";
 import Loader from "../common/Loader";
 import Swal from "sweetalert2";
