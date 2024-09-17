@@ -6,8 +6,8 @@ import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 
 const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
-    const router=useRouter();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
+    const router=useRouter();
     const[loader,SetLoader]=useState<boolean>(false)
 
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {

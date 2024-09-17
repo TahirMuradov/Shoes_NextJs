@@ -16,12 +16,16 @@ export function withAuthMiddleware(middleware: CustomMiddleware): CustomMiddlewa
 
 let pathname:string[]=request.nextUrl.pathname.split("/");
 
-    if (pathname[2]=="dashboard"&&(token?.role!="admin"||token?.role!="SuperAdmin")) {
+    if (pathname[2]=="dashboard" &&(token?.role!="admin"||token?.role!="SuperAdmin")) {
 
       return NextResponse.redirect(new URL('/auth/signin', request.url));
 
     }
-    if (pathname[2]=="auth"&&token) {
+    if ((pathname[3]=="login"||
+      pathname[3]=="register"||
+      pathname[3]=="forgotpassword"||
+      pathname[3]=="emailconfirmed"
+    )&&token) {
       return NextResponse.redirect(new URL('/', request.url));
     }
 

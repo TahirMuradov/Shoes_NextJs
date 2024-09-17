@@ -26,7 +26,7 @@ const LoginForm:React.FC=()=>{
         }) .then(async (response) => {
 if(response?.ok){
   
-  await router.push("/dashboard/category");
+  await router.push("/dashboard");
 
 }else{
   alert(response?.error)
