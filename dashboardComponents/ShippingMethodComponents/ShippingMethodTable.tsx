@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -34,14 +35,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDomen:string|undefined}) => {
     const[shippingMethods,SetShippingMethods]=useState<Result<PaginatedList<GetAllShippingMethod>>>();
     const router=useRouter();
-  
+    const sessions=useSession();
     useEffect(()=>{
     
       fetch(`${apiDomen}api/ShippingMethod/GetAllShippingMethod?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+          'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
         },
         cache:"no-store",
         method: "GET",
@@ -54,7 +57,9 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+            'Accept-Language': `${lang}`,
+               'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
         }).then(response=>response.json())
@@ -83,7 +88,9 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json',
-                  'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                  'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+                  'Accept-Language': `${lang}`,
+                     'Authorization':`Bearer ${sessions.data?.user.token}`
                 },
                 cache:"no-store",
                 method: "GET",

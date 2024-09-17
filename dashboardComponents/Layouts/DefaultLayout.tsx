@@ -118,10 +118,10 @@ export default function DefaultLayout({
             </button>
             <ul id="dropdown-example" className={`${isSubCategoryDropDown?"":"hidden"} py-2 space-y-2`}>
                   <li>
-                     <Link href="/dashboard/subCategory/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL SubCategories</Link>
+                     <Link href="/dashboard/subcategory/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL SubCategories</Link>
                   </li>
                   <li>
-                     <Link href="/dashboard/subCategory/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">SubCategory Create</Link>
+                     <Link href="/dashboard/subcategory/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">SubCategory Create</Link>
                   </li>
                
             </ul>

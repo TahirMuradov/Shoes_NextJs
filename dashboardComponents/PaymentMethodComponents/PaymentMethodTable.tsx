@@ -10,6 +10,7 @@ import Loader from "../common/Loader";
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import GetAllPaymentMethod from "@/types/PaymentMethodTypes/GetAllPaymentMethod";
+import { useSession } from "next-auth/react";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -35,6 +36,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDomen:string|undefined}) => {
     const[paymentMethods,SetPaymentMethods]=useState<Result<PaginatedList<GetAllPaymentMethod>>>();
     const router=useRouter();
+    const sessions=useSession();
   
     useEffect(()=>{
     
@@ -42,7 +44,9 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+   'Authorization':`Bearer ${sessions.data?.user.token}`,
+   'Accept-Language': `${lang}`,
         },
         cache:"no-store",
         method: "GET",
@@ -55,7 +59,9 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+            'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
         }).then(response=>response.json())

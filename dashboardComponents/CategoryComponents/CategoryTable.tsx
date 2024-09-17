@@ -17,6 +17,7 @@ import { Locale } from '@/i18n-config';
 import Swal from 'sweetalert2';
 import { usePathname, useRouter } from 'next/navigation';
 import Loader from '../common/Loader';
+import { useSession } from 'next-auth/react';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -45,6 +46,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:number,apiDomen:string|undefined}) {
   const router=useRouter();
+  const sessions=useSession();
 const [categories,SetCategories]=React.useState<Result<PaginatedList<GetCategoryAllDashboard>>>()
 React.useEffect(()=>{
 
@@ -52,7 +54,9 @@ React.useEffect(()=>{
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+      'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+      'Accept-Language': `${lang}`,
+      'Authorization':`Bearer ${sessions.data?.user.token}`
     },
     cache:"no-store",
     method: "GET",
@@ -65,7 +69,9 @@ React.useEffect(()=>{
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+        'langCode': `${lang}` ,         // You can dynamically set this value based on user selection or other logic
+        'Accept-Language': `${lang}`,
+           'Authorization':`Bearer ${sessions.data?.user.token}`
       },
      method: "DELETE",
     }).then(response=>response.json())

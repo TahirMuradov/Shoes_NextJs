@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import { useSession } from "next-auth/react";
 
 const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,apiDomen})=>{
     
     const[loader,SetLoader]=useState<boolean>(false)
      const router=useRouter();
+     const sessions=useSession();
     function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
         if (Number.parseInt( e.target.value)<1) {
            e.target.value = '';
@@ -25,6 +27,8 @@ const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,ap
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`, // Or whatever language code you want to send
+                'Accept-Language': `${lang}`,
+                   'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body:JSON.stringify({
         

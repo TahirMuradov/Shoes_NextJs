@@ -65,12 +65,16 @@ const RegisterForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}>=({
                 if (result.message) {
                     errorMessage=result.message
                 }else{
-
-                    result.messages.forEach((error: any) => {errorMessage+=`*${error}/n`})
+                    errorMessage = "<ul>";
+                    result.messages.forEach((error: any) => {errorMessage+=`<li>${error}</li>`})
+               
+               
+            errorMessage += "</ul>";
                 }
                 Swal.fire({
                     title: 'Error!',
-                    text: errorMessage || 'Failed to add category!',
+                 
+                    html: errorMessage || 'Failed to add category!',
                     icon: 'error',
                     confirmButtonText: 'Cool'
                 }).then((res)=>{

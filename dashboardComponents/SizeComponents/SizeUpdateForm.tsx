@@ -8,10 +8,12 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import { useSession } from "next-auth/react";
 
 
 const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,Size:GetSize,apiDOmen:string|undefined}}> = ({params:{id,lang,Size,apiDOmen}}) => {
     const router=useRouter();
+    const sessions=useSession();
 function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
  if (Number.parseInt( e.target.value)<1) {
     e.target.value = '';
@@ -28,6 +30,8 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`, // Or whatever language code you want to send
+                'Accept-Language': `${lang}`,
+                   'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body:JSON.stringify({
               id:id, // ID of the size being updated
@@ -52,7 +56,7 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
                     }
                 });
             } else {
-           console.log(result)
+          
                 Swal.fire({
                     title: 'Error!',
                     text: result.messages || 'Failed to updated size!',

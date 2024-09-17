@@ -4,11 +4,13 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import { useSession } from "next-auth/react";
 
 const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,apiDomen})=>{
         
     const[loader,SetLoader]=useState<boolean>(false)
      const router=useRouter();
+     const sessions=useSession();
 
        function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -46,6 +48,8 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`, // Or whatever language code you want to send
+                'Accept-Language': `${lang}`,
+                   'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
                 isApi:form.get("isApi"),

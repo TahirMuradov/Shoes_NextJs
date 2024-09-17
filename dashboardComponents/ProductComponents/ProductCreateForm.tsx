@@ -2,6 +2,7 @@
 import { i18n, Locale } from "@/i18n-config"
 import GetSize from "@/types/SizeTypes/GetSize"
 import GetSubCategory from "@/types/SubCategoriesType/GetSubCategory"
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
@@ -10,6 +11,7 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,sizes:Ge
 
   const [subCategories, setSubCategories] = useState<string[]>([]);
   const router=useRouter();
+  const sessions=useSession();
   function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
     if (Number.parseFloat(e.target.value) < 1) {
       e.target.value = "";
@@ -119,6 +121,8 @@ formData.append("ProductName",JSON.stringify( productName))
         body: formData,
         headers: {
           'LangCode': `${lang}`,
+          'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
         },
       });
 

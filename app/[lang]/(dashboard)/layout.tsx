@@ -3,6 +3,7 @@ import Loader from "@/dashboardComponents/common/Loader";
 import "../globals.css"
 import { useEffect, useState } from "react";
 import DefaultLayout from "@/dashboardComponents/Layouts/DefaultLayout";
+import { SessionProvider } from "next-auth/react";
 
 export default function DashboardLayout({
   children,
@@ -16,10 +17,13 @@ export default function DashboardLayout({
   }, []);
   return (
     <div className={`${darkMode?"dark":""} dark:bg-boxdark-2 dark:text-bodydark w-full min-h-[100vh]  dark:text-slate-400 dark:bg-slate-800`}>
+        <SessionProvider>
+
          <DefaultLayout>
      
     {loading ? <Loader /> : children}
       </DefaultLayout>
+        </SessionProvider>
 
     
   </div>

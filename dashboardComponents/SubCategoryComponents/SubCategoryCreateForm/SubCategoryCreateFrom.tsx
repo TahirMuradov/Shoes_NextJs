@@ -5,10 +5,11 @@ import Swal from 'sweetalert2'
 import { useState } from "react";
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import Loader from "@/dashboardComponents/common/Loader";
+import { useSession } from "next-auth/react";
 const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories,apiDomen}}) => {
     const router=useRouter();
     // const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
-
+    const sessions=useSession();
     const[loader,SetLoader]=useState<boolean>(false)
 
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -49,6 +50,8 @@ const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefi
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`, // Or whatever language code you want to send
+                'Accept-Language': `${lang}`,
+                   'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
                 CategoryId:form.get("categoryId"),

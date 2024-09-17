@@ -12,6 +12,7 @@ import Loader from "../common/Loader";
 import GetProduct from "@/types/ProductTypes/GetProduct";
 import Image from "next/image";
 import { Locale } from "@/i18n-config";
+import { useSession } from "next-auth/react";
 
 
 
@@ -38,12 +39,16 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
       const [loader,SetLoader]=useState<boolean>(false)
     const [Products,SetProducts]=useState<Result<PaginatedList<GetProduct>>>();
     const router=useRouter();
+    const sessions=useSession();
     useEffect(()=>{
       fetch(`${apiDomen}api/Product/GetAllProductDashboard?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+          'Accept-Language': `${Lang}`,
+         'Authorization':`Bearer ${sessions.data?.user.token}`
+
         },
         cache:"no-store",
         method: "GET",
@@ -57,7 +62,9 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+            'Accept-Language': `${Lang}`,
+   'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
         }).then(response=>response.json())
@@ -74,7 +81,9 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
                     headers: {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json',
-                      'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+                      'langCode': `${Lang}` , // You can dynamically set this value based on user selection or other logic
+                      'Accept-Language': `${Lang}`,
+                         'Authorization':`Bearer ${sessions.data?.user.token}`
                     },
                     cache:"no-store",
                     method: "GET",

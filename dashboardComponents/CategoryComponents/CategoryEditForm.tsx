@@ -7,9 +7,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import { useSession } from "next-auth/react";
 
 const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:string|undefined} }> = ({ params })=>{
     const router=useRouter();
+    const sessions=useSession();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
     const [category,setCategory]=useState<Result<GetCategoryForUpdate>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
@@ -19,6 +21,8 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
       headers: {
           'Content-Type': 'application/json',
           'LangCode': `${params.lang}`, 
+          'Accept-Language': `${params.lang}`,  
+           'Authorization':`Bearer ${sessions.data?.user.token}`
       }
   })
   .then(response => response.json())
@@ -95,7 +99,9 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
             method:'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'LangCode': `${params.lang}`, // Or whatever language code you want to send
+                'LangCode': `${params.lang}`, // Or whatever language code you want to send'
+                'Accept-Language': `${params.lang}`,
+                   'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body:JSON.stringify({
               id: params.id, // ID of the category being updated

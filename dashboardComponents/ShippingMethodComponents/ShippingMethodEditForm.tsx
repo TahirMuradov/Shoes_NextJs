@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import { useSession } from "next-auth/react";
 
 
 const ShippingMethodEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:string}>=({
@@ -16,6 +17,7 @@ const ShippingMethodEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:
 })=>{
 const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpdate>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
+    const sessions=useSession();
     const router=useRouter();
     useEffect(()=>{
         fetch(`${apiDomen}api/ShippingMethod/GetShippingMethodForUpdate?Id=${id}`, {
@@ -23,6 +25,8 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
           headers: {
               'Content-Type': 'application/json',
               'LangCode': `${lang}`, 
+              'Accept-Language': `${lang}`,
+                 'Authorization':`Bearer ${sessions.data?.user.token}`
           }
       })
       .then(response =>  response.json())
@@ -93,6 +97,8 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
            headers: {
                'Content-Type': 'application/json',
                'LangCode': `${lang}`, // Or whatever language code you want to send
+               'Accept-Language': `${lang}`,
+                  'Authorization':`Bearer ${sessions.data?.user.token}`
            },
            body: JSON.stringify({
             Id:id,
@@ -114,15 +120,13 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                    confirmButtonText: 'Cool'
                }).then((res) => {
                    if (res.isConfirmed) {
-                     SetLoader(false)
-                   
-                 
-                   
+                     SetLoader(false)                
+                                    
                        router.push("/dashboard/shippingmethod/1")
                    }
                });
            } else {
-          console.log(result)
+        
                Swal.fire({
                    title: 'Error!',
                    text: result.messages || 'Failed to added Shipping Method!',

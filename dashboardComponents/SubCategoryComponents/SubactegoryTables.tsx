@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
+import { useSession } from "next-auth/react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -32,6 +33,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
     const [loader,SetLoader]=useState<boolean>(false)
     const [SubCategory,SetSubCategory]=useState<Result<PaginatedList<GetSubCategory>>>();
+    const sessions=useSession();
     const router=useRouter();
     useEffect(()=>{
 
@@ -39,7 +41,9 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${Lang}`  ,// You can dynamically set this value based on user selection or other logic
+          'Accept-Language': `${Lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
         },
         cache:"no-store",
         method: "GET",
@@ -51,7 +55,9 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+            'Accept-Language': `${Lang}`,
+               'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
         }).then(response=>response.json())
@@ -68,7 +74,9 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
                     headers: {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json',
-                      'langCode': `${Lang}`  // You can dynamically set this value based on user selection or other logic
+                      'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+                      'Accept-Language': `${Lang}`,
+   'Authorization':`Bearer ${sessions.data?.user.token}`
                     },
                     cache:"no-store",
                     method: "GET",

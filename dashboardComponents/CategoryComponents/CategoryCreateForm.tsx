@@ -4,6 +4,7 @@ import { useState } from "react";
 import Loader from "../common/Loader";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
@@ -13,6 +14,7 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true);
+        const sessions=useSession();
 
         const form = new FormData(e.currentTarget);
         const newItems: { key: string, value: string | null }[] = [];
@@ -47,7 +49,10 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'LangCode': `${lang}`, // Or whatever language code you want to send
+                'LangCode': `${lang}`,  
+                'Accept-Language': `${lang}`,              
+                'Authorization':`Bearer ${sessions.data?.user.token}`
+              
             },
             body: JSON.stringify({
                 LangContent: newItems.reduce((acc, item) => {

@@ -11,13 +11,14 @@ import React, { ChangeEvent, SyntheticEvent, useEffect, useRef, useState } from 
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import ProductAddedImage from "./ProductAddedImage";
+import { useSession } from "next-auth/react";
 
 
 const ProductUpdateForm:React.FC<{lang:Locale,apiDomen:string|undefined,sizes:GetSize[],subcategories:GetSubCategory[],Product:GetProductForUpdate}>=({lang,sizes,subcategories,Product,apiDomen})=>{
     const[loader,SetLoader]=useState<boolean>(false);
     const [newPhotos, setNewPhotos] = useState<File[]>([]);
     const PictureinputRef = useRef<HTMLInputElement | null>(null);
-
+    const sessions=useSession();
   const router=useRouter();
   function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
     if (Number.parseFloat(e.target.value) < 1) {
@@ -151,6 +152,8 @@ formData.append("Id",Product.id)
         body: formData,
         headers: {
           'LangCode': `${lang}`,
+          'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
         },
       }) .then(response => response.json())
       .then(result => {

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import Result from "@/types/ApiResultType";
+import { useSession } from "next-auth/react";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -32,6 +33,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefined}}>=({params:{lang,page,apiDomen}})=>{
     const [loader,SetLoader]=useState<boolean>(false)
     const [size,SetSizes]=useState<Result<PaginatedList<GetSize>>>()
+    const sessions=useSession();
     const router=useRouter();
     useEffect(()=>{
 
@@ -39,7 +41,9 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+          'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
         },
         cache:"no-store",
         method: "GET",
@@ -51,8 +55,10 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
            headers: {
              'Accept': 'application/json',
              'Content-Type': 'application/json',
-             'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
-           },
+             'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+             'Accept-Language': `${lang}`,
+                'Authorization':`Bearer ${sessions.data?.user.token}`
+            },
           method: "DELETE",
          }).then(response=>response.json())
          .then(responsData=>{
@@ -68,7 +74,9 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
                     headers: {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json',
-                      'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                      'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+                      'Accept-Language': `${lang}`,
+                         'Authorization':`Bearer ${sessions.data?.user.token}`
                     },
                     cache:"no-store",
                     method: "GET",

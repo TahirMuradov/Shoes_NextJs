@@ -6,6 +6,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import GetPaymentMethodForUpdate from "@/types/PaymentMethodTypes/GetPaymentMethodForUpdate";
+import { useSession } from "next-auth/react";
 
 
 const UpdatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:string}>=({
@@ -16,6 +17,7 @@ const UpdatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined,id
 const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpdate>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
     const router=useRouter();
+    const sessions=useSession();
     useEffect(()=>{
         fetch(`${apiDomen}api/PaymentMethod/GetPaymentMethoForUpdate?Id=${id}`, {
           method: 'GET',
@@ -88,7 +90,9 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpda
            headers: {
                'Content-Type': 'application/json',
                'LangCode': `${lang}`, // Or whatever language code you want to send
-           },
+               'Accept-Language': `${lang}`,
+                  'Authorization':`Bearer ${sessions.data?.user.token}`
+            },
            body: JSON.stringify({         
                 id:id,          
                 isApi:form.get("isApi")=="on"?true:false,
@@ -117,7 +121,7 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpda
                    }
                });
            } else {
-          console.log(result)
+   
                Swal.fire({
                    title: 'Error!',
                    text: result.messages || 'Failed to updated Payment Method!',
