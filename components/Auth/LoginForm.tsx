@@ -2,28 +2,23 @@
 import Link from "next/link"
 import { signIn, signOut } from 'next-auth/react'
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import Loader from "@/dashboardComponents/common/Loader"
 const LoginForm:React.FC=()=>{
    let router= useRouter()
    const [email, setEmail] = useState<string>('');
  const [password, setPassword] = useState<string>('');
- useEffect(()=>{
+ const [loader,SetLoader]=useState<boolean>(false);
 
-  fetch('http://localhost:5000/api/auth', {
-    method: 'POST'
-})
-.then(response => response.json())
-.then(data => console.log('Success:', data))
-.catch(error => console.error('Error:', error));
- },[])
- function login(){
+async function  login(){
 
-    
+    SetLoader(true)
         signIn('credentials', {
             email,
             password,
             redirect: false,
         }) .then(async (response) => {
+          SetLoader(false);
 if(response?.ok){
   
   await router.push("/dashboard");
@@ -38,7 +33,9 @@ if(response?.ok){
         
     
 }
-   
+   if (loader) {
+    return(<Loader/>)
+   }
     return( <form>
         <div className="mb-4">
 

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -99,7 +99,7 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
         })
         }
       
-      })
+      }).catch(error=>signOut())
         
         ;
       }

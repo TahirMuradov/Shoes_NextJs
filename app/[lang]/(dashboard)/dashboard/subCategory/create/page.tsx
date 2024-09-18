@@ -1,8 +1,6 @@
 
 import { i18n, Locale } from "@/i18n-config";
-import { useRouter } from "next/navigation";
-import Swal from 'sweetalert2'
-import { useState } from "react";
+
 import Loader from "@/dashboardComponents/common/Loader";
 import SubCategoryCreateForm from "@/dashboardComponents/SubCategoryComponents/SubCategoryCreateForm/SubCategoryCreateFrom";
 import Result from "@/types/ApiResultType";

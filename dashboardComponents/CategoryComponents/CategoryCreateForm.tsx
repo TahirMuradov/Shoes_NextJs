@@ -4,17 +4,17 @@ import { useState } from "react";
 import Loader from "../common/Loader";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
     const router=useRouter();
     const[loader,SetLoader]=useState<boolean>(false)
 
+    const sessions=useSession();
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true);
-        const sessions=useSession();
 
         const form = new FormData(e.currentTarget);
         const newItems: { key: string, value: string | null }[] = [];
@@ -51,59 +51,88 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`,  
                 'Accept-Language': `${lang}`,              
-                'Authorization':`Bearer ${sessions.data?.user.token}`
-              
+                'Authorization': `Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
+                isFeatured: form.get("isFeatured"),
                 LangContent: newItems.reduce((acc, item) => {
                     acc[item.key] = item.value;
                     return acc;
                 }, {} as { [key: string]: string | null }),
             }),
         })
-        .then(response => response.json())
-        .then(result => {
+        .then(async response => {
+            const result = await response.json();
+        
+            if (response.status === 401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'warning',
+                    confirmButtonText: 'Login'
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); // Oturum sonlandırılıyor
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
+                return;
+            }
+        
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
                     text: 'Category added successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool'
-                }).then((res) => {
+                }).then(res => {
                     if (res.isConfirmed) {
-                        SetLoader(false)
-                        setItems([]);                        
-                        router.push("/dashboard/category/1")// Clear the form
+                        SetLoader(false);
+                        setItems([]);
+                        router.push("/dashboard/category/1"); // Sayfa yönlendirme
                     }
                 });
             } else {
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                errors += "</ul>";
+        
                 Swal.fire({
                     title: 'Error!',
-                    text: result.message || 'Failed to add category!',
+                    html: errors, // Mesajlar HTML formatında gösteriliyor
                     icon: 'error',
                     confirmButtonText: 'Cool'
-                }).then((res)=>{
-if (res.isConfirmed) {
-    SetLoader(false)
-    setItems([]);
-    router.refresh();
-}
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        setItems([]);
+                        router.refresh();
+                    }
                 });
             }
         })
         .catch(error => {
-
             Swal.fire({
                 title: 'Error!',
                 text: 'An unexpected error occurred!',
                 icon: 'error',
                 confirmButtonText: 'Cool'
-            }).then((res)=>{
-if (res.isConfirmed) {
-    SetLoader(false)
-    setItems([]);
-    router.refresh();
-}
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    setItems([]);
+                    signOut();
+                    router.refresh();
+                }
             });
         });
     }
@@ -132,6 +161,12 @@ if (loader) {
                         />
                     ))}
                 </div>
+                <div className="col-span-2">
+                <div className="flex items-center">
+    <input id="isfeatured" name="isFeatured" type="checkbox"  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+    <label htmlFor="isfeatured" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Is featured</label>
+</div>
+          </div>
             </div>
             <button
                 type="submit"

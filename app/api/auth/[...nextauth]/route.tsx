@@ -56,8 +56,9 @@ const handler = NextAuth({
       
           if (res.ok) {
             const result: Result<LoginResponseType> = await res.json();
+          
             const userData: DecodedLoginApiTokenResult = jwt.decode(result.response.accessToken) as DecodedLoginApiTokenResult;
-      console.log(userData)
+
            
             return {
               id: userData.Id ,         
@@ -99,7 +100,7 @@ const handler = NextAuth({
     async session({ session, token }) {
       // Merge token data into session object
  
-  console.log(token)
+
   session.user = {
     id: token.id as string, 
     email: token.email as string , 

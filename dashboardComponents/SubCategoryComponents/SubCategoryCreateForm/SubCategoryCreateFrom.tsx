@@ -2,16 +2,35 @@
 import { i18n, Locale } from "@/i18n-config";
 import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import Loader from "@/dashboardComponents/common/Loader";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Result from "@/types/ApiResultType";
 const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories,apiDomen}}) => {
     const router=useRouter();
-    // const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
+    const [Categories, SetCategories] = useState<Result<GetCategoryAllDashboard[]>>();
+    const session=useSession();
     const sessions=useSession();
     const[loader,SetLoader]=useState<boolean>(false)
-
+useEffect(()=>{
+    fetch(`${apiDomen}api/Category/GetAllCategory`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'langCode': `${lang}`,
+         'Accept-Language': `${lang}`,
+                   'Authorization':`Bearer ${sessions.data?.user.token}`
+        },
+        cache:"no-store",
+        method: "GET",
+      })
+      .then(res=>res.json())
+      .then(data=>SetCategories(data))
+      .catch(x=>signOut())
+      
+      ;
+},[])
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true);

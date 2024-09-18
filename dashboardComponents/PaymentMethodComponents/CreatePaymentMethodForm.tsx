@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,apiDomen})=>{
         
@@ -97,9 +97,13 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
                 icon: 'error',
                 confirmButtonText: 'Cool'
             }).then(x=>{
-              SetLoader(false)
-           
-              router.refresh();
+              if (x.isConfirmed) {
+                
+                  SetLoader(false)
+  
+             signOut()
+                router.refresh();
+              }
             });
         });
        

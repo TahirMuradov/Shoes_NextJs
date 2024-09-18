@@ -3,6 +3,7 @@ import Loader from "@/dashboardComponents/common/Loader";
 import { i18n, Locale } from "@/i18n-config"
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import GetSubCategoryForUpdate from "@/types/SubCategoriesType/GetSubCategoryForUpdate"
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -44,8 +45,8 @@ const SubCategoryEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,Subcat
         }
 
         setItems(newItems); 
-        // Update state with the new items
-        console.log(newItems)
+    
+        
         fetch(`${apiDomen}api/SubCategory/UpdateSubCategory`, {
             method: 'PUT',
             headers: {
@@ -104,6 +105,7 @@ if (res.isConfirmed) {
     SetLoader(false)
     setItems([]);
     router.refresh();
+    signOut();
 }
             });
         });
