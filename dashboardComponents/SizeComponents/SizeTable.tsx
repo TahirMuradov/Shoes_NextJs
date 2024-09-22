@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import Result from "@/types/ApiResultType";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -47,7 +47,39 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
         },
         cache:"no-store",
         method: "GET",
-      }).then(x=>x.json()).then(res=>SetSizes(res));
+      }).then(x=>{
+        if (x.status==401) {
+          Swal.fire({
+              title: 'Authorization Error!',
+              text: 'Your session has expired. Please log in again.',
+              icon: 'info',
+              confirmButtonText: 'Login',
+               allowEscapeKey:false,
+               allowOutsideClick:false                     
+          }).then(res => {
+              if (res.isConfirmed) {
+                  signOut(); 
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
+          return;
+      }else if(!x.ok){
+        Swal.fire({
+          title: 'Error!',
+          text: 'An unexpected error occurred!',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+      }).then(x=>{
+        if (x.isConfirmed) {
+            SetLoader(false)
+       signOut()        
+        }
+      });
+      return;
+      }
+      return  x.json()
+      }).then(res=>SetSizes(res));
     },[])
     function SizeDelete(id:string){
         SetLoader(true)
@@ -60,7 +92,41 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
                 'Authorization':`Bearer ${sessions.data?.user.token}`
             },
           method: "DELETE",
-         }).then(response=>response.json())
+         }).then(response=>{
+          
+          if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }else if(!response.ok){
+          Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred!',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+        }).then(x=>{
+          if (x.isConfirmed) {
+              SetLoader(false)
+         signOut()
+        
+          }
+        });
+        return;
+        }
+          
+          return response.json()})
          .then(responsData=>{
            if (responsData.isSuccess) {
              Swal.fire({
@@ -86,18 +152,32 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
                  }
              })
          }else{
-            console.log(responsData)
-           Swal.fire({
-             title: `Error!${responsData.statusCode}`,
-          text: responsData.message  ,
-             icon: 'error',
-             confirmButtonText: 'Cool'
-         }).then((res) => {
-             if (res.isConfirmed) {
-               SetLoader(false)
-                 router.push("/dashboard/size/1")// Clear the form
-             }
-         })
+      
+          let errors = "<ul>";
+          if (Array.isArray(responsData.messages)) {
+          
+              responsData.messages.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+          } else if (responsData.message) {
+           
+              errors += `<li>${responsData.message}</li>`;
+          }
+          errors += "</ul>";
+  
+          Swal.fire({
+              title: 'Error!',
+              html: errors, 
+              icon: 'error',
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false
+          }).then(res => {
+              if (res.isConfirmed) {
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
          }
        
        })

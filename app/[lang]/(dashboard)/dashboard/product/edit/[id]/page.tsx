@@ -11,43 +11,11 @@ const page:React.FC<{ params: { lang: Locale,id:string} }>  = async ({ params :{
           // This line should be placed at the very top of your file
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
           const apiDomen = process.env.apiDomen;
-          // Fetch data from the API
-          const responseSize = await fetch(`${apiDomen}api/Size/GetAllSize`, {
-            cache:"no-store",
-          method: "GET",
-        });
-        const responseSubCategory = await fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
-          headers:{
-            'LangCode':`${lang}`
-          },
-          cache:"no-store",
-        method: "GET",
-      });
-      const responseProduct = await fetch(`${apiDomen}api/Product/GetProductDetailDashboard?id=${id}`, {
-        headers:{
-          'LangCode':`${lang}`
-        },
-        cache:"no-store",
-      method: "GET",
-    });
-          // Check if the response is OK (status 200-299)
-          if (!responseSize.ok) {
-            throw new Error(`HTTP error! status: ${responseSize.status}`);
-          }    if (!responseSubCategory.ok) {
-            throw new Error(`HTTP error! status: ${responseSubCategory.status}`);
-          }
-          if (!responseProduct.ok) {
-            throw new Error(`HTTP error! status: ${responseProduct.status}`);
-          }
-          // Parse the JSON data from the response
-    
-    const dataSize:Result<GetSize[]>= await responseSize.json();
- const dataProduct:Result<GetProductForUpdate>=await responseProduct.json();
-    const dataSubCategory:Result< GetSubCategory[]>= await responseSubCategory.json();
+
        
     
     return (
-            <ProductUpdateForm apiDomen={apiDomen} Product={dataProduct.response} lang={lang} sizes={dataSize.response} subcategories={dataSubCategory.response}/>
+            <ProductUpdateForm apiDomen={apiDomen}  lang={lang} id={id}/>
            )
         
         } catch (error) {

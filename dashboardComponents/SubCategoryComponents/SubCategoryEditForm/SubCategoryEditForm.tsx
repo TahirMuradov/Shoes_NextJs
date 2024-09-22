@@ -1,17 +1,183 @@
 "use client"
 import Loader from "@/dashboardComponents/common/Loader";
 import { i18n, Locale } from "@/i18n-config"
+import Result from "@/types/ApiResultType";
 import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import GetSubCategoryForUpdate from "@/types/SubCategoriesType/GetSubCategoryForUpdate"
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
-const SubCategoryEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,Subcategory:GetSubCategoryForUpdate,Categories:GetCategoryAllDashboard[]}>=({lang,Subcategory,Categories,apiDomen})=>{
+const SubCategoryEditForm:React.FC<{lang:Locale,id:string,apiDomen:string|undefined}>=({lang,apiDomen,id})=>{
     const router=useRouter();
+    const sessions=useSession();
+    const [categories,SetCategories]=useState<Result<GetCategoryAllDashboard[]>>()
+const [SubCategory,SetSubCategory]=useState<Result<GetSubCategoryForUpdate>>();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
     const[loader,SetLoader]=useState<boolean>(false)
+useEffect(()=>{
+
+    fetch(`${apiDomen}api/SubCategory/GetSubCategoryForUpdate?Id=${id}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+              'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+        },
+        cache:"no-store",
+        method: "GET",
+      }).then(response=>{
+
+        if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }else if(!response.ok){
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            }).then(x=>{
+              if (x.isConfirmed) {
+                
+                  SetLoader(false)
+  
+             signOut()
+                router.refresh();
+              }
+            });
+            return;
+        }
+        return response.json();
+      }).then(result=>{
+
+        if (result.isSuccess) {
+            SetSubCategory(result)
+        }else{
+            let errors = "<ul>";
+            if (Array.isArray(result.messages)) {
+            
+                result.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (result.message) {
+             
+                errors += `<li>${result.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+        }
+      });
+      fetch(`${apiDomen}api/Category/GetAllCategory`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'LangCode': `${lang}`,
+              'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+        },
+        cache:"no-store",
+        method: "GET",
+      }).then(response=>{
+
+        if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                }
+            });
+            return;
+        }else if(!response.ok){
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            }).then(x=>{
+              if (x.isConfirmed) {
+                
+                  SetLoader(false)
+  
+             signOut()
+                router.refresh();
+              }
+            });
+            return;
+        }
+        return response.json();
+      }).then(result=>{
+        if (result.isSuccess) {
+            SetCategories(result)
+        }else{
+            let errors = "<ul>";
+            if (Array.isArray(result.messages)) {
+            
+                result.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (result.message) {
+             
+                errors += `<li>${result.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    setItems([]);
+                    router.refresh();
+                }
+            });
+        }
+      });
+
+
+},[])
+
+
+
 
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -52,9 +218,11 @@ const SubCategoryEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,Subcat
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`, // Or whatever language code you want to send
+                    'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
-                Id:Subcategory.id,
+                Id:SubCategory?.response.id,
                 CategoryId:form.get("categoryId"),
                 LangContent: newItems.reduce((acc, item) => {
                     acc[item.key] = item.value;
@@ -62,7 +230,42 @@ const SubCategoryEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,Subcat
                 }, {} as { [key: string]: string | null }),
             }),
         })
-        .then(response => response.json())
+        .then(response => {
+            
+            if (response.status==401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); 
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
+                return;
+            }else if(!response.ok){
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                }).then(x=>{
+                  if (x.isConfirmed) {
+                    
+                      SetLoader(false)
+      
+                 signOut()
+                    router.refresh();
+                  }
+                });
+                return;
+            }
+         return   response.json()})
         .then(result => {
             if (result.isSuccess) {
                 Swal.fire({
@@ -79,17 +282,30 @@ const SubCategoryEditForm:React.FC<{lang:Locale,apiDomen:string|undefined,Subcat
                     }
                 });
             } else {
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                errors += "</ul>";
+        
                 Swal.fire({
                     title: 'Error!',
-                    text: result.message || 'Failed to update Subcategory!',
+                    html: errors, 
                     icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then((res)=>{
-if (res.isConfirmed) {
-    SetLoader(false)
-    setItems([]);
-    router.refresh();
-}
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
                 });
             }
         })
@@ -120,8 +336,8 @@ if (res.isConfirmed) {
                    Sub Category Name:
                 </label>
                 {
-          Subcategory !== null ? 
-          Object.entries(Subcategory.content).map(([key, value]) => (
+          SubCategory ? 
+          Object.entries(SubCategory?.response.content).map(([key, value]) => (
             i18n.locales.includes(key as Locale) ? (
               <input
                 key={key}
@@ -145,8 +361,8 @@ if (res.isConfirmed) {
             <label htmlFor="categoryId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an Categories</label>
   <select name="categoryId" id="categoryId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
    {
-    Categories.map((category)=>(
-category.id==Subcategory.categoryId?
+    categories?.response.map((category)=>(
+category.id==SubCategory?.response.categoryId?
         <option selected value={category.id} >{category.content}</option>:  <option value={category.id} >{category.content}</option>
     ))
    }

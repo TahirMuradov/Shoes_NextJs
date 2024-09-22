@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,apiDomen})=>{
     
@@ -31,11 +31,45 @@ const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,ap
                    'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body:JSON.stringify({
-        
-              Size:form.get("Size")
+               Size:form.get("Size")
           }),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.status==401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); 
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
+                return;
+            }else if (!response.ok) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                }).then(x=>{
+                  if (x.isConfirmed) {
+                    
+                      SetLoader(false)
+      
+                 signOut()
+                    router.refresh();
+                  }
+                }); 
+                return;
+            }
+            
+           return response.json()})
         .then(result => {
             if (result.isSuccess) {
                 Swal.fire({
@@ -46,23 +80,34 @@ const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,ap
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)
-                    
-                  
-                    
-                        router.push("/dashboard/size/1")
+                     router.push("/dashboard/size/1")
                     }
                 });
             } else {
-           console.log(result)
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                errors += "</ul>";
+        
                 Swal.fire({
                     title: 'Error!',
-                    text: result.messages || 'Failed to added size!',
+                    html: errors, 
                     icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(res=>{
-                  SetLoader(false)
-                  
-                  router.refresh();
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
                 });
             }
         })

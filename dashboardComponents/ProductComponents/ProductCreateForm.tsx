@@ -2,31 +2,177 @@
 import { i18n, Locale } from "@/i18n-config"
 import GetSize from "@/types/SizeTypes/GetSize"
 import GetSubCategory from "@/types/SubCategoriesType/GetSubCategory"
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import Loader from "../common/Loader";
+import Result  from "@/types/ApiResultType";
 
-const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,sizes:GetSize[],subcategories:GetSubCategory[]}>=({lang,sizes,subcategories,apiDomen})=>{
+const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lang,apiDomen})=>{
 
-  const [subCategories, setSubCategories] = useState<string[]>([]);
+  // const [subCategories, setSubCategories] = useState<string[]>([]);
+  const [sizes,SetSizes]=useState<Result<GetSize[]>>();
+  const [subCategories,setSubCategories]=useState<Result<GetSubCategory[]>>();
+  const [loader,SetLoader]=useState<boolean>(false);
   const router=useRouter();
   const sessions=useSession();
+  useEffect(()=>{
+    fetch(`${apiDomen}api/Size/GetAllSize`, {
+    headers:{
+          'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+    },
+    method: "GET",
+    
+  })
+  .then(res=>{
+    if (res.status==401) {
+      Swal.fire({
+          title: 'Authorization Error!',
+          text: 'Your session has expired. Please log in again.',
+          icon: 'info',
+          confirmButtonText: 'Login',
+           allowEscapeKey:false,
+           allowOutsideClick:false                     
+      }).then(res => {
+          if (res.isConfirmed) {
+              signOut(); 
+              SetLoader(false);
+              router.refresh();
+          }
+      });
+      return;
+  }else if (!res.ok) {
+    Swal.fire({
+      title: 'Error!',
+      text: 'An unexpected error occurred!',
+      icon: 'error',
+      confirmButtonText: 'Cool'
+  }).then(x=>{
+    if (x.isConfirmed) {
+   SetLoader(false)
+   signOut()
+      router.refresh();
+    }
+  });
+  return;
+  }
+  return res.json();
+  }).then(data=>{
+    if (data.isSuccess) {
+      SetSizes(data)
+    }else{
+      let errors = "<ul>";
+      if (Array.isArray(data.messages)) {
+      
+          data.messages.forEach((message:string)=> {
+              errors += `<li>${message}</li>`;
+          });
+      } else if (data.message) {
+       
+          errors += `<li>${data.message}</li>`;
+      }
+      errors += "</ul>";
+
+      Swal.fire({
+          title: 'Error!',
+          html: errors, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+              router.refresh();
+          }
+      });
+    }
+  });
+  fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
+    headers:{
+      'LangCode':`${lang}`,
+          'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+    },
+  method: "GET",
+}).then(response=>{
+  if (response.status==401) {
+    Swal.fire({
+        title: 'Authorization Error!',
+        text: 'Your session has expired. Please log in again.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+         allowEscapeKey:false,
+         allowOutsideClick:false                     
+    }).then(res => {
+        if (res.isConfirmed) {
+            signOut(); 
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+    return;
+}else if(!response.ok){
+  Swal.fire({
+    title: 'Error!',
+    text: 'An unexpected error occurred!',
+    icon: 'error',
+    confirmButtonText: 'Cool'
+}).then(x=>{
+  if (x.isConfirmed) {
+      SetLoader(false)
+      signOut()
+    router.refresh();
+  }
+});
+return;
+}
+return response.json();
+}).then(result=>{
+  if (result.isSuccess) {
+    setSubCategories(result)
+  }else{
+    let errors = "<ul>";
+    if (Array.isArray(result.messages)) {
+    
+        result.messages.forEach((message:string)=> {
+            errors += `<li>${message}</li>`;
+        });
+    } else if (result.message) {
+     
+        errors += `<li>${result.message}</li>`;
+    }
+    errors += "</ul>";
+
+    Swal.fire({
+        title: 'Error!',
+        html: errors, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+  }
+});
+
+  },[])
   function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
     if (Number.parseFloat(e.target.value) < 1) {
       e.target.value = "";
     }
   }
 
-
- 
-
-
-
-  const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-    setSubCategories(selectedOptions);
-  };
+  // const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+  //   setSubCategories(selectedOptions);
+  // };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,24 +182,26 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,sizes:Ge
 
 //size   
  const Size: { key: string, value: number | null }[] = [];
-
-    for (const size of sizes) {
-      const sizeInput = document.getElementById(`${size.id}`) as HTMLInputElement | null;
-      if (sizeInput) {
-        const sizeValue = sizeInput.value;
-        if (Number.parseInt( sizeValue) <= 0) {
-          formData.delete(`SizeId-${size.id}`);
-          continue;
-        }
-     Size.push({
-      key: size.id,
-      value: Number.parseInt(sizeValue),
-     })
+if (sizes?.response) {
   
-    
+  for (const size of sizes?.response) {
+    const sizeInput = document.getElementById(`${size.id}`) as HTMLInputElement | null;
+    if (sizeInput) {
+      const sizeValue = sizeInput.value;
+      if (Number.parseInt( sizeValue) <= 0) {
         formData.delete(`SizeId-${size.id}`);
+        continue;
       }
+   Size.push({
+    key: size.id,
+    value: Number.parseInt(sizeValue),
+   })
+
+  
+      formData.delete(`SizeId-${size.id}`);
     }
+  }
+}
     formData.append("Sizes",JSON.stringify(Size))
     //productName
     const productName: { key: string, value: string | null }[] = [];
@@ -108,13 +256,10 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,sizes:Ge
         }
     }
     formData.append("Description",JSON.stringify(productDescription))
-formData.append("ProductName",JSON.stringify( productName))
-
-
-     
-    Array.from(formData.entries()).forEach(([key, value]) => {
-      console.log(`Key: ${key}, Value: ${value}`);
-    });
+formData.append("ProductName",JSON.stringify( productName))     
+    // Array.from(formData.entries()).forEach(([key, value]) => {
+    //   console.log(`Key: ${key}, Value: ${value}`);
+    // });
     try {
       const response = await fetch(`${apiDomen}api/Product/AddProduct`, {
         method: "POST",
@@ -126,17 +271,95 @@ formData.append("ProductName",JSON.stringify( productName))
         },
       });
 
-      if (response.ok) {
-        console.log("Success!", response);
-      } else {
-        const errorData = await response.json();
-        console.log("BadRequest Data:", errorData);
-        console.log("Failed!", response);
+
+  if (response.status==401) {
+    Swal.fire({
+        title: 'Authorization Error!',
+        text: 'Your session has expired. Please log in again.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+         allowEscapeKey:false,
+         allowOutsideClick:false                     
+    }).then(res => {
+        if (res.isConfirmed) {
+            signOut(); 
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+
+}else if(!response.ok){
+  Swal.fire({
+    title: 'Error!',
+    text: 'An unexpected error occurred!',
+    icon: 'error',
+    confirmButtonText: 'Cool'
+}).then(x=>{
+  if (x.isConfirmed) {    
+      SetLoader(false)
+ signOut()
+    router.refresh();
+  }
+});
+}
+var apiResponse=await response.json();
+if (apiResponse.isSuccess) {
+  Swal.fire({
+    title: 'Success!',
+    text: 'Product added successfully!',
+    icon: 'success',
+    confirmButtonText: 'Cool'
+}).then((res) => {
+    if (res.isConfirmed) {
+      SetLoader(false)
+       router.push("/dashboard/product/1")
+    }
+})
+}else {
+  let errors = "<ul>";
+  if (Array.isArray(apiResponse.messages)) {
+  
+      apiResponse.messages.forEach((message:string)=> {
+          errors += `<li>${message}</li>`;
+      });
+  } else if (apiResponse.message) {
+   
+      errors += `<li>${apiResponse.message}</li>`;
+  }
+  errors += "</ul>";
+
+  Swal.fire({
+      title: 'Error!',
+      html: errors, 
+      icon: 'error',
+      confirmButtonText: 'Cool',
+      allowEscapeKey:false,
+      allowOutsideClick:false
+  }).then(res => {
+      if (res.isConfirmed) {
+          SetLoader(false);
+          router.refresh();
       }
+  });
+}
     } catch (error) {
-      console.error("Error:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'An unexpected error occurred!',
+        icon: 'error',
+        confirmButtonText: 'Cool'
+    }).then(x=>{
+      if (x.isConfirmed) {
+                  SetLoader(false)
+     signOut()
+        router.refresh();
+      }
+    });
     }
   };
+  if (loader) {
+    return(<Loader/>)
+  }
     return(
         <form id="addPictureForm" onSubmit={handleSubmit} encType="multipart/form-data">
 
@@ -239,7 +462,7 @@ formData.append("ProductName",JSON.stringify( productName))
             </label>
             <div id="sizes" className="grid grid-cols-3 gap-4">
 {
-    sizes.map((size)=>(
+    sizes?.response.map((size)=>(
 
               <div className="">
                 <label htmlFor={size.id} className="text-sm font-medium text-gray-900 dark:text-white">№ {size.size}</label>
@@ -275,14 +498,13 @@ formData.append("ProductName",JSON.stringify( productName))
               id="subCategory"
               name="SubCategories"
               multiple
-              onChange={handleSubCategoryChange}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required>
                 {
-                    subcategories.map((category)=>(
+                    subCategories?.response.map((category)=>(
                         <option value={category.id}>{category.content}</option>
                     ))
                 }

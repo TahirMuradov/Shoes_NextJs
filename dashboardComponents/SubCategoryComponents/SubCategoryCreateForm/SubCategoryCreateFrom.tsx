@@ -7,9 +7,10 @@ import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import Loader from "@/dashboardComponents/common/Loader";
 import { signOut, useSession } from "next-auth/react";
 import Result from "@/types/ApiResultType";
-const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined,categories:GetCategoryAllDashboard[]}}> = ({params:{lang,categories,apiDomen}}) => {
+const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const router=useRouter();
     const [Categories, SetCategories] = useState<Result<GetCategoryAllDashboard[]>>();
+
     const session=useSession();
     const sessions=useSession();
     const[loader,SetLoader]=useState<boolean>(false)
@@ -25,11 +26,75 @@ useEffect(()=>{
         cache:"no-store",
         method: "GET",
       })
-      .then(res=>res.json())
-      .then(data=>SetCategories(data))
-      .catch(x=>signOut())
+      .then(res=>{
+        if (res.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+        }else if(!res.ok){
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            }).then(x=>{
+              if (x.isConfirmed) {
+                
+                  SetLoader(false)
+  
+             signOut()
+                router.refresh();
+              }
+            });
+        }
+       return res.json()})
+      .then(data=>{
+        
+        if (data.isSuccess) {
+            
+            
+            SetCategories(data)
+        }else{
+            let errors = "<ul>";
+            if (Array.isArray(data.messages)) {
+            
+                data.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (data.message) {
+             
+                errors += `<li>${data.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+        }
+    })
+     
       
-      ;
 },[])
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -80,7 +145,42 @@ useEffect(()=>{
                 }, {} as { [key: string]: string | null }),
             }),
         })
-        .then(response => response.json())
+        .then(response =>{
+            if (response.status==401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); 
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
+                return;
+            }else if(!response.ok){
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                }).then(x=>{
+                  if (x.isConfirmed) {
+                    
+                      SetLoader(false)
+      
+                 signOut()
+                    router.refresh();
+                  }
+                });
+                return;
+            }
+       return     response.json()
+        } )
         .then(result => {
             if (result.isSuccess) {
                 Swal.fire({
@@ -97,17 +197,30 @@ useEffect(()=>{
                     }
                 });
             } else {
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                errors += "</ul>";
+        
                 Swal.fire({
                     title: 'Error!',
-                    text: result.message || 'Failed to add category!',
+                    html: errors, 
                     icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then((res)=>{
-if (res.isConfirmed) {
-    SetLoader(false)
-    // setItems([]);
-    router.refresh();
-}
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
                 });
             }
         })
@@ -156,7 +269,7 @@ if (res.isConfirmed) {
             <label htmlFor="categoryId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an Categories</label>
   <select name="categoryId" id="categoryId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
    {
-    categories.map((category)=>(
+    Categories?.response.map((category)=>(
 
         <option value={category.id}>{category.content}</option>
     ))

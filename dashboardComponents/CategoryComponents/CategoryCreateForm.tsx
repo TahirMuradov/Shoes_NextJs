@@ -45,6 +45,7 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
         }
 
         setItems(newItems); // Update state with the new items
+   
         fetch(`${apiDomen}api/Category/AddCategory`, {
             method: 'POST',
             headers: {
@@ -54,7 +55,7 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                 'Authorization': `Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
-                isFeatured: form.get("isFeatured"),
+                IsFeatured: form.get("isFeatured")=="on"?true:false,
                 LangContent: newItems.reduce((acc, item) => {
                     acc[item.key] = item.value;
                     return acc;
@@ -62,35 +63,56 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
             }),
         })
         .then(async response => {
-            const result = await response.json();
-        
+                  
             if (response.status === 401) {
                 Swal.fire({
                     title: 'Authorization Error!',
                     text: 'Your session has expired. Please log in again.',
-                    icon: 'warning',
-                    confirmButtonText: 'Login'
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); // Oturum sonlandırılıyor
+                        signOut(); 
                         SetLoader(false);
                         router.refresh();
                     }
                 });
                 return;
             }
-        
+            else if(!response.ok){
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                }).then(x=>{
+                  if (x.isConfirmed) {
+                    
+                      SetLoader(false)
+      
+                 signOut()
+                    router.refresh();
+                  }
+                });
+                return;
+            }
+
+            const result = await response.json();
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
                     text: 'Category added successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false,
                 }).then(res => {
                     if (res.isConfirmed) {
                         SetLoader(false);
                         setItems([]);
-                        router.push("/dashboard/category/1"); // Sayfa yönlendirme
+                        router.push("/dashboard/category/1");
                     }
                 });
             } else {
@@ -108,9 +130,11 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
         
                 Swal.fire({
                     title: 'Error!',
-                    html: errors, // Mesajlar HTML formatında gösteriliyor
+                    html: errors, 
                     icon: 'error',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
                 }).then(res => {
                     if (res.isConfirmed) {
                         SetLoader(false);
@@ -125,7 +149,9 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                 title: 'Error!',
                 text: 'An unexpected error occurred!',
                 icon: 'error',
-                confirmButtonText: 'Cool'
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false,
             }).then(res => {
                 if (res.isConfirmed) {
                     SetLoader(false);

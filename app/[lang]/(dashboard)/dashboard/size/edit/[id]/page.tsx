@@ -11,25 +11,13 @@ const page = async ({params:{lang,id}}:{params:{lang:Locale,id:string}}) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const apiDomen = process.env.apiDomen;
     // Fetch data from the API
-    const response = await fetch(`${apiDomen}api/Size/GetSize?Id=${id}`, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
-      },
-      cache:"no-store",
-      method: "GET",
-    });
 
-    // Check if the response is OK (status 200-299)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
 
-    // Parse the JSON data from the response
-    const data:Result<GetSizeForUpdate>= await response.json();
+
+   
+
     return (
-      <SizeUpdateForm key={1} params={{lang:lang,Size:data.response,id:id,apiDOmen:apiDomen}}/>
+      <SizeUpdateForm key={1} params={{lang:lang,id:id,apiDomen:apiDomen}}/>
      )
   
   } catch (error) {

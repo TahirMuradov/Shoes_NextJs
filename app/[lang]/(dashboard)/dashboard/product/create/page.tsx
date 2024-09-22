@@ -15,31 +15,17 @@ const page:React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     const apiDomen = process.env.apiDomen;
 
-    // Fetch data from the API
-    const responseSize = await fetch(`${apiDomen}api/Size/GetAllSize`, {
-        cache:"no-store",
-      method: "GET",
-    });
-    const responseSubCategory = await fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
-      headers:{
-        'LangCode':`${lang}`
-      },
-      cache:"no-store",
-    method: "GET",
-  });
-    // Check if the response is OK (status 200-299)
-    if (!responseSize.ok) {
-      throw new Error(`HTTP error! status: ${responseSize.status}`);
-    }
 
-    // Parse the JSON data from the response
-    const dataSize:Result<GetSize[]>= await responseSize.json();
  
-    const dataSubCategory:Result< GetSubCategory[]>= await responseSubCategory.json();
+
+  
+  
+ 
+
   
 
     return (
-      <ProductCreateForm apiDomen={apiDomen} key={1} lang={lang}sizes={dataSize.response} subcategories={dataSubCategory.response} />
+      <ProductCreateForm apiDomen={apiDomen} key={1} lang={lang} />
      )
   
   } catch (error) {

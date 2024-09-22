@@ -2,11 +2,11 @@
 import { i18n, Locale } from "@/i18n-config";
 import Result from "@/types/ApiResultType"
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import GetPaymentMethodForUpdate from "@/types/PaymentMethodTypes/GetPaymentMethodForUpdate";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 
 const UpdatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:string}>=({
@@ -24,22 +24,77 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpda
           headers: {
               'Content-Type': 'application/json',
               'LangCode': `${lang}`, 
+                  'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
           }
       })
-      .then(response =>  response.json())
+      .then(response =>{ 
+        
+  
+            if (response.status==401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); 
+                        SetLoader(false);
+                                        }
+                });
+                return ;
+            }else if(!response.ok){
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                }).then(x=>{
+                  if (x.isConfirmed) {
+                     SetLoader(false)      
+                 signOut()
+                    }
+                });
+                return ;
+            }
+     
+        
+        return  response.json()})
       .then(result => {
           if (result.isSuccess) {
         SetShippingMethod(result)
-         console.log("then result",result)
+        
      
        
           } else {
-              Swal.fire({
-                  title: 'Error!',
-                  text: result.message || 'Failed to Update Payment Method!',
-                  icon: 'error',
-                  confirmButtonText: 'Cool'
-              });
+            let errors = "<ul>";
+            if (Array.isArray(result.messages)) {
+            
+                result.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (result.message) {
+             
+                errors += `<li>${result.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                   router.refresh();
+                }
+            });
           }
       })
       .catch(error => {
@@ -48,7 +103,10 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpda
               title: 'Error!',
               text: 'An unexpected error occurred!',
               icon: 'error',
-              confirmButtonText: 'Cool'
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false,
+
           });
       });
       },[])
@@ -103,7 +161,40 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpda
            
            }),
        })
-       .then(response => response.json())
+       .then(response => {
+        if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }else if(!response.ok){
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            }).then(x=>{
+              if (x.isConfirmed) {
+                 SetLoader(false)  
+             signOut()
+                router.refresh();
+              }
+            });
+            return;
+        }
+        return response.json()
+    })
        .then(result => {
            if (result.isSuccess) {
                Swal.fire({
@@ -113,25 +204,37 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetPaymentMethodForUpda
                    confirmButtonText: 'Cool'
                }).then((res) => {
                    if (res.isConfirmed) {
-                     SetLoader(false)
-                   
-                 
-                   
-                       router.push("/dashboard/paymentmethod/1")
+                     SetLoader(false)                
+               router.push("/dashboard/paymentmethod/1")
                    }
                });
            } else {
    
-               Swal.fire({
-                   title: 'Error!',
-                   text: result.messages || 'Failed to updated Payment Method!',
-                   icon: 'error',
-                   confirmButtonText: 'Cool'
-               }).then(res=>{
-                 SetLoader(false)
-                 
-                 router.refresh();
-               });
+            let errors = "<ul>";
+            if (Array.isArray(result.messages)) {
+            
+                result.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (result.message) {
+             
+                errors += `<li>${result.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
            }
        })
        .catch(error => {

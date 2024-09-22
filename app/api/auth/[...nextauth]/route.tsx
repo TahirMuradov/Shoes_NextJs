@@ -25,6 +25,7 @@ const handler = NextAuth({
   secret: process.env.SECRET_KEY,
   session: {
     strategy: 'jwt',
+    maxAge: 8760,
   },
   providers: [
     CredentialsProvider({

@@ -1,8 +1,6 @@
 "use client"
 import { i18n, Locale } from "@/i18n-config"
-
 import GetProductForUpdate from "@/types/ProductTypes/GetProdutForUpdate";
-
 import GetSize from "@/types/SizeTypes/GetSize"
 import GetSubCategory from "@/types/SubCategoriesType/GetSubCategory"
 import Image from "next/image";
@@ -11,15 +9,248 @@ import React, { ChangeEvent, SyntheticEvent, useEffect, useRef, useState } from 
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import ProductAddedImage from "./ProductAddedImage";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Result from "@/types/ApiResultType";
 
 
-const ProductUpdateForm:React.FC<{lang:Locale,apiDomen:string|undefined,sizes:GetSize[],subcategories:GetSubCategory[],Product:GetProductForUpdate}>=({lang,sizes,subcategories,Product,apiDomen})=>{
+const ProductUpdateForm:React.FC<{lang:Locale,apiDomen:string|undefined,id:string}>=({lang,apiDomen,id})=>{
     const[loader,SetLoader]=useState<boolean>(false);
+    const [sizes,SetSizes]=useState<Result<GetSize[]>>()
+    const [subCategories,SetSubCategories]=useState<Result<GetSubCategory[]>>()
+const [Product,SetProduct]=useState<Result<GetProductForUpdate>>()
     const [newPhotos, setNewPhotos] = useState<File[]>([]);
     const PictureinputRef = useRef<HTMLInputElement | null>(null);
     const sessions=useSession();
   const router=useRouter();
+useEffect(()=>{
+  fetch(`${apiDomen}api/Size/GetAllSize`, {
+      method: "GET",
+  headers:{
+        'Accept-Language': `${lang}`,
+   'Authorization':`Bearer ${sessions.data?.user.token}`
+  }
+})
+.then(response=>{
+  if (response.status==401) {
+    Swal.fire({
+        title: 'Authorization Error!',
+        text: 'Your session has expired. Please log in again.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+         allowEscapeKey:false,
+         allowOutsideClick:false                     
+    }).then(res => {
+        if (res.isConfirmed) {
+            signOut(); 
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+    return;
+}
+else if(!response.ok){
+  Swal.fire({
+    title: 'Error!',
+    text: 'An unexpected error occurred!',
+    icon: 'error',
+    confirmButtonText: 'Cool'
+}).then(x=>{
+  if (x.isConfirmed) {
+    
+      SetLoader(false)
+
+ signOut()
+    router.refresh();
+  }
+});
+return;
+}
+return response.json()
+}).then(result=>{
+  if (result.isSuccess) {
+SetSizes(result)
+  }else{
+    let errors = "<ul>";
+    if (Array.isArray(result.messages)) {
+    
+        result.messages.forEach((message:string)=> {
+            errors += `<li>${message}</li>`;
+        });
+    } else if (result.message) {
+     
+        errors += `<li>${result.message}</li>`;
+    }
+    errors += "</ul>";
+
+    Swal.fire({
+        title: 'Error!',
+        html: errors, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+  }
+});
+fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
+  headers:{
+    'LangCode':`${lang}`,
+        'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+  },
+method: "GET",
+}).then(response=>{
+  if (response.status==401) {
+    Swal.fire({
+        title: 'Authorization Error!',
+        text: 'Your session has expired. Please log in again.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+         allowEscapeKey:false,
+         allowOutsideClick:false                     
+    }).then(res => {
+        if (res.isConfirmed) {
+            signOut(); 
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+    return;
+}else if(!response.ok){
+  Swal.fire({
+    title: 'Error!',
+    text: 'An unexpected error occurred!',
+    icon: 'error',
+    confirmButtonText: 'Cool'
+}).then(x=>{
+  if (x.isConfirmed) {
+    
+      SetLoader(false)
+
+ signOut()
+    router.refresh();
+  }
+});
+return;
+}
+return response.json()
+}).then(result=>{
+if (result.isSuccess) {
+  SetSubCategories(result)
+}else{
+  let errors = "<ul>";
+  if (Array.isArray(result.messages)) {
+  
+      result.messages.forEach((message:string)=> {
+          errors += `<li>${message}</li>`;
+      });
+  } else if (result.message) {
+   
+      errors += `<li>${result.message}</li>`;
+  }
+  errors += "</ul>";
+
+  Swal.fire({
+      title: 'Error!',
+      html: errors, 
+      icon: 'error',
+      confirmButtonText: 'Cool',
+      allowEscapeKey:false,
+      allowOutsideClick:false
+  }).then(res => {
+      if (res.isConfirmed) {
+          SetLoader(false);
+          router.refresh();
+      }
+  });
+}
+
+});
+ fetch(`${apiDomen}api/Product/GetProductDetailDashboard?id=${id}`, {
+  headers:{
+    'LangCode':`${lang}`,
+        'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+  },
+  cache:"no-store",
+method: "GET",
+}).then(response=>{
+  if (response.status==401) {
+    Swal.fire({
+        title: 'Authorization Error!',
+        text: 'Your session has expired. Please log in again.',
+        icon: 'info',
+        confirmButtonText: 'Login',
+         allowEscapeKey:false,
+         allowOutsideClick:false                     
+    }).then(res => {
+        if (res.isConfirmed) {
+            signOut(); 
+            SetLoader(false);
+           
+        }
+    });
+    return;
+}else if(!response.ok){
+  Swal.fire({
+    title: 'Error!',
+    text: 'An unexpected error occurred!',
+    icon: 'error',
+    confirmButtonText: 'Cool'
+}).then(x=>{
+  if (x.isConfirmed) {
+    
+      SetLoader(false)
+
+ signOut()
+    router.refresh();
+  }
+});
+return;
+}
+return response.json()
+}).then(result=>{
+  if (result.isSuccess) {
+    SetProduct(result)
+  }else{
+    let errors = "<ul>";
+    if (Array.isArray(result.messages)) {
+    
+        result.messages.forEach((message:string)=> {
+            errors += `<li>${message}</li>`;
+        });
+    } else if (result.message) {
+     
+        errors += `<li>${result.message}</li>`;
+    }
+    errors += "</ul>";
+
+    Swal.fire({
+        title: 'Error!',
+        html: errors, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+            router.refresh();
+        }
+    });
+  }
+});
+
+},[])
+
+
+
+
   function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
     if (Number.parseFloat(e.target.value) < 1) {
       e.target.value = "";
@@ -48,8 +279,9 @@ if (files) {
 
 
 }
+
 useEffect(()=>{
- console.log(newPhotos)
+
   const newFileList = new DataTransfer();
 
   newPhotos.forEach((file) => {
@@ -67,24 +299,26 @@ useEffect(()=>{
 form
 //size   
  const Size: { key: string, value: number | null }[] = [];
-
-    for (const size of sizes) {
-      const sizeInput = document.getElementById(`${size.id}`) as HTMLInputElement | null;
-      if (sizeInput) {
-        const sizeValue = sizeInput.value;
-        if (Number.parseInt( sizeValue) <= 0) {
-          formData.delete(`SizeId-${size.id}`);
-          continue;
-        }
-     Size.push({
-      key: size.id,
-      value: Number.parseInt(sizeValue),
-     })
+if (sizes?.response) {
   
-    
+  for (const size of sizes?.response) {
+    const sizeInput = document.getElementById(`${size.id}`) as HTMLInputElement | null;
+    if (sizeInput) {
+      const sizeValue = sizeInput.value;
+      if (Number.parseInt( sizeValue) <= 0) {
         formData.delete(`SizeId-${size.id}`);
+        continue;
       }
+   Size.push({
+    key: size.id,
+    value: Number.parseInt(sizeValue),
+   })
+
+  
+      formData.delete(`SizeId-${size.id}`);
     }
+  }
+}
     formData.append("Sizes",JSON.stringify(Size))
     //productName
     const productName: { key: string, value: string | null }[] = [];
@@ -140,7 +374,7 @@ form
     }
     formData.append("Description",JSON.stringify(productDescription))
 formData.append("ProductName",JSON.stringify( productName))
-formData.append("Id",Product.id)
+formData.append("Id",id)
 
      
     // Array.from(formData.entries()).forEach(([key, value]) => {
@@ -155,7 +389,42 @@ formData.append("Id",Product.id)
           'Accept-Language': `${lang}`,
              'Authorization':`Bearer ${sessions.data?.user.token}`
         },
-      }) .then(response => response.json())
+      }) .then(response =>{
+        if (response.status==401) {
+          Swal.fire({
+              title: 'Authorization Error!',
+              text: 'Your session has expired. Please log in again.',
+              icon: 'info',
+              confirmButtonText: 'Login',
+               allowEscapeKey:false,
+               allowOutsideClick:false                     
+          }).then(res => {
+              if (res.isConfirmed) {
+                  signOut(); 
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
+          return;
+      }else if(!response.ok){
+        Swal.fire({
+          title: 'Error!',
+          text: 'An unexpected error occurred!',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+      }).then(x=>{
+        if (x.isConfirmed) {
+          
+            SetLoader(false)
+
+       signOut()
+          router.refresh();
+        }
+      });
+      return;
+      }
+        
+      return  response.json()})
       .then(result => {
           if (result.isSuccess) {
               Swal.fire({
@@ -173,31 +442,35 @@ formData.append("Id",Product.id)
                   }
               });
           } else {
-         console.log(result)
-              Swal.fire({
-                  title: 'Error!',
-                  text: result.messages || 'Failed to updated product!',
-                  icon: 'error',
-                  confirmButtonText: 'Cool'
-              }).then(res=>{
-                SetLoader(false)
-                
-                router.refresh();
-              });
+      
+            let errors = "<ul>";
+            if (Array.isArray(result.messages)) {
+            
+                result.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (result.message) {
+             
+                errors += `<li>${result.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
           }
       })
-      .catch(error => {
-          Swal.fire({
-              title: 'Error!',
-              text: 'An unexpected error occurred!',
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then(x=>{
-            SetLoader(false)
-         
-            router.refresh();
-          });
-      });;
+    
 
      
     } catch (error) {
@@ -230,7 +503,7 @@ formData.append("Id",Product.id)
                     <input
                         key={locale}
                         placeholder={`Product  Name in ${locale} Language`}
-                        defaultValue={`${Product.productName[locale as keyof typeof Product.productName]}`}
+                        defaultValue={`${Product?.response?.productName[locale as keyof typeof Product.response.productName]}`}
                         type="text"
                         id={locale}
                         name={`Name${locale}`}
@@ -250,7 +523,7 @@ formData.append("Id",Product.id)
                 i18n.locales.map((locale) => (
                     <input
                         key={locale}
-                        defaultValue={`${Product.description[locale as keyof typeof Product.productName]}`}
+                        defaultValue={`${Product?.response.description[locale as keyof typeof Product.response.productName]}`}
                         placeholder={`Product  Description in ${locale} Language`}
                         type="text"
                         id={locale}
@@ -268,7 +541,7 @@ formData.append("Id",Product.id)
               Product Code:
             </label>
             <input
-            defaultValue={Product.productCode}
+            defaultValue={Product?.response.productCode}
               type="text"
               id="ProductCode"
               name="ProductCode"
@@ -285,7 +558,7 @@ formData.append("Id",Product.id)
               Discount Price:
             </label>
             <input
-            defaultValue={Product.discountPrice}
+            defaultValue={Product?.response.discountPrice}
             onChange={(e)=>NumberInputCheckedValue(e)}
               type="number"
               id="discountPrice"
@@ -304,7 +577,7 @@ formData.append("Id",Product.id)
               Price:
             </label>
             <input
-            defaultValue={Product.price}
+            defaultValue={Product?.response.price}
              onChange={(e)=>NumberInputCheckedValue(e)}
               type="number"
               id="price"
@@ -324,7 +597,7 @@ formData.append("Id",Product.id)
             </label>
             <div id="sizes" className="grid grid-cols-3 gap-4">
 {
-    sizes.map((size)=>(
+    sizes?.response.map((size)=>(
 
               <div className="">
                 <label htmlFor={size.id} className="text-sm font-medium text-gray-900 dark:text-white">№ {size.size}</label>
@@ -332,7 +605,7 @@ formData.append("Id",Product.id)
                 id={size.id}
                 name={`SizeId-${size.id}`}
                   type="number"
-                  defaultValue={`${Product.sizes.find((x)=>x.sizeId==size.id)?.stockCount}`}
+                  defaultValue={`${Product?.response.sizes.find((x)=>x.sizeId==size.id)?.stockCount}`}
                   placeholder={`Size ${size.size} Quantity`}
                   onChange={(e) =>{
                     if (Number.parseInt(e.target.value)<1) {
@@ -369,8 +642,8 @@ formData.append("Id",Product.id)
               required>
              
                 {
-                    subcategories.map((category)=>(
-                     Product.subCategories.includes(category.id)?<option selected value={category.id}>{category.content}</option>:<option value={category.id}>{category.content}</option>
+                    subCategories?.response.map((category)=>(
+                     Product?.response.subCategories.includes(category.id)?<option selected value={category.id}>{category.content}</option>:<option value={category.id}>{category.content}</option>
                     ))
                 }
        
@@ -400,13 +673,16 @@ formData.append("Id",Product.id)
 
         {
 
-            Product.pictureUrls.map((x)=>{
+            Product?.response.pictureUrls.map((x)=>{
    return  <ProductAddedImage apiDomen={apiDomen??"https://localhost:7115/"} Photo={null}  CurrentPictureUrl={x} onPhotoDelete={NewPhotoDelete}/>
 })
             
         }{
           newPhotos.map((x,index)=>{
-            return <ProductAddedImage apiDomen={apiDomen??"https://localhost:7115/"} CurrentPictureUrl={null} Photo={x} key={Product.pictureUrls.length+index} onPhotoDelete={NewPhotoDelete}/>
+            if (Product?.response.pictureUrls) {
+              
+              return <ProductAddedImage apiDomen={apiDomen??"https://localhost:7115/"} CurrentPictureUrl={null} Photo={x} key={Product?.response.pictureUrls.length+index} onPhotoDelete={NewPhotoDelete}/>
+            }
           })
         }
 </div>

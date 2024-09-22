@@ -2,18 +2,72 @@
 import { i18n, Locale } from "@/i18n-config"
 import Result from "@/types/ApiResultType";
 import GetSize from "@/types/SizeTypes/GetSize";
-
 import { useRouter } from "next/navigation";
-
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 
-const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,Size:GetSize,apiDOmen:string|undefined}}> = ({params:{id,lang,Size,apiDOmen}}) => {
+const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,apiDomen:string|undefined}}> = ({params:{id,lang,apiDomen}}) => {
+    const[size,SetSize]=useState<Result<GetSize>>();
+    
     const router=useRouter();
     const sessions=useSession();
+
+
+useEffect(()=>{
+    fetch(`${apiDomen}api/Size/GetSize?Id=${id}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+            'Accept-Language': `${lang}`,
+             'Authorization':`Bearer ${sessions.data?.user.token}`
+        },
+        cache:"no-store",
+        method: "GET",
+      }).then(res=>{
+
+        if (res.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }else if(!res.ok){
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            }).then(x=>{
+              if (x.isConfirmed) {
+                SetLoader(false)  
+             signOut()
+                router.refresh();
+              }
+            });
+            return;
+        }
+        return res.json();
+
+      })
+      .then(x=>SetSize(x))
+      ;
+},[])
+
+
 function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
  if (Number.parseInt( e.target.value)<1) {
     e.target.value = '';
@@ -25,7 +79,7 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
         e.preventDefault();
         SetLoader(true)
         const form = new FormData(e.currentTarget);          
-        fetch(`${apiDOmen}api/Size/UpdateSize`, {
+        fetch(`${apiDomen}api/Size/UpdateSize`, {
             method:'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,34 +92,85 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
               NewSizeNumber:form.get("Size")
           }),
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.status==401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); 
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
+                return;
+            } else if(!response.ok){
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(x=>{
+                  if (x.isConfirmed) {
+                    
+                      SetLoader(false)
+      
+                 signOut()
+                    router.refresh();
+                  }
+                });
+                return;
+            } 
+          return  response.json()
+        })
         .then(result => {
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
                     text: 'Size updated successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
-                      SetLoader(false)
-                    
-                  
-                    
-                        router.push("/dashboard/size/1")// Clear the form
+                      SetLoader(false)                 
+                     router.push("/dashboard/size/1")// Clear the form
                     }
                 });
             } else {
           
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                errors += "</ul>";
+        
                 Swal.fire({
                     title: 'Error!',
-                    text: result.messages || 'Failed to updated size!',
+                    html: errors, 
                     icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(res=>{
-                  SetLoader(false)
-                  
-                  router.refresh();
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);                      
+                        router.refresh();
+                    }
                 });
             }
         })
@@ -74,7 +179,9 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
                 title: 'Error!',
                 text: 'An unexpected error occurred!',
                 icon: 'error',
-                confirmButtonText: 'Cool'
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
             }).then(x=>{
               SetLoader(false)
            
@@ -94,15 +201,15 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
                  Size Number:
                 </label>
                 {
-               Size!== null ? 
+               size?.response!== null ? 
                <input
                onChange={(e)=>CheckedSizeNumber(e)}
-               key={Size.id}
+               key={size?.response.id}
              min={0}
                type="number"
-               id={Size.id}
+               id={size?.response.id}
                name='Size'
-               defaultValue={`${Size.size}` || ""}
+               defaultValue={`${size?.response.size}` || ""}
                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 

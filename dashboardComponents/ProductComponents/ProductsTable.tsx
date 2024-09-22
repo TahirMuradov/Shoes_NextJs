@@ -12,7 +12,7 @@ import Loader from "../common/Loader";
 import GetProduct from "@/types/ProductTypes/GetProduct";
 import Image from "next/image";
 import { Locale } from "@/i18n-config";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 
 
@@ -52,7 +52,77 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
         },
         cache:"no-store",
         method: "GET",
-      }).then(x=>x.json()).then(res=>SetProducts(res));
+      }).then(x=>
+      {
+        if (x.status==401) {
+          Swal.fire({
+              title: 'Authorization Error!',
+              text: 'Your session has expired. Please log in again.',
+              icon: 'info',
+              confirmButtonText: 'Login',
+               allowEscapeKey:false,
+               allowOutsideClick:false                     
+          }).then(res => {
+              if (res.isConfirmed) {
+                  signOut(); 
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
+          return;
+      }else if(!x.ok){
+        Swal.fire({
+          title: 'Error!',
+          text: 'An unexpected error occurred!',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+      }).then(x=>{
+        if (x.isConfirmed) {
+          
+            SetLoader(false)
+
+       signOut()
+          router.refresh();
+        }
+      });
+      return;
+      }
+        return x.json()
+      }
+    
+    ).then(res=>{
+      if (res.isSuccess) {
+        
+        SetProducts(res)
+      }else {
+        let errors = "<ul>";
+        if (Array.isArray(res.messages)) {
+        
+            res.messages.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+        } else if (res.message) {
+         
+            errors += `<li>${res.message}</li>`;
+        }
+        errors += "</ul>";
+
+        Swal.fire({
+            title: 'Error!',
+            html: errors, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+                router.refresh();
+            }
+        });
+      }
+      
+    });
     },[])
 
     function ProductDelete(id:string){
@@ -67,7 +137,42 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
    'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
-        }).then(response=>response.json())
+        }).then(response=>{
+          if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }else if(!response.ok){
+          Swal.fire({
+            title: 'Error!',
+            text: 'An unexpected error occurred!',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+        }).then(x=>{
+          if (x.isConfirmed) {
+            
+              SetLoader(false)
+
+         signOut()
+           
+          }
+        });
+        return;
+        }
+         return response.json()
+        })
         .then(responsData=>{
           if (responsData.isSuccess) {
             Swal.fire({
@@ -77,37 +182,39 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
                 confirmButtonText: 'Cool'
             }).then((res) => {
                 if (res.isConfirmed) {
-                  fetch(`${apiDomen}api/Product/GetAllProductDashboard?page=${page}`, {
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                      'langCode': `${Lang}` , // You can dynamically set this value based on user selection or other logic
-                      'Accept-Language': `${Lang}`,
-                         'Authorization':`Bearer ${sessions.data?.user.token}`
-                    },
-                    cache:"no-store",
-                    method: "GET",
-                  }).then(x=>x.json()).then(res=>SetProducts(res));
+               router.refresh();
                   SetLoader(false)
-                    router.refresh();// Clear the form
                 }
             })
         }else{
+          let errors = "<ul>";
+          if (Array.isArray(responsData.messages)) {
+          
+              responsData.messages.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+          } else if (responsData.message) {
+           
+              errors += `<li>${responsData.message}</li>`;
+          }
+          errors += "</ul>";
+  
           Swal.fire({
-            title: 'Error!',
-         
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then((res) => {
-            if (res.isConfirmed) {
-              SetLoader(false)
-                router.replace("/dashboard/product/1")// Clear the form
-            }
-        })
+              title: 'Error!',
+              html: errors, 
+              icon: 'error',
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false
+          }).then(res => {
+              if (res.isConfirmed) {
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
         }
       
-      })
-        
+      })       
         ;
       }
       if (loader) {

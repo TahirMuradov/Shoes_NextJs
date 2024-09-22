@@ -27,14 +27,20 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
             }
         });
 
-        if (response.status === 401) {
+        if (response.status == 401) {
             Swal.fire({
                 title: 'Unauthorized',
                 text: 'Your session has expired. Please log in again.',
                 icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(() => {
-                signOut();
+                confirmButtonText: 'Cool',
+                allowOutsideClick: false, 
+                allowEscapeKey:false,
+            }).then((res) => {
+                console.log(res)
+                if (res.isDismissed) {
+                      signOut();
+
+                }
             });
         }
 
@@ -47,15 +53,21 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
                 error+=`<li>${data.message}</li>`
               }
               data.messages.forech((message:string)=>{
-
-                error+=`<li>${message}</li>`
+               error+=`<li>${message}</li>`
               })
               error+="</ul>"
                 Swal.fire({
                     title: 'Error!',
                     html: error || 'Failed to fetch category!',
                     icon: 'error',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowOutsideClick: false, 
+                    allowEscapeKey:false,
+                }).then((res)=>{
+                    if (res.isConfirmed) {
+                        
+                        router.refresh();
+                    }
                 });
             }
       
@@ -98,14 +110,52 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
               }, {} as { [key: string]: string | null }),
           }),
       })
-      .then(response => response.json())
+      .then(response => {
+        if (response.status === 401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }
+        else if(!response.ok){
+            Swal.fire({
+                title: 'Error!',
+                text: 'An unexpected error occurred!',
+                icon: 'error',
+                confirmButtonText: 'Cool'
+            }).then(x=>{
+              if (x.isConfirmed) {
+                
+                  SetLoader(false)
+  
+             signOut()
+                router.refresh();
+              }
+            });
+            return;
+        }
+       return response.json()})
       .then(result => {
           if (result.isSuccess) {
               Swal.fire({
                   title: 'Success!',
                   text: 'Category updated successfully!',
                   icon: 'success',
-                  confirmButtonText: 'Cool'
+                  confirmButtonText: 'Cool',
+                  allowOutsideClick: false, 
+                  allowEscapeKey:false,
+                  background:""
               }).then((res) => {
                   if (res.isConfirmed) {
                       SetLoader(false);
@@ -113,7 +163,7 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
                   }
               });
           } else {
-              // Hata mesajlarını HTML formatında göstermek için hazırlanmış kod
+            
               let errorMessage = '<ul>';
   
               if (result.message) {
@@ -132,7 +182,10 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
                   title: 'Error!',
                   html: errorMessage || 'Failed to update category!',
                   icon: 'error',
+                  allowOutsideClick: false, 
+                  allowEscapeKey:false,
                   confirmButtonText: 'Cool'
+
               }).then(() => {
                   SetLoader(false);
                   router.refresh();
@@ -144,7 +197,9 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
               title: 'Info!',
               text: 'Yeniden Login Olun!',
               icon: 'info',
-              confirmButtonText: 'Cool'
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false,
           }).then((res) => {
             if (res.isConfirmed) {
               
@@ -191,7 +246,10 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
                 </div>
                 <div className="col-span-2">
                     <div className="flex items-center">
-                        <input id="isfeatured" name="isFeatured" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                    {
+                    category?.response.isFeatured?  <input defaultChecked id="isfeatured" name="isFeatured" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+: <input id="isfeatured" name="isFeatured" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                    }
                         <label htmlFor="isfeatured" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Is featured</label>
                     </div>
                 </div>

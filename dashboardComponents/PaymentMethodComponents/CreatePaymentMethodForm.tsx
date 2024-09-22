@@ -1,7 +1,7 @@
 "use client"
 import { i18n, Locale } from "@/i18n-config";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
 import { signOut, useSession } from "next-auth/react";
@@ -12,7 +12,7 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
      const router=useRouter();
      const sessions=useSession();
 
-       function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true)
         const form = new FormData(e.currentTarget);      
@@ -42,8 +42,17 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
                   })
                 return;
             }
-        }    
-        fetch(`${apiDomen}api/PaymentMethod/AddPaymentMethod`, {
+        }   
+        console.log(
+            JSON.stringify({
+                isApi:form.get("isApi")=="on"?true:false,
+                lang: newItems.reduce((acc, item) => {
+                    acc[item.key] = item.value;
+                    return acc;
+                }, {} as { [key: string]: string | null }),
+            })
+        ) 
+  fetch(`${apiDomen}api/PaymentMethod/AddPaymentMenthod`, {
             method:'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -52,14 +61,47 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
                    'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
-                isApi:form.get("isApi"),
+                isApi:form.get("isApi")=="on"?true:false,
                 lang: newItems.reduce((acc, item) => {
                     acc[item.key] = item.value;
                     return acc;
                 }, {} as { [key: string]: string | null }),
             }),
+        })      
+        .then(response => {
+            if (response.status==401) {
+                Swal.fire({
+                    title: 'Authorization Error!',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'info',
+                    confirmButtonText: 'Login',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false                     
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        signOut(); 
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
+                return;
+            }else if(!response.ok){
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'An unexpected error occurred!',
+                    icon: 'error',
+                    confirmButtonText: 'Cool'
+                }).then(x=>{
+                  if (x.isConfirmed) {                    
+                      SetLoader(false)    
+                        router.refresh();
+                  }
+                });
+                return;
+            }
+
+          return  response.json()
         })
-        .then(response => response.json())
         .then(result => {
             if (result.isSuccess) {
                 Swal.fire({
@@ -69,43 +111,41 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
                     confirmButtonText: 'Cool'
                 }).then((res) => {
                     if (res.isConfirmed) {
-                      SetLoader(false)
-                    
-                  
-                    
+                      SetLoader(false)                   
+                                     
                         router.push("/dashboard/paymentmethod/1")
                     }
                 });
             } else {
-           console.log(result)
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                errors += "</ul>";
+        
                 Swal.fire({
                     title: 'Error!',
-                    text: result.messages || 'Failed to added Shipping Method!',
+                    html: errors, 
                     icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(res=>{
-                  SetLoader(false)
-                  
-                  router.refresh();
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                   
+                        router.refresh();
+                    }
                 });
             }
         })
-        .catch(error => {
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
-        });
+      ;
        
     }
     if (loader) {

@@ -10,7 +10,7 @@ import Loader from "../common/Loader";
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import GetAllPaymentMethod from "@/types/PaymentMethodTypes/GetAllPaymentMethod";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -50,7 +50,48 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
         },
         cache:"no-store",
         method: "GET",
-      }).then(res=>res.json()).then(x=>SetPaymentMethods(x));
+      }).then(res=>{
+
+        if(res.status==401){ 
+
+          Swal.fire({
+            title: 'Authorization Error!',
+            text: 'Your session has expired. Please log in again.',
+            icon: 'info',
+            confirmButtonText: 'Login',
+             allowEscapeKey:false,
+             allowOutsideClick:false                     
+        }).then(res => {
+            if (res.isConfirmed) {
+                signOut(); 
+                SetLoader(false);
+                router.refresh();
+            }
+        });
+        return;
+        }
+      else if(!res.ok){
+        Swal.fire({
+          title: 'Error!',
+          text: 'An unexpected error occurred!',
+          icon: 'error',
+          confirmButtonText: 'Cool'
+        }
+     
+    ).then(x=>{
+        if (x.isConfirmed) {
+                      SetLoader(false)
+       signOut()
+    
+        }
+      });
+      return;
+      }
+        return    res.json();
+      }
+        
+    
+    ).then(x=>SetPaymentMethods(x));
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
       function PaymentMethodDelete(id:string){
@@ -64,7 +105,46 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
              'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
-        }).then(response=>response.json())
+        }).then(response=>{
+          
+     
+            if (response.status==401) {
+              Swal.fire({
+                  title: 'Authorization Error!',
+                  text: 'Your session has expired. Please log in again.',
+                  icon: 'info',
+                  confirmButtonText: 'Login',
+                   allowEscapeKey:false,
+                   allowOutsideClick:false                     
+              }).then(res => {
+                  if (res.isConfirmed) {
+                      signOut(); 
+                      SetLoader(false);
+                      router.refresh();
+                  }
+              });
+              return;
+          }else if(!response.ok){
+            Swal.fire({
+              title: 'Error!',
+              text: 'An unexpected error occurred!',
+              icon: 'error',
+              confirmButtonText: 'Cool'
+          }).then(x=>{
+            if (x.isConfirmed) {
+              
+                SetLoader(false)
+
+           signOut()
+              router.refresh();
+            }
+          });
+         return ;
+        }
+
+    
+          return response.json()
+        })
         .then(responsData=>{
           if (responsData.isSuccess) {
             Swal.fire({
@@ -79,7 +159,9 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
                     headers: {
                       'Accept': 'application/json',
                       'Content-Type': 'application/json',
-                      'langCode': `${lang}`  // You can dynamically set this value based on user selection or other logic
+                      'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+                      'Authorization':`Bearer ${sessions.data?.user.token}`,
+                      'Accept-Language': `${lang}`,
                     },
                     cache:"no-store",
                     method: "GET",
@@ -89,8 +171,7 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
             })
         }else{
           Swal.fire({
-            title: 'Error!',
-         
+            title: 'Error!',         
             icon: 'error',
             confirmButtonText: 'Cool'
         }).then((res) => {
