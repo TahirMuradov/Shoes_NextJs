@@ -75,7 +75,9 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
           title: 'Error!',
           text: 'An unexpected error occurred!',
           icon: 'error',
-          confirmButtonText: 'Cool'
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
         }
      
     ).then(x=>{
@@ -91,7 +93,12 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
       }
         
     
-    ).then(x=>SetPaymentMethods(x));
+    ).then(x=>{
+      if (x) {
+        
+        SetPaymentMethods(x)
+      }
+    });
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
       function PaymentMethodDelete(id:string){
@@ -146,42 +153,45 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
           return response.json()
         })
         .then(responsData=>{
-          if (responsData.isSuccess) {
+          if (responsData) {
+            
+            if (responsData.isSuccess) {
+              Swal.fire({
+                  title: 'Success!',
+                  text: 'Payment Method  delete successfully!',
+                  icon: 'success',
+                  confirmButtonText: 'Cool'
+              }).then((res) => {
+                  if (res.isConfirmed) {
+                    SetLoader(false)
+                    fetch(`${apiDomen}api/PaymentMethod/GetAllPaymentMethod?page=${page}`, {
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+                        'Authorization':`Bearer ${sessions.data?.user.token}`,
+                        'Accept-Language': `${lang}`,
+                      },
+                      cache:"no-store",
+                      method: "GET",
+                    }).then(res=>res.json()).then(x=>SetPaymentMethods(x));
+                      router.refresh();// Clear the form
+                  }
+              })
+          }else{
             Swal.fire({
-                title: 'Success!',
-                text: 'Payment Method  delete successfully!',
-                icon: 'success',
-                confirmButtonText: 'Cool'
-            }).then((res) => {
-                if (res.isConfirmed) {
-                  SetLoader(false)
-                  fetch(`${apiDomen}api/PaymentMethod/GetAllPaymentMethod?page=${page}`, {
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                      'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
-                      'Authorization':`Bearer ${sessions.data?.user.token}`,
-                      'Accept-Language': `${lang}`,
-                    },
-                    cache:"no-store",
-                    method: "GET",
-                  }).then(res=>res.json()).then(x=>SetPaymentMethods(x));
-                    router.refresh();// Clear the form
-                }
-            })
-        }else{
-          Swal.fire({
-            title: 'Error!',         
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then((res) => {
-            if (res.isConfirmed) {
-              SetLoader(false)
-              router.refresh();
-                router.push("/dashboard/paymentmethod/1")// Clear the form
-            }
-        })
-        }
+              title: 'Error!',         
+              icon: 'error',
+              confirmButtonText: 'Cool'
+          }).then((res) => {
+              if (res.isConfirmed) {
+                SetLoader(false)
+                router.refresh();
+                  router.push("/dashboard/paymentmethod/1")// Clear the form
+              }
+          })
+          }
+          }
       
       })
         

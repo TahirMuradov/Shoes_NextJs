@@ -79,7 +79,12 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
       return;
       }
       return  x.json()
-      }).then(res=>SetSizes(res));
+      }).then(res=>{
+        if (res) {
+          
+          SetSizes(res)
+        }
+      });
     },[])
     function SizeDelete(id:string){
         SetLoader(true)
@@ -128,57 +133,60 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
           
           return response.json()})
          .then(responsData=>{
-           if (responsData.isSuccess) {
-             Swal.fire({
-                 title: 'Success!',
-                 text: 'Size delete successfully!',
-                 icon: 'success',
-                 confirmButtonText: 'Cool'
-             }).then((res) => {
-                 if (res.isConfirmed) {
-                  fetch(`${apiDomen}api/Size/GetAllSizeForTable?page=${page}`, {
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                      'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
-                      'Accept-Language': `${lang}`,
-                         'Authorization':`Bearer ${sessions.data?.user.token}`
-                    },
-                    cache:"no-store",
-                    method: "GET",
-                  }).then(x=>x.json()).then(res=>SetSizes(res));
-                   SetLoader(false)
-                     router.refresh();// Clear the form
-                 }
-             })
-         }else{
-      
-          let errors = "<ul>";
-          if (Array.isArray(responsData.messages)) {
-          
-              responsData.messages.forEach((message:string)=> {
-                  errors += `<li>${message}</li>`;
-              });
-          } else if (responsData.message) {
+          if (responsData) {
+            
+            if (responsData.isSuccess) {
+              Swal.fire({
+                  title: 'Success!',
+                  text: 'Size delete successfully!',
+                  icon: 'success',
+                  confirmButtonText: 'Cool'
+              }).then((res) => {
+                  if (res.isConfirmed) {
+                   fetch(`${apiDomen}api/Size/GetAllSizeForTable?page=${page}`, {
+                     headers: {
+                       'Accept': 'application/json',
+                       'Content-Type': 'application/json',
+                       'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+                       'Accept-Language': `${lang}`,
+                          'Authorization':`Bearer ${sessions.data?.user.token}`
+                     },
+                     cache:"no-store",
+                     method: "GET",
+                   }).then(x=>x.json()).then(res=>SetSizes(res));
+                    SetLoader(false)
+                      router.refresh();// Clear the form
+                  }
+              })
+          }else{
+       
+           let errors = "<ul>";
+           if (Array.isArray(responsData.messages)) {
            
-              errors += `<li>${responsData.message}</li>`;
+               responsData.messages.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+           } else if (responsData.message) {
+            
+               errors += `<li>${responsData.message}</li>`;
+           }
+           errors += "</ul>";
+   
+           Swal.fire({
+               title: 'Error!',
+               html: errors, 
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
+           }).then(res => {
+               if (res.isConfirmed) {
+                   SetLoader(false);
+                   router.refresh();
+               }
+           });
           }
-          errors += "</ul>";
-  
-          Swal.fire({
-              title: 'Error!',
-              html: errors, 
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false
-          }).then(res => {
-              if (res.isConfirmed) {
-                  SetLoader(false);
-                  router.refresh();
-              }
-          });
-         }
+          }
        
        })
     }

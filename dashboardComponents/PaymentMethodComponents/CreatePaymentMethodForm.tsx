@@ -43,15 +43,7 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
                 return;
             }
         }   
-        console.log(
-            JSON.stringify({
-                isApi:form.get("isApi")=="on"?true:false,
-                lang: newItems.reduce((acc, item) => {
-                    acc[item.key] = item.value;
-                    return acc;
-                }, {} as { [key: string]: string | null }),
-            })
-        ) 
+    
   fetch(`${apiDomen}api/PaymentMethod/AddPaymentMenthod`, {
             method:'POST',
             headers: {
@@ -103,46 +95,49 @@ const CreatePaymentMethodForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=
           return  response.json()
         })
         .then(result => {
-            if (result.isSuccess) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Payment Method added successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'Cool'
-                }).then((res) => {
-                    if (res.isConfirmed) {
-                      SetLoader(false)                   
-                                     
-                        router.push("/dashboard/paymentmethod/1")
-                    }
-                });
-            } else {
-                let errors = "<ul>";
-                if (Array.isArray(result.messages)) {
+            if (result) {
                 
-                    result.messages.forEach((message:string)=> {
-                        errors += `<li>${message}</li>`;
+                if (result.isSuccess) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Payment Method added successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'Cool'
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                          SetLoader(false)                   
+                                         
+                            router.push("/dashboard/paymentmethod/1")
+                        }
                     });
-                } else if (result.message) {
-                 
-                    errors += `<li>${result.message}</li>`;
-                }
-                errors += "</ul>";
-        
-                Swal.fire({
-                    title: 'Error!',
-                    html: errors, 
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);
-                   
-                        router.refresh();
+                } else {
+                    let errors = "<ul>";
+                    if (Array.isArray(result.messages)) {
+                    
+                        result.messages.forEach((message:string)=> {
+                            errors += `<li>${message}</li>`;
+                        });
+                    } else if (result.message) {
+                     
+                        errors += `<li>${result.message}</li>`;
                     }
-                });
+                    errors += "</ul>";
+            
+                    Swal.fire({
+                        title: 'Error!',
+                        html: errors, 
+                        icon: 'error',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            SetLoader(false);
+                       
+                            router.refresh();
+                        }
+                    });
+                }
             }
         })
       ;

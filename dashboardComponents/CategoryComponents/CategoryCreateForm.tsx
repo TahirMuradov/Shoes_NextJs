@@ -100,48 +100,51 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
             }
 
             const result = await response.json();
-            if (result.isSuccess) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Category added successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false,
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);
-                        setItems([]);
-                        router.push("/dashboard/category/1");
-                    }
-                });
-            } else {
-                let errors = "<ul>";
-                if (Array.isArray(result.messages)) {
+            if (result) {
                 
-                    result.messages.forEach((message:string)=> {
-                        errors += `<li>${message}</li>`;
+                if (result.isSuccess) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Category added successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false,
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            SetLoader(false);
+                            setItems([]);
+                            router.push("/dashboard/category/1");
+                        }
                     });
-                } else if (result.message) {
-                 
-                    errors += `<li>${result.message}</li>`;
-                }
-                errors += "</ul>";
-        
-                Swal.fire({
-                    title: 'Error!',
-                    html: errors, 
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);
-                        setItems([]);
-                        router.refresh();
+                } else {
+                    let errors = "<ul>";
+                    if (Array.isArray(result.messages)) {
+                    
+                        result.messages.forEach((message:string)=> {
+                            errors += `<li>${message}</li>`;
+                        });
+                    } else if (result.message) {
+                     
+                        errors += `<li>${result.message}</li>`;
                     }
-                });
+                    errors += "</ul>";
+            
+                    Swal.fire({
+                        title: 'Error!',
+                        html: errors, 
+                        icon: 'error',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            SetLoader(false);
+                            setItems([]);
+                            router.refresh();
+                        }
+                    });
+                }
             }
         })
         .catch(error => {

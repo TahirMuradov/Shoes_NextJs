@@ -63,7 +63,12 @@ useEffect(()=>{
         return res.json();
 
       })
-      .then(x=>SetSize(x))
+      .then(x=>{
+        if (x) {
+            
+            SetSize(x)
+        }
+    })
       ;
 },[])
 
@@ -131,47 +136,50 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
           return  response.json()
         })
         .then(result => {
-            if (result.isSuccess) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Size updated successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then((res) => {
-                    if (res.isConfirmed) {
-                      SetLoader(false)                 
-                     router.push("/dashboard/size/1")// Clear the form
-                    }
-                });
-            } else {
-          
-                let errors = "<ul>";
-                if (Array.isArray(result.messages)) {
+            if (result) {
                 
-                    result.messages.forEach((message:string)=> {
-                        errors += `<li>${message}</li>`;
+                if (result.isSuccess) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Size updated successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                          SetLoader(false)                 
+                         router.push("/dashboard/size/1")// Clear the form
+                        }
                     });
-                } else if (result.message) {
-                 
-                    errors += `<li>${result.message}</li>`;
-                }
-                errors += "</ul>";
-        
-                Swal.fire({
-                    title: 'Error!',
-                    html: errors, 
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);                      
-                        router.refresh();
+                } else {
+              
+                    let errors = "<ul>";
+                    if (Array.isArray(result.messages)) {
+                    
+                        result.messages.forEach((message:string)=> {
+                            errors += `<li>${message}</li>`;
+                        });
+                    } else if (result.message) {
+                     
+                        errors += `<li>${result.message}</li>`;
                     }
-                });
+                    errors += "</ul>";
+            
+                    Swal.fire({
+                        title: 'Error!',
+                        html: errors, 
+                        icon: 'error',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            SetLoader(false);                      
+                            router.refresh();
+                        }
+                    });
+                }
             }
         })
         .catch(error => {

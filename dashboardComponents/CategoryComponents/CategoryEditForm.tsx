@@ -36,40 +36,59 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
                 allowOutsideClick: false, 
                 allowEscapeKey:false,
             }).then((res) => {
-                console.log(res)
-                if (res.isDismissed) {
+                
+                if (res.isConfirmed) {
                       signOut();
 
                 }
             });
         }
+if (!response.ok) {
+    Swal.fire({
+        title: 'Error!',
+        text: 'An unexpected error occurred!',
+        icon: 'error',
+        confirmButtonText: 'Cool'
+    }).then(x=>{
+      if (x.isConfirmed) {
+        
+          SetLoader(false)
 
+     signOut()
+ 
+      }
+    });
+
+}
   const data=  await  response.json()
-            if (data.isSuccess) {
-                setCategory(data);
-            } else {
-              let error="<ul>"
-              if (data.message) {
-                error+=`<li>${data.message}</li>`
+  if (data) {
+    
+      if (data.isSuccess) {
+          setCategory(data);
+      } else {
+        let error="<ul>"
+        if (data.message) {
+          error+=`<li>${data.message}</li>`
+        }
+        data.messages.forech((message:string)=>{
+         error+=`<li>${message}</li>`
+        })
+        error+="</ul>"
+          Swal.fire({
+              title: 'Error!',
+              html: error || 'Failed to fetch category!',
+              icon: 'error',
+              confirmButtonText: 'Cool',
+              allowOutsideClick: false, 
+              allowEscapeKey:false,
+          }).then((res)=>{
+              if (res.isConfirmed) {
+                  
+                  router.refresh();
               }
-              data.messages.forech((message:string)=>{
-               error+=`<li>${message}</li>`
-              })
-              error+="</ul>"
-                Swal.fire({
-                    title: 'Error!',
-                    html: error || 'Failed to fetch category!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowOutsideClick: false, 
-                    allowEscapeKey:false,
-                }).then((res)=>{
-                    if (res.isConfirmed) {
-                        
-                        router.refresh();
-                    }
-                });
-            }
+          });
+      }
+  }
       
     }
 
@@ -147,50 +166,53 @@ const CategoryEditForm:React.FC<{ params: { lang: Locale,id:string ,apiDomen:str
         }
        return response.json()})
       .then(result => {
-          if (result.isSuccess) {
-              Swal.fire({
-                  title: 'Success!',
-                  text: 'Category updated successfully!',
-                  icon: 'success',
-                  confirmButtonText: 'Cool',
-                  allowOutsideClick: false, 
-                  allowEscapeKey:false,
-                  background:""
-              }).then((res) => {
-                  if (res.isConfirmed) {
-                      SetLoader(false);
-                      router.push("/dashboard/category/1");
-                  }
-              });
-          } else {
+        if (result) {
             
-              let errorMessage = '<ul>';
+            if (result.isSuccess) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Category updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'Cool',
+                    allowOutsideClick: false, 
+                    allowEscapeKey:false,
+                    background:""
+                }).then((res) => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.push("/dashboard/category/1");
+                    }
+                });
+            } else {
+              
+                let errorMessage = '<ul>';
+    
+                if (result.message) {
+                    errorMessage += `<li>${result.message}</li>`;
+                }
+    
+                if (result.messages && Array.isArray(result.messages)) {
+                    result.messages.forEach((msg: string) => {
+                        errorMessage += `<li>${msg}</li>`;
+                    });
+                }
+    
+                errorMessage += '</ul>';
+    
+                Swal.fire({
+                    title: 'Error!',
+                    html: errorMessage || 'Failed to update category!',
+                    icon: 'error',
+                    allowOutsideClick: false, 
+                    allowEscapeKey:false,
+                    confirmButtonText: 'Cool'
   
-              if (result.message) {
-                  errorMessage += `<li>${result.message}</li>`;
-              }
-  
-              if (result.messages && Array.isArray(result.messages)) {
-                  result.messages.forEach((msg: string) => {
-                      errorMessage += `<li>${msg}</li>`;
-                  });
-              }
-  
-              errorMessage += '</ul>';
-  
-              Swal.fire({
-                  title: 'Error!',
-                  html: errorMessage || 'Failed to update category!',
-                  icon: 'error',
-                  allowOutsideClick: false, 
-                  allowEscapeKey:false,
-                  confirmButtonText: 'Cool'
-
-              }).then(() => {
-                  SetLoader(false);
-                  router.refresh();
-              });
-          }
+                }).then(() => {
+                    SetLoader(false);
+                    router.refresh();
+                });
+            }
+        }
       })
       .catch(error => {
           Swal.fire({

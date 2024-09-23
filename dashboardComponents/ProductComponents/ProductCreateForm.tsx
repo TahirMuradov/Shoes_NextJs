@@ -131,34 +131,37 @@ return;
 }
 return response.json();
 }).then(result=>{
-  if (result.isSuccess) {
-    setSubCategories(result)
-  }else{
-    let errors = "<ul>";
-    if (Array.isArray(result.messages)) {
-    
-        result.messages.forEach((message:string)=> {
-            errors += `<li>${message}</li>`;
-        });
-    } else if (result.message) {
-     
-        errors += `<li>${result.message}</li>`;
-    }
-    errors += "</ul>";
+  if(result){
 
-    Swal.fire({
-        title: 'Error!',
-        html: errors, 
-        icon: 'error',
-        confirmButtonText: 'Cool',
-        allowEscapeKey:false,
-        allowOutsideClick:false
-    }).then(res => {
-        if (res.isConfirmed) {
-            SetLoader(false);
-            router.refresh();
-        }
-    });
+    if (result.isSuccess) {
+      setSubCategories(result)
+    }else{
+      let errors = "<ul>";
+      if (Array.isArray(result.messages)) {
+      
+          result.messages.forEach((message:string)=> {
+              errors += `<li>${message}</li>`;
+          });
+      } else if (result.message) {
+       
+          errors += `<li>${result.message}</li>`;
+      }
+      errors += "</ul>";
+  
+      Swal.fire({
+          title: 'Error!',
+          html: errors, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+              router.refresh();
+          }
+      });
+    }
   }
 });
 

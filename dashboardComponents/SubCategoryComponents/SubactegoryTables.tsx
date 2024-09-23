@@ -87,35 +87,38 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
       }
         
       ).then(x=>{
-        if(x.isSuccess){
-
-          SetSubCategory(x)
-        }else{
-          let errors = "<ul>";
-          if (Array.isArray(x.messages)) {
+        if (x) {
           
-              x.messages.forEach((message:string)=> {
-                  errors += `<li>${message}</li>`;
-              });
-          } else if (x.message) {
-           
-              errors += `<li>${x.message}</li>`;
-          }
-          errors += "</ul>";
+          if(x.isSuccess){
   
-          Swal.fire({
-              title: 'Error!',
-              html: errors, 
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false
-          }).then(res => {
-              if (res.isConfirmed) {
-                  SetLoader(false);
-                  router.refresh();
-              }
-          });
+            SetSubCategory(x)
+          }else{
+            let errors = "<ul>";
+            if (Array.isArray(x.messages)) {
+            
+                x.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (x.message) {
+             
+                errors += `<li>${x.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+          }
         }
         
       });
@@ -170,44 +173,47 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
           
         return response.json()})
         .then(responsData=>{
-          if (responsData.isSuccess) {
+          if (responsData) {
+            
+            if (responsData.isSuccess) {
+              Swal.fire({
+                  title: 'Success!',
+                  text: 'SubCategory delete successfully!',
+                  icon: 'success',
+                  confirmButtonText: 'Cool'
+              }).then((res) => {
+                  if (res.isConfirmed) {
+                    fetch(`${apiDomen}api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+                        'Accept-Language': `${Lang}`,
+     'Authorization':`Bearer ${sessions.data?.user.token}`
+                      },
+                      cache:"no-store",
+                      method: "GET",
+                    }).then(res=>res.json()).then(x=>SetSubCategory(x));
+                    SetLoader(false)
+                      router.refresh();// Clear the form
+                  }
+              })
+           
+          }else{
             Swal.fire({
-                title: 'Success!',
-                text: 'SubCategory delete successfully!',
-                icon: 'success',
-                confirmButtonText: 'Cool'
-            }).then((res) => {
-                if (res.isConfirmed) {
-                  fetch(`${apiDomen}api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                      'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
-                      'Accept-Language': `${Lang}`,
-   'Authorization':`Bearer ${sessions.data?.user.token}`
-                    },
-                    cache:"no-store",
-                    method: "GET",
-                  }).then(res=>res.json()).then(x=>SetSubCategory(x));
-                  SetLoader(false)
-                    router.refresh();// Clear the form
-                }
-            })
-         
-        }else{
-          Swal.fire({
-            title: 'Error!',
-         
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then((res) => {
-            if (res.isConfirmed) {
-              SetLoader(false)
-                router.push("/dashboard/subCategory/1")// Clear the form
-            }
-        })
-    
-        }
+              title: 'Error!',
+           
+              icon: 'error',
+              confirmButtonText: 'Cool'
+          }).then((res) => {
+              if (res.isConfirmed) {
+                SetLoader(false)
+                  router.push("/dashboard/subCategory/1")// Clear the form
+              }
+          })
+      
+          }
+          }
       
       }).catch(error=>signOut())
         

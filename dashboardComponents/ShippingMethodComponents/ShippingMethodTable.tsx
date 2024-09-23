@@ -85,36 +85,46 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
       return;
       }
        return res.json()}).then(x=>{
-        if (x.isSuccess) {
+        if (x) {
+
+          if (x.isSuccess) {
+            
+            SetShippingMethods(x)
+          }else{
+            let errors = "<ul>";
+            if (Array.isArray(x.messages)) {
+            
+                x.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (x.message) {
+             
+                errors += `<li>${x.message}</li>`;
+            }
+            errors += "</ul>";
+    
+            Swal.fire({
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
           
-          SetShippingMethods(x)
-        }else{
-          let errors = "<ul>";
-          if (Array.isArray(x.messages)) {
-          
-              x.messages.forEach((message:string)=> {
-                  errors += `<li>${message}</li>`;
-              });
-          } else if (x.message) {
+  if (res) {
+    
+    if ( res.isConfirmed) {
+        SetLoader(false);
+        router.refresh();
+    }
+  }
            
-              errors += `<li>${x.message}</li>`;
+            });
           }
-          errors += "</ul>";
-  
-          Swal.fire({
-              title: 'Error!',
-              html: errors, 
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false
-          }).then(res => {
-              if (res.isConfirmed) {
-                  SetLoader(false);
-                  router.refresh();
-              }
-          });
         }
+    
+        
       }
       );
         
@@ -171,6 +181,8 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
         
         })
         .then(responsData=>{
+          if (!responsData) 
+            return;
           if (responsData.isSuccess) {
             Swal.fire({
                 title: 'Success!',

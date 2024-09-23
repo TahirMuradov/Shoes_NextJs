@@ -63,7 +63,10 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
       
       if (res.ok) {
         const data = await res.json();
-        SetCategories(data); 
+        if (data) {
+          
+          SetCategories(data); 
+        }
       } 
       if (res.status === 401) {
         Swal.fire({
@@ -133,52 +136,73 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
             signOut();
           }
         });
+        return;
       }
-      const responsData = await res.json();
-      if (responsData.isSuccess) {
+      if(!res.ok){
         Swal.fire({
-          title: 'Success!',
-          text: 'Category deleted successfully!',
-          icon: 'success',
-          confirmButtonText: 'Cool',
-          allowEscapeKey:false,
-          allowOutsideClick:false,
-        }).then((res) => {
-          if (res.isConfirmed) {
-            SetLoader(false);
-            fetchCategories();  // Refetch categories after deletion
+            title: 'Error!',
+            text: 'An unexpected error occurred!',
+            icon: 'error',
+            confirmButtonText: 'Cool'
+        }).then(x=>{
+          if (x.isConfirmed) {
+            
+              SetLoader(false)
+
+         signOut()
+            router.refresh();
           }
         });
-      } else {
-        let errorMessage = '<ul>';
-  
-              if (responsData.message) {
-                  errorMessage += `<li>${responsData.message}</li>`;
-              }
-  
-              if (responsData.messages && Array.isArray(responsData.messages)) {
-                  responsData.messages.forEach((msg: string) => {
-                      errorMessage += `<li>${msg}</li>`;
-                  });
-              }
-  
-              errorMessage += '</ul>';
-  
-              Swal.fire({
-                  title: 'Error!',
-                  html: errorMessage || 'Failed to update category!',
-                  icon: 'error',
-                  allowOutsideClick: false, 
-                  allowEscapeKey:false,
-                  confirmButtonText: 'Cool'
-
-              }).then((res) => {
-                if (res.isConfirmed) {
-                  
-                  SetLoader(false);
-                  router.refresh();
+        return;
+    }
+      const responsData = await res.json();
+      if (responsData) {
+        
+        if (responsData.isSuccess) {
+          Swal.fire({
+            title: 'Success!',
+            text: 'Category deleted successfully!',
+            icon: 'success',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false,
+          }).then((res) => {
+            if (res.isConfirmed) {
+              SetLoader(false);
+              fetchCategories();  // Refetch categories after deletion
+            }
+          });
+        } else {
+          let errorMessage = '<ul>';
+    
+                if (responsData.message) {
+                    errorMessage += `<li>${responsData.message}</li>`;
                 }
-              });
+    
+                if (responsData.messages && Array.isArray(responsData.messages)) {
+                    responsData.messages.forEach((msg: string) => {
+                        errorMessage += `<li>${msg}</li>`;
+                    });
+                }
+    
+                errorMessage += '</ul>';
+    
+                Swal.fire({
+                    title: 'Error!',
+                    html: errorMessage || 'Failed to update category!',
+                    icon: 'error',
+                    allowOutsideClick: false, 
+                    allowEscapeKey:false,
+                    confirmButtonText: 'Cool'
+  
+                }).then((res) => {
+                  if (res.isConfirmed) {
+                    
+                    SetLoader(false);
+                    router.refresh();
+                  }
+                });
+        }
       }
     } catch (error) {
       console.log(error);

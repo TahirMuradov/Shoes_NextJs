@@ -426,6 +426,8 @@ formData.append("Id",id)
         
       return  response.json()})
       .then(result => {
+        if (result) {
+          
           if (result.isSuccess) {
               Swal.fire({
                   title: 'Success!',
@@ -469,6 +471,7 @@ formData.append("Id",id)
                 }
             });
           }
+        }
       })
     
 

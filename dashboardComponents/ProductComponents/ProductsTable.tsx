@@ -52,8 +52,7 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
         },
         cache:"no-store",
         method: "GET",
-      }).then(x=>
-      {
+      }).then(x=>{
         if (x.status==401) {
           Swal.fire({
               title: 'Authorization Error!',
@@ -91,37 +90,40 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
       }
     
     ).then(res=>{
-      if (res.isSuccess) {
+   if (res) {
+    
+     if (res.isSuccess) {
+       
+       SetProducts(res)
+     }else {
+       let errors = "<ul>";
+       if (Array.isArray(res.messages)) {
+       
+           res.messages.forEach((message:string)=> {
+               errors += `<li>${message}</li>`;
+           });
+       } else if (res.message) {
         
-        SetProducts(res)
-      }else {
-        let errors = "<ul>";
-        if (Array.isArray(res.messages)) {
-        
-            res.messages.forEach((message:string)=> {
-                errors += `<li>${message}</li>`;
-            });
-        } else if (res.message) {
-         
-            errors += `<li>${res.message}</li>`;
-        }
-        errors += "</ul>";
+           errors += `<li>${res.message}</li>`;
+       }
+       errors += "</ul>";
 
-        Swal.fire({
-            title: 'Error!',
-            html: errors, 
-            icon: 'error',
-            confirmButtonText: 'Cool',
-            allowEscapeKey:false,
-            allowOutsideClick:false
-        }).then(res => {
-            if (res.isConfirmed) {
-                SetLoader(false);
-                router.refresh();
-            }
-        });
-      }
-      
+       Swal.fire({
+           title: 'Error!',
+           html: errors, 
+           icon: 'error',
+           confirmButtonText: 'Cool',
+           allowEscapeKey:false,
+           allowOutsideClick:false
+       }).then(res => {
+           if (res.isConfirmed) {
+               SetLoader(false);
+               router.refresh();
+           }
+       });
+     }
+     
+   }
     });
     },[])
 
@@ -174,45 +176,48 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
          return response.json()
         })
         .then(responsData=>{
-          if (responsData.isSuccess) {
+          if (responsData) {
+            
+            if (responsData.isSuccess) {
+              Swal.fire({
+                  title: 'Success!',
+                  text: 'Product delete successfully!',
+                  icon: 'success',
+                  confirmButtonText: 'Cool'
+              }).then((res) => {
+                  if (res.isConfirmed) {
+                 router.refresh();
+                    SetLoader(false)
+                  }
+              })
+          }else{
+            let errors = "<ul>";
+            if (Array.isArray(responsData.messages)) {
+            
+                responsData.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (responsData.message) {
+             
+                errors += `<li>${responsData.message}</li>`;
+            }
+            errors += "</ul>";
+    
             Swal.fire({
-                title: 'Success!',
-                text: 'Product delete successfully!',
-                icon: 'success',
-                confirmButtonText: 'Cool'
-            }).then((res) => {
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
                 if (res.isConfirmed) {
-               router.refresh();
-                  SetLoader(false)
+                    SetLoader(false);
+                    router.refresh();
                 }
-            })
-        }else{
-          let errors = "<ul>";
-          if (Array.isArray(responsData.messages)) {
-          
-              responsData.messages.forEach((message:string)=> {
-                  errors += `<li>${message}</li>`;
-              });
-          } else if (responsData.message) {
-           
-              errors += `<li>${responsData.message}</li>`;
+            });
           }
-          errors += "</ul>";
-  
-          Swal.fire({
-              title: 'Error!',
-              html: errors, 
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false
-          }).then(res => {
-              if (res.isConfirmed) {
-                  SetLoader(false);
-                  router.refresh();
-              }
-          });
-        }
+          }
       
       })       
         ;

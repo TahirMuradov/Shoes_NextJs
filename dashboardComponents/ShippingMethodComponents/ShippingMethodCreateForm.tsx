@@ -100,47 +100,50 @@ const ShippingMethodCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>
             
            return response.json()})
         .then(result => {
-            if (result.isSuccess) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Shipping Method added successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'Cool'
-                }).then((res) => {
-                    if (res.isConfirmed) {
-                      SetLoader(false)
-                    
-                  
-                    
-                        router.push("/dashboard/shippingmethod/1")
-                    }
-                });
-            } else {
-                let errors = "<ul>";
-                if (Array.isArray(result.messages)) {
-                
-                    result.messages.forEach((message:string)=> {
-                        errors += `<li>${message}</li>`;
+            if(result){
+
+                if (result.isSuccess) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Shipping Method added successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'Cool'
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                          SetLoader(false)
+                        
+                      
+                        
+                            router.push("/dashboard/shippingmethod/1")
+                        }
                     });
-                } else if (result.message) {
-                 
-                    errors += `<li>${result.message}</li>`;
-                }
-                errors += "</ul>";
-        
-                Swal.fire({
-                    title: 'Error!',
-                    html: errors, 
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);
-                        router.refresh();
+                } else {
+                    let errors = "<ul>";
+                    if (Array.isArray(result.messages)) {
+                    
+                        result.messages.forEach((message:string)=> {
+                            errors += `<li>${message}</li>`;
+                        });
+                    } else if (result.message) {
+                     
+                        errors += `<li>${result.message}</li>`;
                     }
-                });
+                    errors += "</ul>";
+            
+                    Swal.fire({
+                        title: 'Error!',
+                        html: errors, 
+                        icon: 'error',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            SetLoader(false);
+                            router.refresh();
+                        }
+                    });
+                }
             }
         })
         .catch(error => {

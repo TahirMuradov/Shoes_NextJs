@@ -65,38 +65,41 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
    return     response.json()
       })
       .then(result => {
-          if (result.isSuccess) {
-        SetShippingMethod(result)
-       
-     
-       
-          } else {
-            let errors = "<ul>";
-            if (Array.isArray(result.messages)) {
+        if (result) {
             
-                result.messages.forEach((message:string)=> {
-                    errors += `<li>${message}</li>`;
-                });
-            } else if (result.message) {
-             
-                errors += `<li>${result.message}</li>`;
+            if (result.isSuccess) {
+          SetShippingMethod(result)
+         
+       
+         
+            } else {
+              let errors = "<ul>";
+              if (Array.isArray(result.messages)) {
+              
+                  result.messages.forEach((message:string)=> {
+                      errors += `<li>${message}</li>`;
+                  });
+              } else if (result.message) {
+               
+                  errors += `<li>${result.message}</li>`;
+              }
+              errors += "</ul>";
+      
+              Swal.fire({
+                  title: 'Error!',
+                  html: errors, 
+                  icon: 'error',
+                  confirmButtonText: 'Cool',
+                  allowEscapeKey:false,
+                  allowOutsideClick:false
+              }).then(res => {
+                  if (res.isConfirmed) {
+                      SetLoader(false);
+                      router.refresh();
+                  }
+              });
             }
-            errors += "</ul>";
-    
-            Swal.fire({
-                title: 'Error!',
-                html: errors, 
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowEscapeKey:false,
-                allowOutsideClick:false
-            }).then(res => {
-                if (res.isConfirmed) {
-                    SetLoader(false);
-                    router.refresh();
-                }
-            });
-          }
+        }
       })
       .catch(error => {
       
@@ -200,46 +203,49 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
       }
        return response.json()})
        .then(result => {
-           if (result.isSuccess) {
-               Swal.fire({
-                   title: 'Success!',
-                   text: 'Shipping Method updated successfully!',
-                   icon: 'success',
-                   confirmButtonText: 'Cool'
-               }).then((res) => {
-                   if (res.isConfirmed) {
-                     SetLoader(false)                
-                                    
-                       router.push("/dashboard/shippingmethod/1")
-                   }
-               });
-           } else {
-            let errors = "<ul>";
-            if (Array.isArray(result.messages)) {
+        if (result) {
             
-                result.messages.forEach((message:string)=> {
-                    errors += `<li>${message}</li>`;
+            if (result.isSuccess) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Shipping Method updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'Cool'
+                }).then((res) => {
+                    if (res.isConfirmed) {
+                      SetLoader(false)                
+                                     
+                        router.push("/dashboard/shippingmethod/1")
+                    }
                 });
-            } else if (result.message) {
+            } else {
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
              
-                errors += `<li>${result.message}</li>`;
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                     router.refresh();
+                 }
+             });
             }
-            errors += "</ul>";
-    
-            Swal.fire({
-                title: 'Error!',
-                html: errors, 
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowEscapeKey:false,
-                allowOutsideClick:false
-            }).then(res => {
-                if (res.isConfirmed) {
-                    SetLoader(false);
-                    router.refresh();
-                }
-            });
-           }
+        }
        })
        .catch(error => {
            Swal.fire({

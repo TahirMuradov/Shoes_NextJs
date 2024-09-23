@@ -141,35 +141,38 @@ useEffect(()=>{
         }
         return response.json();
       }).then(result=>{
-        if (result.isSuccess) {
-            SetCategories(result)
-        }else{
-            let errors = "<ul>";
-            if (Array.isArray(result.messages)) {
+        if (result) {
             
-                result.messages.forEach((message:string)=> {
-                    errors += `<li>${message}</li>`;
-                });
-            } else if (result.message) {
-             
-                errors += `<li>${result.message}</li>`;
-            }
-            errors += "</ul>";
-    
-            Swal.fire({
-                title: 'Error!',
-                html: errors, 
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowEscapeKey:false,
-                allowOutsideClick:false
-            }).then(res => {
-                if (res.isConfirmed) {
-                    SetLoader(false);
-                    setItems([]);
-                    router.refresh();
+            if (result.isSuccess) {
+                SetCategories(result)
+            }else{
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
                 }
-            });
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        setItems([]);
+                        router.refresh();
+                    }
+                });
+            }
         }
       });
 
@@ -267,46 +270,49 @@ useEffect(()=>{
             }
          return   response.json()})
         .then(result => {
-            if (result.isSuccess) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'SubCategory update successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'Cool'
-                }).then((res) => {
-                    if (res.isConfirmed) {
-                        SetLoader(false)
-                        setItems([]); 
-                    
-                        router.push("/dashboard/subCategory/1")// Clear the form
-                    }
-                });
-            } else {
-                let errors = "<ul>";
-                if (Array.isArray(result.messages)) {
+            if (result) {
                 
-                    result.messages.forEach((message:string)=> {
-                        errors += `<li>${message}</li>`;
+                if (result.isSuccess) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'SubCategory update successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'Cool'
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                            SetLoader(false)
+                            setItems([]); 
+                        
+                            router.push("/dashboard/subCategory/1")// Clear the form
+                        }
                     });
-                } else if (result.message) {
-                 
-                    errors += `<li>${result.message}</li>`;
-                }
-                errors += "</ul>";
-        
-                Swal.fire({
-                    title: 'Error!',
-                    html: errors, 
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);
-                        router.refresh();
+                } else {
+                    let errors = "<ul>";
+                    if (Array.isArray(result.messages)) {
+                    
+                        result.messages.forEach((message:string)=> {
+                            errors += `<li>${message}</li>`;
+                        });
+                    } else if (result.message) {
+                     
+                        errors += `<li>${result.message}</li>`;
                     }
-                });
+                    errors += "</ul>";
+            
+                    Swal.fire({
+                        title: 'Error!',
+                        html: errors, 
+                        icon: 'error',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            SetLoader(false);
+                            router.refresh();
+                        }
+                    });
+                }
             }
         })
         .catch(error => {
