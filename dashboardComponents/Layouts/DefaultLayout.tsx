@@ -4,7 +4,7 @@ import logo from "../../public/İSTANBUL.png"
 import user from "../../public/img/product-img/product-1.jpg"
 import Image from "next/image";
 import Link from "next/link";
-
+import WebIcon from '@mui/icons-material/Web';
 export default function DefaultLayout({
   children,
 }: {
@@ -18,6 +18,8 @@ export default function DefaultLayout({
   const [isShippingMethod,SetShippingMethod]=useState<boolean>(false);
   const [isPaymentMethod,SetPaymentMethod]=useState<boolean>(false);
   const [barsClick,setbarsClick]=useState<boolean>(false)
+  const [discountarea,setDisCountAre]=useState<boolean>(false)
+  const [HomeSliderItem,setHomeSliderItem]=useState<boolean>(false)
   return (
     <>
     
@@ -198,6 +200,7 @@ export default function DefaultLayout({
       
    </ul>
 </ul>
+
 <ul>
 
 <button onClick={()=>SetPaymentMethod(!isPaymentMethod)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
@@ -220,6 +223,50 @@ export default function DefaultLayout({
          </li>
       
    </ul>
+</ul>
+<ul>
+
+<button onClick={()=>setDisCountAre(!discountarea)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">DisCountArea</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${discountarea?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/webui/discountarea/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL DisCountArea</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/webui/discountarea/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">DisCountArea Create</Link>
+         </li>
+      
+   </ul>
+
+</ul>
+<ul>
+
+<button onClick={()=>setHomeSliderItem(!HomeSliderItem)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">HomeSliderItem</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${HomeSliderItem?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/webui/homeslideritem/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL HomeSliderItem</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/webui/homeslideritem/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">HomeSliderItem Create</Link>
+         </li>
+      
+   </ul>
+
 </ul>
          <li>
             <Link href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

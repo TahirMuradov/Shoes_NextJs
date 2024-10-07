@@ -4,7 +4,7 @@ import Image from "next/image";
 const ProductAddedImage:React.FC<{
     Photo:File|null,
     onPhotoDelete: (name: string,dom:boolean) => void;
-    CurrentPictureUrl:string|null,
+    CurrentPictureUrl:string|null|undefined,
     apiDomen:string
   }> = ({Photo,onPhotoDelete,CurrentPictureUrl,apiDomen}) => {
  
