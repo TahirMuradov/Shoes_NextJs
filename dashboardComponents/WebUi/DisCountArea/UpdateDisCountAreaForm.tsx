@@ -156,19 +156,25 @@ console.log(discountArea)
         }
 
      
-   
+
         fetch(`${apiDomen}api/DisCountArea/UpdateDiscountArea`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${lang}`,  
                 'Accept-Language': `${lang}`,              
                 'Authorization': `Bearer ${sessions.data?.user.token}`
             },
-            body: JSON.stringify({
+            body:JSON.stringify({
                 Id:id,
-                TitleContent:Title,
-                DescriptionContent: Description
+                TitleContent:Title.reduce((acc, item) => {
+                    acc[item.key] = item.value;
+                    return acc;
+                }, {} as { [key: string]: string | null }),
+                DescriptionContent:Description.reduce((acc, item) => {
+                    acc[item.key] = item.value;
+                    return acc;
+                }, {} as { [key: string]: string | null }),
             }),
         })
         .then(async response => {
@@ -191,6 +197,7 @@ console.log(discountArea)
                 return;
             }
             else if(!response.ok){
+                console.log(await response.json())
                 Swal.fire({
                     title: 'Error!',
                     text: 'An unexpected error occurred!',
@@ -277,6 +284,8 @@ console.log(discountArea)
 if (loader) {
     return <Loader/>
 }
+if (discountArea) {
+    
     return (
         <form id="addDisCountAreaForm" onSubmit={HandleSubmit}>
             <div className="grid grid-cols-4 gap-6 mb-6">
@@ -284,14 +293,14 @@ if (loader) {
                     <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Title
                     </label>
-                    {discountArea?.response.titleContent.map((value) => (
+                    { Object.entries(discountArea?.response.titleContent).map(([key,value]) => (
                         <input
-                            key={value.key}
-                            placeholder={`Title  in ${value.key} Language`}
+                            key={key}
+                            placeholder={`Title  in ${key} Language`}
                             type="text"
-                            id={`${value.key}`}
-                            name={`Title${value.key}`}
-                            defaultValue={value.value}
+                            id={`${key}`}
+                            name={`Title${key}`}
+                            defaultValue={`${value}`}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                                        dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -304,15 +313,15 @@ if (loader) {
                     <label htmlFor="Description" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         Description
                     </label>
-                    {discountArea?.response.descriptionContent?.map((desc) => (
+                    { Object.entries(discountArea?.response.descriptionContent) .map(([key,value]) => (
                         <input
-                            key={desc.key}
-                            placeholder={`Description  in ${desc.key} Language`}
+                            key={key}
+                            placeholder={`Description  in ${key} Language`}
                             type="text"
-                            id={`${desc.key}`}
+                            id={`${key}`}
                             
-                            defaultValue={desc.value}
-                            name={`Description${desc.key}`}
+                            defaultValue={`${value}`}
+                            name={`Description${key}`}
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                                        focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                                        dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -332,5 +341,6 @@ if (loader) {
             </button>
         </form>
     );
+}
 };
 export default UpdateDisCountAreaForm;
