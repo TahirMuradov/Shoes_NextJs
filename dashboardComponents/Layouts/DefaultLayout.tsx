@@ -20,6 +20,7 @@ export default function DefaultLayout({
   const [barsClick,setbarsClick]=useState<boolean>(false)
   const [discountarea,setDisCountAre]=useState<boolean>(false)
   const [HomeSliderItem,setHomeSliderItem]=useState<boolean>(false)
+  const [TopCategory,setTopCategory]=useState<boolean>(false)
   return (
     <>
     
@@ -267,6 +268,27 @@ export default function DefaultLayout({
       
    </ul>
 
+</ul>
+<ul>
+
+<button onClick={()=>setTopCategory(!TopCategory)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">TopCategoryArea</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${TopCategory?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/webui/topcategoryarea/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL TopCategoryArea</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/webui/topcategoryarea/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">TopCategoryArea Create</Link>
+         </li>
+      
+   </ul>
 </ul>
          <li>
             <Link href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
