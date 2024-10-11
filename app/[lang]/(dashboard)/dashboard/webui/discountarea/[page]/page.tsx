@@ -1,8 +1,8 @@
-import ShippingMethodTable from "@/dashboardComponents/ShippingMethodComponents/ShippingMethodTable";
+import DisCountAreaTable from "@/dashboardComponents/WebUi/DisCountArea/DisCountAreaTable";
 import { Locale } from "@/i18n-config"
 
-const shippingmethod:React.FC<{params:{page:number,lang:Locale}}> = ({params:{page,lang}}) => {
 
+const page :React.FC<{params:{page:number,lang:Locale}}> = ({params:{page,lang}}) =>  {
     try {
         // This line should be placed at the very top of your file
         // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -12,7 +12,7 @@ const shippingmethod:React.FC<{params:{page:number,lang:Locale}}> = ({params:{pa
   }
      
         return (
-          <ShippingMethodTable apiDomen={apiDomen}  lang={lang} page={page} key={1}/>
+    <DisCountAreaTable Lang={lang} apiDomen={apiDomen} page={page} key={1}/>
          )
       
       } catch (error) {
@@ -20,4 +20,5 @@ const shippingmethod:React.FC<{params:{page:number,lang:Locale}}> = ({params:{pa
         console.error('Error fetching data:', error);
       }
 }
-export default shippingmethod
+
+export default page
