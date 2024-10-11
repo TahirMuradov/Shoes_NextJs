@@ -8,7 +8,6 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import Link from 'next/link';
-
 import { PhoneCallback } from '@mui/icons-material';
 import {  useAppDispatch, useAppSelector } from '@/hooks/hooks';
 import CartType from '@/types/CartTypes/Cart.type';

@@ -5,11 +5,12 @@ import bg1 from '../../public/img/bg-img/bg-1.jpg';
 import bg2 from '../../public/img/bg-img/bg-2.jpg';
 import bg3 from '../../public/img/bg-img/bg-3.jpg';
 import bg4 from '../../public/img/bg-img/bg-4.jpg';
-import { getCartCookie, setCartCookie } from '@/utils/cookies';
-import { products } from '@/types/data';
+
 import CartType from '@/types/CartTypes/Cart.type';
 import { Locale } from '@/i18n-config';
-import { HomeLaunguage, HomeSliderLaunguage } from '@/types/DictionaryTypes/Dictionary';
+import {  HomeSliderLaunguage } from '@/types/DictionaryTypes/Dictionary';
+import GetAllHomeSliderItemType from '@/types/WebUI/HomeSliderItem/GetAllHomeSliderItemType';
+import Link from 'next/link';
 
 
 
@@ -53,7 +54,9 @@ const data:CartType={
 
 interface HomeSliderParasm{
   local:Locale,
-  dictinory:HomeSliderLaunguage
+  dictinory:HomeSliderLaunguage,
+  homeSliderItem:GetAllHomeSliderItemType[],
+  apiDomen:string|undefined
 }
 const HomeSlider: React.FC<HomeSliderParasm> = (params:HomeSliderParasm) => {
 
@@ -71,29 +74,29 @@ const HomeSlider: React.FC<HomeSliderParasm> = (params:HomeSliderParasm) => {
   return (
     <section className="welcome_area overflow-hidden w-full">
       <Slider {...settings} className="welcome_slides owl-carousel">
-        {slidesData.map(slide => (
+        {params.homeSliderItem.map(slide => (
           <div key={slide.id}>
 
-          <div  className="single_slide h-[800px] bg-img background-overlay" style={{ backgroundImage: `url(${slide.backgroundImage.src})` }}>
+          <div  className="single_slide h-[800px] bg-img background-overlay" style={{ backgroundImage: `url(${params.apiDomen}${slide.imageUrl})` }}>
             <div className="container m-auto my-auto h-full">
               <div className="flex h-full items-center justify-center">
                 <div className="w-full" >
                   <div className="welcome_slide_text">
                     <h6 data-animation="bounceInDown" data-delay="0" data-duration="500ms">
-                      * Sadece bugün ücretsiz kargo imkanı
+                     {slide.title}
                     </h6>
                     <h2 data-animation="fadeInUp" className='sm:font-[38px]' data-delay="500ms" data-duration="500ms">
-                      {slide.heading}
+                      {slide.description}
                     </h2>
-                    <a
-                      href={slide.buttonLink}
+                    <Link
+                      href={`${params.local}/shop`}
                       className="btn karl-btn"
                       data-animation="fadeInUp"
                       data-delay="1s"
                       data-duration="500ms"
                     >
                      {params.dictinory.button}
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
