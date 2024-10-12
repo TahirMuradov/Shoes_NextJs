@@ -41,7 +41,7 @@ const data:Result<GetTopCategoryArea[]> = await response.json();
         data.response.map((item)=>(
 
            
-            <div className="single_catagory_area flex items-center w-full bg-img" style={{backgroundImage:`url(${apiDomen}/${item.pictureUrl})`}}>
+            <div key={item.id} className="single_catagory_area flex items-center w-full bg-img" style={{backgroundImage:`url(${apiDomen}/${item.pictureUrl})`}}>
                 <div className="catagory-content">
                     <h6>{item.title}</h6>
                     <h2>{item.description}</h2>

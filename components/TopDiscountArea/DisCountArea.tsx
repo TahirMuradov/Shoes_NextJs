@@ -31,7 +31,7 @@ const data:Result<GetDisCountAreaType[]> = await response.json();
 {
   data.response.map((item)=>(
 
-<div className="single-discount-area">
+<div key={item.id} className="single-discount-area">
         <h5>{item.title}</h5>
         <h6>{item.description}</h6>
     </div>
