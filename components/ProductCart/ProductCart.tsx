@@ -1,20 +1,22 @@
 import Image from "next/image";
-import  Product  from "@/types/Product.type";
+
 import Link from "next/link";
 import Slider from "react-slick";
 import { Locale } from "@/i18n-config";
+import GetProductForUIType from "@/types/ProductTypes/GetProductForUIType";
 
 
 
 
 
 interface ProductCardProps {
-    product: Product,
-    lang:Locale
+    product: GetProductForUIType,
+    lang:Locale,
+    apiDomen:string|undefined
 
 
   }
-const ProductCart:React.FC<ProductCardProps>=({product,lang})=>{
+const ProductCart:React.FC<ProductCardProps>=({product,lang,apiDomen})=>{
     const baseUrl=process.env.baseUrl;
  
     const settings = {
@@ -24,7 +26,7 @@ const ProductCart:React.FC<ProductCardProps>=({product,lang})=>{
         
           return (
             <a>
-              <img width={100} height={100} src={`${product.imgUrls[i]}`} alt={`${product.description}`}/>
+              <img width={100} height={100} src={`${apiDomen}${product.imgUrls[i]}`} alt={`${product.title}`}/>
             </a>
           );
         },
@@ -51,7 +53,7 @@ const ProductCart:React.FC<ProductCardProps>=({product,lang})=>{
             {
                 product.imgUrls.map(Url=>(
                     <div key={Url}>
-                    <Image src={`${Url}`}  width={1000} height={1444} alt={`${product.description}`} />
+                    <Image src={`${apiDomen}${Url}`}  width={1000} height={1444} alt={`${product.title}`} />
         </div>
                 ))
             }
@@ -64,8 +66,17 @@ const ProductCart:React.FC<ProductCardProps>=({product,lang})=>{
         </div>
         <Link href={`/${lang}/productdetail/${product.id}`}>
         <div className="product-description">
-            <h4 className="product-price">{product.price}</h4>
-            <p>{product.description}</p>
+          {
+            product.disCount==0? null:<h4 className="product-price"><s>
+               {product.price }  azn
+              </s>
+              &nbsp;&nbsp;&nbsp;
+            
+            {product.disCount}     azn
+            </h4>
+          }
+            
+            <p>{product.title}</p>
        
         
         </div>

@@ -2,47 +2,72 @@
 import { useEffect, useState } from "react"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {Accordion, AccordionDetails, AccordionSummary, Box, List, ListItemButton, ListItemText, Pagination, Slider, Typography } from "@mui/material";
-import Product from "@/types/Product.type";
-import { products as Data } from "@/types/data";
-
 import ProductCart from "../ProductCart/ProductCart";
 import { ShopLaunguage } from "@/types/DictionaryTypes/Dictionary";
 import { Locale } from "@/i18n-config";
+import { useRouter } from "next/navigation";
+import Result from "@/types/ApiResultType";
+import PaginatedList from "@/types/Paginated.type";
+import GetProductForUIType from "@/types/ProductTypes/GetProductForUIType";
+import GetSize from "@/types/SizeTypes/GetSize";
+import GetCategoryForUI from "@/types/CategoryTypes/GetCategoryForUI";
+
+
+
 
 interface ShopParams{
   dictinory:ShopLaunguage,
-  lang:Locale
+  lang:Locale,
+  apiDomen:string|undefined
+  ,
+  Products:Result<PaginatedList<GetProductForUIType>>,
+  page: number,
+  Size:Result<GetSize[]>,
+  Category:Result<GetCategoryForUI[]>,
 }
 
 
 const Shop:React.FC<ShopParams>=(params)=>{
-    const [products,SetProducts]=useState<Product[]>([])
-    const [categoryFilter,SetCategoryFilter]=useState<String>("All");
+    const [products,SetProducts]=useState<[]>([])
+    const [categoryFilter,SetCategoryFilter]=useState<String>();
     const [priceFilter,SetPriceFilter]=useState<number[]>([0,300]);
-    const [sizeFilter,SetSizeFilter]=useState<Number>(0);
+    const [sizeFilter,SetSizeFilter]=useState<string>();
     const [page, setPage] = useState<number>(1);
+    const router = useRouter();
 
    useEffect(()=>{
-     const filteredProducts=Data.filter((product)=>true)
-SetProducts(filteredProducts)
-   },[categoryFilter,priceFilter])
+    const url = new URLSearchParams();
+  
+    if (categoryFilter) url.append("subCategoryId", categoryFilter as string);
+  
+    if (sizeFilter) url.append("SizeId", sizeFilter as string);
+    if (priceFilter[0]) url.append("minPrice", priceFilter[0].toString());
+    if (priceFilter[1]) url.append("maxPrice", priceFilter[1].toString());
+   
+   router.push(`/${params.lang}/shop/${page}?${url}`)
+    
+    //  const filteredProducts=Data.filter((product)=>true)
+// SetProducts(filteredProducts)
+   },[categoryFilter,priceFilter,sizeFilter,page])
 
     function valuePricetext(value: number) {
         return `${value} ₼`;
       }
 
-      const handleSelection = (value:string) => {
+      const handleSubCategorySelection = (value:string) => {
         SetCategoryFilter(value);
-        console.log("Selected Item:", value);
+ 
       };
-    
+    function handleSize(sizeId:string){
+      console.log(sizeId)
+SetSizeFilter(sizeId)
+    }
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value); 
         
     }
   const handlePriceChange = (event: Event, newValue: number | number[]) => {
-    console.log(newValue)
-    SetPriceFilter(newValue as number[]);
+       SetPriceFilter(newValue as number[]);
 
   
 
@@ -61,157 +86,73 @@ SetProducts(filteredProducts)
                                     <h6 className="mb-0">{params.dictinory.Filter.Categories}</h6>
                                     <div className="menu-list">
                                     <div id="menu-content2">
-      {/* Women Wear */}
-      <Accordion defaultExpanded>
+                                    <Accordion>
+        <AccordionSummary
+        onClick={() => handleSubCategorySelection("")}
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="women2-content"
+          id="women2-header"
+        >
+          <Typography>All</Typography>
+        </AccordionSummary>
+     
+      </Accordion>
+    {
+      params.Category.response?
+      params.Category.response.map((category,index)=>(
+index==0?
+      <Accordion key={index} defaultExpanded>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="women2-content"
           id="women2-header"
         >
-          <Typography>Woman Wear</Typography>
+          <Typography>{category.name}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <List component="div" disablePadding>
-            <ListItemButton onClick={() => handleSelection("Midi Dresses")}>
-              <ListItemText primary="Midi Dresses" />
+            {
+              category.subCategories?
+           Object.entries(category.subCategories).map(([key,value])=>(
+
+            <ListItemButton key={key} onClick={() => handleSubCategorySelection(key)}>
+              <ListItemText primary={`${value}`} />
             </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Maxi Dresses")}>
-              <ListItemText primary="Maxi Dresses" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Prom Dresses")}>
-              <ListItemText primary="Prom Dresses" />
-            </ListItemButton>
-            <ListItemButton
-              onClick={() => handleSelection("Little Black Dresses")}
-            >
-              <ListItemText primary="Little Black Dresses" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Mini Dresses")}>
-              <ListItemText primary="Mini Dresses" />
-            </ListItemButton>
+              )):null
+            }
+           
+         
+    
           </List>
         </AccordionDetails>
-      </Accordion>
-
-      {/* Man Wear */}
-      <Accordion>
+      </Accordion>:   <Accordion key={index}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls="man2-content"
-          id="man2-header"
+          aria-controls="women2-content"
+          id="women2-header"
         >
-          <Typography>Man Wear</Typography>
+          <Typography>{category.name}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <List component="div" disablePadding>
-            <ListItemButton onClick={() => handleSelection("Man Dresses")}>
-              <ListItemText primary="Man Dresses" />
-            </ListItemButton>
-            <ListItemButton
-              onClick={() => handleSelection("Man Black Dresses")}
-            >
-              <ListItemText primary="Man Black Dresses" />
-            </ListItemButton>
-            <ListItemButton
-              onClick={() => handleSelection("Man Mini Dresses")}
-            >
-              <ListItemText primary="Man Mini Dresses" />
-            </ListItemButton>
-          </List>
-        </AccordionDetails>
-      </Accordion>
+            {
+              category.subCategories?
+           Object.entries(category.subCategories).map(([key,value])=>(
 
-      {/* Children */}
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="kids2-content"
-          id="kids2-header"
-        >
-          <Typography>Children</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <List component="div" disablePadding>
-            <ListItemButton
-              onClick={() => handleSelection("Children Dresses")}
-            >
-              <ListItemText primary="Children Dresses" />
+            <ListItemButton key={key} onClick={() => handleSubCategorySelection(key)}>
+              <ListItemText primary={`${value}`} />
             </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Mini Dresses")}>
-              <ListItemText primary="Mini Dresses" />
-            </ListItemButton>
+              )):null
+            }
+           
+         
+    
           </List>
         </AccordionDetails>
       </Accordion>
+      )):null
+    }
 
-      {/* Bags & Purses */}
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="bags2-content"
-          id="bags2-header"
-        >
-          <Typography>Bags & Purses</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <List component="div" disablePadding>
-            <ListItemButton onClick={() => handleSelection("Bags")}>
-              <ListItemText primary="Bags" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Purses")}>
-              <ListItemText primary="Purses" />
-            </ListItemButton>
-          </List>
-        </AccordionDetails>
-      </Accordion>
-
-      {/* Eyewear */}
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="eyewear2-content"
-          id="eyewear2-header"
-        >
-          <Typography>Eyewear</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <List component="div" disablePadding>
-            <ListItemButton onClick={() => handleSelection("Eyewear Style 1")}>
-              <ListItemText primary="Eyewear Style 1" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Eyewear Style 2")}>
-              <ListItemText primary="Eyewear Style 2" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Eyewear Style 3")}>
-              <ListItemText primary="Eyewear Style 3" />
-            </ListItemButton>
-          </List>
-        </AccordionDetails>
-      </Accordion>
-
-      {/* Footwear */}
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon/>}
-          aria-controls="footwear2-content"
-          id="footwear2-header"
-        >
-          <Typography>Footwear</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <List component="div" disablePadding>
-            <ListItemButton onClick={() => handleSelection("Footwear 1")}>
-              <ListItemText primary="Footwear 1" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Footwear 2")}>
-              <ListItemText primary="Footwear 2" />
-            </ListItemButton>
-            <ListItemButton onClick={() => handleSelection("Footwear 3")}>
-              <ListItemText primary="Footwear 3" />
-            </ListItemButton>
-          </List>
-        </AccordionDetails>
-      </Accordion>
     </div>
                                     </div>
                                 </div>
@@ -254,13 +195,15 @@ SetProducts(filteredProducts)
                             <div className="widget size mb-52">
                                 <h6 className="widget-title mb-32">{params.dictinory.Filter.FilterBySize}</h6>
                                 <div className="widget-desc">
-                                    <ul className="flex justify-between">
-                                        <li><a href="#">XS</a></li>
-                                        <li><a href="#">S</a></li>
-                                        <li><a href="#">M</a></li>
-                                        <li><a href="#">L</a></li>
-                                        <li><a href="#">XL</a></li>
-                                        <li><a href="#">XXL</a></li>
+                                    <ul className="flex">
+                                      {
+                                        params.Size.response?
+                                        params.Size.response.map((size)=>(
+                                          
+                                          <li key={size.id}><a className={`cursor-pointer ${sizeFilter==size.id?'active':''}`} onClick={(e)=>{e.preventDefault(); handleSize(size.id)}}>{size.size}</a></li>
+                                        )):null
+                                      }
+                                 
                                     </ul>
                                 </div>
                             </div>
@@ -274,9 +217,10 @@ SetProducts(filteredProducts)
                             <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 
                            {
-                            products.map((product, index) => (
-                            <ProductCart product={product} lang={params.lang}  key={index}/>
-                            ))
+                            params.Products.response?
+                            params.Products.response.data.map((product, index) => (
+                            <ProductCart  apiDomen={params.apiDomen} product={product} lang={params.lang}  key={index}/>
+                            )):null
                            }
                             
 
@@ -293,7 +237,7 @@ SetProducts(filteredProducts)
                         </div>
 
                         <div className="shop_pagination_area wow fadeInUp flex justify-center" data-wow-delay="1.1s">
-                        <Pagination color="standard" count={10} shape="rounded" onChange={handlePageChange} />
+                        <Pagination color="standard" count={params.Products.response?.totalPages} shape="rounded" onChange={handlePageChange} />
                         </div>
 
                     </div>

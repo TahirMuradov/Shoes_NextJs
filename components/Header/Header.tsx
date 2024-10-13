@@ -155,7 +155,7 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
                   </li>
                  
                   <li className="mx-3">
-                    <Link className="" href={`/${lang}/shop`}>
+                    <Link className="" href={`/${lang}/shop/1`}>
                 {dictionary.menu.shop}
                     </Link>
                   </li>

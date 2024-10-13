@@ -11,7 +11,7 @@ const HeaderUserBox = () => {
     const [isUserDropdownOpen, setUserDropdownOpen] = useState<boolean>(false);
     const {data}=useSession();
     if (data) {
-        console.log(data)
+        
         return(
             <>  <div className="flex items-center">
             <div className="flex items-center ms-3">

@@ -828,6 +828,11 @@ height: 0;
     background-color: #ff084e;
     border-color: #ff084e;
 }
+a.active {
+    background-color: #ff084e;
+    border-color: #ff084e;
+    color: white;
+}
 
 /* -----------------------------
 :: 9.0 Quickview Modal Area CSS
