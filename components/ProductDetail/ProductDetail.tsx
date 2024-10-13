@@ -1,21 +1,22 @@
 "use client";
-import { ProductDetail as ProductType } from "@/types/ProductDetail.type";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import Image from "next/image";
 import Slider from "react-slick";
 import ProductCart from "../ProductCart/ProductCart";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch } from "@/hooks/hooks";
 import { cartSlice } from "@/redux/cartSlice";
 import { Locale } from "@/i18n-config";
 import { ProductDetailLaunguage } from "@/types/DictionaryTypes/Dictionary";
+import GetProductDetailType from "@/types/ProductTypes/GetProductDetailType";
 
 interface ProductDetailParams{
-  Product:ProductType|null|undefined,
+  Product:GetProductDetailType|null|undefined,
   lang:Locale,
-  dictionary:ProductDetailLaunguage
+  dictionary:ProductDetailLaunguage,
+  apiDomens:string|undefined
 }
 
 const ProductDetail: React.FC<ProductDetailParams> = (params) => {
@@ -84,10 +85,10 @@ const dispatch=useAppDispatch();
                 data-ride="carousel"
               >
                 <Slider {...settings1}>
-                  {params?.Product?.imgUrl?.map((url, index) => (
+                  {params?.Product?.imgUrls?.map((url, index) => (
                     <div key={index}>
                       <Image
-                        src={url}
+                        src={`${params.apiDomens}${url}`}
                         width={585}
                         height={400}
                         alt={`${params.Product?.description}`}
@@ -115,10 +116,10 @@ const dispatch=useAppDispatch();
                     {params.Product?.size?.map((size, index) => (
                       <li key={index}>
                         <a
-                          onClick={(e) => SelectSize(e, size)}
+                          onClick={(e) => SelectSize(e, size.sizeNumber)}
                           className="cursor-pointer"
                         >
-                          {size}
+                          {size.sizeNumber}
                         </a>
                       </li>
                     ))}
@@ -154,7 +155,7 @@ const dispatch=useAppDispatch();
                     AddToCart(
                       params.Product?.id ?? " ",
                      params.Product?.description?? " ",
-                    params.Product?.imgUrl?params.Product?.imgUrl[0]: " ",
+                    params.Product?.imgUrls?params.Product?.imgUrls[0]: " ",
                       params.Product?.price??0,
 
                     )
@@ -175,7 +176,7 @@ const dispatch=useAppDispatch();
                 >
                   Information
                 </AccordionSummary>
-                <AccordionDetails>{params.Product?.information}</AccordionDetails>
+                <AccordionDetails>{params.Product?.description}</AccordionDetails>
               </Accordion>
             </div>
           </div>
@@ -192,9 +193,9 @@ const dispatch=useAppDispatch();
           </div>
 
           <div className="slider-container grid grid-cols-2 md:grid-cols-3 gap-3">
-            {params.Product?.relatedProducts?.map((product, index) => (
+            {params.Product?.RelatedProducts?.map((product, index) => (
               <div className="px-2" key={index}>
-                <ProductCart lang={params.lang} product={product} key={index} />
+                <ProductCart apiDomen={params.apiDomens} lang={params.lang} product={product} key={index} />
               </div>
             ))}
           </div>

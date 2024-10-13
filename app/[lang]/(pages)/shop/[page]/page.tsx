@@ -19,11 +19,7 @@ const page:React.FC<{params:{page:number,lang:Locale}, searchParams: { [key: str
     const dictionary:ShopLaunguage= (await getDictionary(lang)).Shop
     const apiDomen = process.env.apiDomen;
   
-    const categoryId = searchParams.categoryId as string | undefined;
-    const subCategoryId = searchParams.subCategoryId as string | undefined; 
-    const sizeId = searchParams.SizeId as string | undefined;
-    const minPrice = searchParams.minPrice || '0';
-    const maxPrice = searchParams.maxPrice || '300';
+
 
 
 if (page<0) page=1
