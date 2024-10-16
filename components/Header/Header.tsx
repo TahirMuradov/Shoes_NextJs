@@ -17,7 +17,7 @@ import { HeaderLaunguage } from "@/types/DictionaryTypes/Dictionary";
 import HeaderUserBox from "../HeaderUserBox/HeaderUserBox";
 
 
-const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictionary}) => {
+const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage,apidomen:string|undefined}>= ({lang,dictionary,apidomen}) => {
 
   const [visible,SetVisible]=useState<Boolean>(false);
   // const [IsTheme,SetIsTheme]=useState<Boolean>(false);
@@ -72,7 +72,7 @@ const Header:React.FC<{lang:Locale,dictionary:HeaderLaunguage}>= ({lang,dictiona
                     cartInfo.items.map((item, index) => (
                       <li key={index}>
                       <a href="#" className="image">
-                        <Image src={`${item.imgUrl}`} width={100} height={100} className="cart-thumb" alt="Product 10" />
+                        <Image src={`${apidomen}${item.imgUrl}`} width={100} height={100} className="cart-thumb" alt="Product 10" />
                       </a>
                       <div className="cart-item-desc">
                         <h6>

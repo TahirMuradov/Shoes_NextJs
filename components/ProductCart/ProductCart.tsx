@@ -53,7 +53,7 @@ const ProductCart:React.FC<ProductCardProps>=({product,lang,apiDomen})=>{
             {
                 product.imgUrls.map(Url=>(
                     <div key={Url}>
-                    <Image src={`${apiDomen}${Url}`}  width={1000} height={1444} alt={`${product.title}`} />
+                    <Image src={`${apiDomen}${Url}`}  width={345} height={498} alt={`${product.title}`} />
         </div>
                 ))
             }

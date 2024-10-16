@@ -23,12 +23,13 @@ export default async function PagesLayout({
   children: React.ReactNode;
   params: { lang: Locale };
 }) {
+  const apiDomen = process.env.apiDomen;
   const dictionary:HeaderLaunguage= (await getDictionary(lang)).LayoutLanguage.header
   return (
       <>
       <Provider>
 
-      <Header lang={lang} dictionary={dictionary}/>
+      <Header apidomen={apiDomen} lang={lang} dictionary={dictionary}/>
           {children}
           <Footer lang={lang}/>
       </Provider>

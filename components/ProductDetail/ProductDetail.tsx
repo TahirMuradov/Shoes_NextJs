@@ -29,6 +29,7 @@ const dispatch=useAppDispatch();
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+
   };
 
   const [countItem, setCountItem] = useState<number>(1);
@@ -84,13 +85,15 @@ const dispatch=useAppDispatch();
                 className="carousel slide"
                 data-ride="carousel"
               >
-                <Slider {...settings1}>
+                <Slider {...settings1} >
                   {params?.Product?.imgUrls?.map((url, index) => (
                     <div key={index}>
                       <Image
+                      className="object-cover object-center"
                         src={`${params.apiDomens}${url}`}
-                        width={585}
-                        height={400}
+                        style={{maxWidth:345,maxHeight:498}}
+                        width={345}
+                        height={498}
                         alt={`${params.Product?.description}`}
                         objectFit="cover"
                       />

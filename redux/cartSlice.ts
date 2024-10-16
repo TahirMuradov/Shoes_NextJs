@@ -6,6 +6,7 @@ import CartItemUpdate from '@/types/CartTypes/CartItemUpdate.type';
 import CartItemDelete from '@/types/CartTypes/CartItemDelete.type';
 import { RootState } from './store';
 import { getCartCookie, setCartCookie } from '@/utils/cookies'; // Updated import path
+import PaymentMethodSelectType from '@/types/CartTypes/PaymentMethodSelectType';
 
 
 
@@ -14,6 +15,7 @@ const initializeCartState = async (): Promise<CartType> => {
     items: [],
     totalAmount: 0,
     totalQuantity: 0,
+    paymentMethod:null
   };
 
   const cookieData = await getCartCookie();
@@ -35,6 +37,7 @@ let initialState: CartType = {
   items: [],
   totalAmount: 0,
   totalQuantity: 0,
+  paymentMethod:null
 };
 
 export const cartSlice = createSlice({
@@ -87,12 +90,28 @@ export const cartSlice = createSlice({
         setCartCookie(state);
       }
     },
-   
+    clearCart:(state:CartType,action:PayloadAction<null>)=>{
+      state.items=[]
+      state.totalAmount=0;
+      state.totalQuantity=0;
+      setCartCookie(state)
+    },
+    addedPaymentMethod:(state:CartType,action:PayloadAction<PaymentMethodSelectType>)=>
+   {
+    state.paymentMethod={
+      paymentMethodId:action.payload.paymentMethodId,
+      paymentMethodPrice:action.payload.paymentMethodPrice,
+      paymentmethodDisCount:action.payload.paymentmethodDisCount
+    }
+
+    setCartCookie(state)  
+   }
   },
   extraReducers: (builder) => {
     builder.addCase(fetchInitialState.fulfilled, (state, action) => {
      
      state.items = action.payload.items;
+     state.paymentMethod=action.payload.paymentMethod
      state.totalAmount = action.payload.totalAmount;
      state.totalQuantity = action.payload.totalQuantity;
      
