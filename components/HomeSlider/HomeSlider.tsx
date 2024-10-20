@@ -46,11 +46,7 @@ const slidesData = [
     backgroundImage: bg4
   }
 ];
-const data:CartType={
-  items:[],
-  totalAmount:0,
-  totalQuantity:0
-}
+
 
 interface HomeSliderParasm{
   local:Locale,
