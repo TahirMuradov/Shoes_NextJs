@@ -12,11 +12,12 @@ import { CartLanguage } from "@/types/DictionaryTypes/Dictionary";
 import GetAllPaymentMethod from "@/types/PaymentMethodTypes/GetAllPaymentMethod";
 import GetAllShippingMethod from "@/types/ShippingMethodType/GetALLShippingMethod";
 import Result from "@/types/ApiResultType";
-import PaymentMethodSelectType from "@/types/CartTypes/PaymentMethodSelectType";
+import PaymentMethodSelectType from "@/types/CartTypes/ShippingMethodSelectType";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCartCookie } from "@/utils/cookies";
 import Swal from "sweetalert2";
+import ShippingMethodSelectType from "@/types/CartTypes/ShippingMethodSelectType";
 interface CartParasm{
     lang:Locale,
     dictinoary:CartLanguage,
@@ -42,7 +43,7 @@ dispatch(cartSlice.actions.updateCart({
    async function  checkOutBtn(){
 var cookie:CartType|null=await getCartCookie()
 
-if (!cookie?.paymentMethod) {
+if (!cookie?.ShippingMethod) {
     Swal.fire({
         title: 'Info!',
         text: 'Select in Shiping Method',
@@ -58,9 +59,13 @@ if (!cookie?.paymentMethod) {
     function ClearCart(){
 dispatch(cartSlice.actions.clearCart(null))
     }
-    function SelectedPaymentMethod(paymentMethod:PaymentMethodSelectType){
-       if (shippingMethods?.find(x=>x.id==paymentMethod.paymentMethodId)) {
-        dispatch(cartSlice.actions.addedPaymentMethod(paymentMethod));
+    function SelectedShippingMethod(Method:ShippingMethodSelectType){
+       if (shippingMethods?.find(x=>x.id==Method.id)) {
+        dispatch(cartSlice.actions.addedShippingMethod({
+            id:Method.id,   
+            disCount:Method.disCount,
+            price:Method.price
+        }));
        }else{
         router.refresh();
        }
@@ -124,7 +129,7 @@ if (cartItems.items.length!=0) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                 <div className="">
-                    {/* <div className="coupon-code-area mt-70">
+                    <div className="coupon-code-area mt-70">
                         <div className="cart-page-heading">
                             <h5>Cupon code</h5>
                             <p>Enter your cupone code</p>
@@ -133,7 +138,7 @@ if (cartItems.items.length!=0) {
                             <input type="search" name="search" placeholder="#569ab15"/>
                             <button type="submit">Apply</button>
                         </form>
-                    </div> */}
+                    </div>
                 </div>
                 <div className="">
                     <div className="shipping-method-area mt-70">
@@ -145,28 +150,28 @@ if (cartItems.items.length!=0) {
     ShippingMethods?.response?.map((method)=>(
 
 <>{
-    cartItems.paymentMethod?.paymentMethodId==method.id?
+    cartItems.ShippingMethod?.id==method.id?
     <div className="grid grid-cols-2">
 
                         <div className="custom-control custom-radio mb-30">
-                            <input defaultChecked onClick={()=>SelectedPaymentMethod({
-                                paymentMethodId:method.id,
-                                paymentMethodPrice:method.price,
-                                paymentmethodDisCount:method.disCount
-                            })} type="radio" id={method.id} name={method.id} className="custom-control-input"/>
+                            <input defaultChecked onClick={()=>SelectedShippingMethod({
+                                id:method.id,
+                                price:method.price,
+                                disCount:method.disCount
+                            })} type="radio" id={method.content} name={method.content} className="custom-control-input"/>
                           
 
-                            <label className="custom-control-label d-flex align-items-center justify-content-between" form="customRadio1">{method.content} </label>
+                            <label className="custom-control-label d-flex align-items-center justify-content-between" htmlFor={method.content}>{method.content} </label>
                            
                         </div>
                         {method.disCount==0?<span> ₼ {method.price}</span>:<span className="grid grid-cols-2 gap-0"> <s>₼{method.price}</s> {method.disCount} ₼</span>}
 </div>:<div className="grid grid-cols-2">
 
 <div className="custom-control custom-radio mb-30">
-    <input onClick={()=>SelectedPaymentMethod({
-        paymentMethodId:method.id,
-        paymentMethodPrice:method.price,
-        paymentmethodDisCount:method.disCount
+    <input onClick={()=>SelectedShippingMethod({
+        id:method.id,
+        price:method.price,
+        disCount:method.disCount
     })} type="radio" id={method.id} name={method.id} className="custom-control-input"/>
   
 
@@ -193,9 +198,9 @@ if (cartItems.items.length!=0) {
 
                         <ul className="cart-total-chart">
                             <li><span>{dictinoary.subtotal}</span> <span> ₼ {cartItems.totalAmount}</span></li>
-                            <li><span>{dictinoary.shipping}</span>  {cartItems.paymentMethod?.paymentmethodDisCount==0?<span> ₼ {cartItems.paymentMethod?.paymentMethodPrice}</span>:<span> ₼ {cartItems.paymentMethod?.paymentmethodDisCount}</span>}</li>
-                            <li><span><strong>{dictinoary.total}</strong></span> <span><strong> ₼  {cartItems.paymentMethod?.paymentmethodDisCount==0? cartItems.totalAmount+cartItems.paymentMethod.paymentMethodPrice:
-                            cartItems.paymentMethod?.paymentmethodDisCount? cartItems.totalAmount+cartItems.paymentMethod?.paymentmethodDisCount:cartItems.totalAmount}</strong></span></li>
+                            <li><span>{dictinoary.shipping}</span>  {cartItems.ShippingMethod?.disCount==0?<span> ₼ {cartItems.ShippingMethod?.price}</span>:<span> ₼ {cartItems.ShippingMethod?.disCount}</span>}</li>
+                            <li><span><strong>{dictinoary.total}</strong></span> <span><strong> ₼  {cartItems.ShippingMethod?.disCount==0? cartItems.totalAmount+cartItems.ShippingMethod.price:
+                            cartItems.ShippingMethod?.disCount? cartItems.totalAmount+cartItems.ShippingMethod?.disCount:cartItems.totalAmount}</strong></span></li>
                         </ul>
                         <button onClick={async () =>checkOutBtn()}  className="btn karl-checkout-btn text-center">{dictinoary.proceedToCheckout}</button>
                     </div>

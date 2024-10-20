@@ -6,7 +6,8 @@ import CartItemUpdate from '@/types/CartTypes/CartItemUpdate.type';
 import CartItemDelete from '@/types/CartTypes/CartItemDelete.type';
 import { RootState } from './store';
 import { getCartCookie, setCartCookie } from '@/utils/cookies'; // Updated import path
-import PaymentMethodSelectType from '@/types/CartTypes/PaymentMethodSelectType';
+import PaymentMethodSelectType from '@/types/CartTypes/ShippingMethodSelectType';
+import ShippingMethodSelectType from '@/types/CartTypes/ShippingMethodSelectType';
 
 
 
@@ -15,7 +16,7 @@ const initializeCartState = async (): Promise<CartType> => {
     items: [],
     totalAmount: 0,
     totalQuantity: 0,
-    paymentMethod:null
+  ShippingMethod:null
   };
 
   const cookieData = await getCartCookie();
@@ -37,7 +38,7 @@ let initialState: CartType = {
   items: [],
   totalAmount: 0,
   totalQuantity: 0,
-  paymentMethod:null
+  ShippingMethod:null
 };
 
 export const cartSlice = createSlice({
@@ -96,12 +97,12 @@ export const cartSlice = createSlice({
       state.totalQuantity=0;
       setCartCookie(state)
     },
-    addedPaymentMethod:(state:CartType,action:PayloadAction<PaymentMethodSelectType>)=>
+    addedShippingMethod:(state:CartType,action:PayloadAction<ShippingMethodSelectType>)=>
    {
-    state.paymentMethod={
-      paymentMethodId:action.payload.paymentMethodId,
-      paymentMethodPrice:action.payload.paymentMethodPrice,
-      paymentmethodDisCount:action.payload.paymentmethodDisCount
+    state.ShippingMethod={
+      id:action.payload.id,
+      disCount:action.payload.disCount,
+      price:action.payload.price
     }
 
     setCartCookie(state)  
@@ -111,7 +112,7 @@ export const cartSlice = createSlice({
     builder.addCase(fetchInitialState.fulfilled, (state, action) => {
      
      state.items = action.payload.items;
-     state.paymentMethod=action.payload.paymentMethod
+     state.ShippingMethod=action.payload.ShippingMethod
      state.totalAmount = action.payload.totalAmount;
      state.totalQuantity = action.payload.totalQuantity;
      

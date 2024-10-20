@@ -3,6 +3,7 @@ export default interface GetProductDetailType{
     description:string,
     title:string,
     subCategoryName:string[],
+    productCode:string,
     price:number,
     disCount:number,
     imgUrls:string[],

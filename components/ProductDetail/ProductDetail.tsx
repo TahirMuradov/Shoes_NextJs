@@ -56,7 +56,7 @@ const dispatch=useAppDispatch();
     (e.currentTarget as HTMLAnchorElement).classList.add("aClick");
   }
 
-  function AddToCart(id: string, title: string, imgUrl: string, price: number) {
+  function AddToCart(id: string, title: string, imgUrl: string, price: number,productCode:string) {
     if (sizeItem==0||countItem==0) {
       alert("Məhsulun ölçüsünü vəya sayını seçin")
     }else{
@@ -65,6 +65,7 @@ const dispatch=useAppDispatch();
       Id: id,
       name: title,
       imgUrl: imgUrl,
+      productCode:productCode,
       price: price,
       size: sizeItem,
       count: countItem,
@@ -106,6 +107,7 @@ const dispatch=useAppDispatch();
 
           <div>
             <div className="single_product_desc">
+              <span>Məhsul Kodu: {params.Product?.productCode}</span>
               <h4 className="title">{params.Product?.description}</h4>
 
               <h4 className="price">$ {params.Product?.price}</h4>
@@ -160,6 +162,7 @@ const dispatch=useAppDispatch();
                      params.Product?.description?? " ",
                     params.Product?.imgUrls?params.Product?.imgUrls[0]: " ",
                       params.Product?.price??0,
+                      params.Product?.productCode??""
 
                     )
                   }

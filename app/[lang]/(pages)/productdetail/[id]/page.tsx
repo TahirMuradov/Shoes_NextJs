@@ -14,10 +14,12 @@ export default async function Page ({ params }: { params: {lang:Locale, id: stri
 
         const response = await fetch(`${apiDomen}api/Product/GetProductDetail?Id=${params.id}`, {
             method: 'GET',
+            cache:"no-store",
             headers: {
                 'Content-Type': 'application/json',
                 'LangCode': `${params.lang}`, 
                 'Accept-Language': `${params.lang}`,  
+
             
             }
         });
@@ -26,7 +28,7 @@ console.log(response)
 
         }
         const data:Result<GetProductDetailType> = await response.json();
-      
+      console.log(data.response)
         
 if (data.isSuccess) {
    
