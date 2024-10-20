@@ -188,6 +188,7 @@ const CheckOut:React.FC<{ params: { lang: Locale,dictionary:CheckOutLaunguage,Ap
               paymentMethods.map((payment,index)=>(
 
                   <FormControlLabel
+                  key={index}
                     value={payment.id}
                     control={<Radio sx={{
                         color: pink[800],
