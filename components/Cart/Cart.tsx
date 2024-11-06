@@ -56,6 +56,26 @@ if (!cookie?.ShippingMethod) {
     router.push(`/${lang}/checkout`)
 }
     }
+  async  function CheckCode(e:React.MouseEvent<HTMLButtonElement>){
+    e.preventDefault();
+    const code=document.getElementById("cuponcode") as HTMLInputElement
+    if (code) {
+        
+        const res = await fetch(`${apiDomen}api/Cupon/CheckedCuponCode?CuponCode=${code.value}`, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'Accept-Language': `${lang}`,
+             
+            },
+            cache: "no-store",
+            method: "GET",
+          });
+          if (!res.ok) {
+              console.log(await res.json())
+          }
+    }
+    }
     function ClearCart(){
 dispatch(cartSlice.actions.clearCart(null))
     }
@@ -82,6 +102,7 @@ if (cartItems.items.length!=0) {
                             <thead>
                                 <tr>
                                     <th>{dictinoary.product}</th>
+                                    <th>Kateqoriyasi</th>
                                     <th>{dictinoary.price}</th>
                                     <th>{dictinoary.size}</th>
                                     <th>{dictinoary.quantity}</th>
@@ -95,6 +116,9 @@ if (cartItems.items.length!=0) {
         <td className="cart_product_img flex items-center break-words">
             <Link href={`/${lang}/productdetail/${item.Id}`}><Image width={100} height={100} src={`${apiDomen}${item.imgUrl}`} alt={`${item.name}`}/></Link>
             <h6>{item.name}</h6>
+        </td>
+        <td className="text-center break-words">
+    {Object.entries( item.categories).map(([key,value])=>(value +","))} {Object.entries( item.subCategories).map(([key,value])=>(value+","))}
         </td>
         <td className="price text-center break-words"><span>${item.price}</span></td>
         <td className="text-center break-words"><span>{item.size}</span></td>
@@ -135,8 +159,8 @@ if (cartItems.items.length!=0) {
                             <p>Enter your cupone code</p>
                         </div>
                         <form action="#">
-                            <input type="search" name="search" placeholder="#569ab15"/>
-                            <button type="submit">Apply</button>
+                            <input type="search" id="cuponcode" name="cuponcode" placeholder="569ab15" />
+                            <button onClick={(e)=>CheckCode(e)} type="submit">Apply</button>
                         </form>
                     </div>
                 </div>

@@ -38,7 +38,8 @@ let initialState: CartType = {
   items: [],
   totalAmount: 0,
   totalQuantity: 0,
-  ShippingMethod:null
+  ShippingMethod:null,
+ 
 };
 
 export const cartSlice = createSlice({

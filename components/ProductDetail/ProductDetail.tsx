@@ -13,7 +13,7 @@ import { ProductDetailLaunguage } from "@/types/DictionaryTypes/Dictionary";
 import GetProductDetailType from "@/types/ProductTypes/GetProductDetailType";
 
 interface ProductDetailParams{
-  Product:GetProductDetailType|null|undefined,
+  Product:GetProductDetailType|null,
   lang:Locale,
   dictionary:ProductDetailLaunguage,
   apiDomens:string|undefined
@@ -56,7 +56,7 @@ const dispatch=useAppDispatch();
     (e.currentTarget as HTMLAnchorElement).classList.add("aClick");
   }
 
-  function AddToCart(id: string, title: string, imgUrl: string, price: number,productCode:string) {
+  function AddToCart(id: string, title: string, imgUrl: string, price: number,productCode:string,categories:{key:string,value:string}[],subCategoryNames:{key:string,value:string}[]) {
     if (sizeItem==0||countItem==0) {
       alert("Məhsulun ölçüsünü vəya sayını seçin")
     }else{
@@ -69,6 +69,8 @@ const dispatch=useAppDispatch();
       price: price,
       size: sizeItem,
       count: countItem,
+      categories:categories,
+      subCategories:subCategoryNames
     }))
       alert("Məhsul səbətə əlavə edildi")
     }
@@ -159,14 +161,17 @@ const dispatch=useAppDispatch();
                   onClick={() =>
                     AddToCart(
                       params.Product?.id ?? " ",
-                     params.Product?.description?? " ",
-                    params.Product?.imgUrls?params.Product?.imgUrls[0]: " ",
-                      params.Product?.price??0,
-                      params.Product?.productCode??""
+                      params.Product?.description?? " ",
+                     params.Product?.imgUrls?params.Product?.imgUrls[0]: " ",
+                       params.Product?.price??0,
+                       params.Product?.productCode??"",
+                       params.Product?.categories??[],
+                       params.Product?. subCategories??[],
+
 
                     )
                   }
-                  type="button" // "submit" yerine "button" olmalı
+                  type="button" 
                   name="addtocart"
                   value="5"
                   className="btn cart-submit block"

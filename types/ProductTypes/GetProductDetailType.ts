@@ -2,11 +2,13 @@ export default interface GetProductDetailType{
     id:string,
     description:string,
     title:string,
-    subCategoryName:string[],
+    subCategories:{key:string,value:string}[],
     productCode:string,
     price:number,
     disCount:number,
     imgUrls:string[],
+    categories:{key:string,value:string}[],
+ 
     size:{
 sizeId:string,
 sizeNumber:number,

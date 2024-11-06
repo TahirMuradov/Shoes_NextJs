@@ -28,7 +28,7 @@ console.log(response)
 
         }
         const data:Result<GetProductDetailType> = await response.json();
-      console.log(data.response)
+console.log(data)
         
 if (data.isSuccess) {
    

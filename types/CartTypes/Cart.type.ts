@@ -5,5 +5,6 @@ export default interface CartType{
     items:CartItemType[],
     totalAmount:number,
     totalQuantity:number,
-    ShippingMethod:ShippingMethodSelectType|null
+    ShippingMethod:ShippingMethodSelectType|null,
+
 }

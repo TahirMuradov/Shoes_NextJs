@@ -5,5 +5,7 @@ productCode:string
 imgUrl:string|null|undefined,
 price:number,
 size:number,
-count:number
+count:number,
+categories:{key:string,value:string}[],
+subCategories:{key:string,value:string}[]
 }
