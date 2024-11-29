@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { getCartCookie } from "@/utils/cookies";
 import Swal from "sweetalert2";
 import ShippingMethodSelectType from "@/types/CartTypes/ShippingMethodSelectType";
+import GetCuponInfo from "@/types/CuponTypes/GetCuponInfo";
 interface CartParasm{
     lang:Locale,
     dictinoary:CartLanguage,
@@ -72,7 +73,45 @@ if (!cookie?.ShippingMethod) {
             method: "GET",
           });
           if (!res.ok) {
-              console.log(await res.json())
+            
+             if(res.status==404){
+                Swal.fire({
+                    title: 'Info',
+                    text: 'Endirim Cuponu Tapilmadi!',
+                    icon: 'info',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false,
+                  })
+             }else if(res.status==400){
+                Swal.fire({
+                    title: 'Error',
+                    text: `${res.text()}`,
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false,
+                  })
+                  console.error(res);
+             }
+          }else{
+            const responseData:Result<GetCuponInfo>=await res.json();
+        if (responseData.isSuccess) {
+            if ((responseData.response.categoriesIds===null||responseData.response.categoriesIds===undefined)&&
+           (responseData.response.subCategories===null||responseData.response.subCategories===undefined)&&
+        (responseData.response.productIds===null||responseData.response.subCategories===undefined)&&
+        (responseData.response.userId===null||responseData.response.userId===undefined)
+               ) {
+            Swal.fire({
+                title: 'Info',
+                text: 'Istifadə edilmiş endirim cuponundan təkrar istifadə mümkün deyildir!',
+                icon: 'info',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false,
+              })
+            }
+        }
           }
     }
     }
