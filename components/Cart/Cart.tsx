@@ -97,9 +97,9 @@ if (!cookie?.ShippingMethod) {
           }else{
             const responseData:Result<GetCuponInfo>=await res.json();
         if (responseData.isSuccess) {
-            if ((responseData.response.categoriesIds===null||responseData.response.categoriesIds===undefined)&&
-           (responseData.response.subCategories===null||responseData.response.subCategories===undefined)&&
-        (responseData.response.productIds===null||responseData.response.subCategories===undefined)&&
+            if ((responseData.response.categoryId===null||responseData.response.categoryId===undefined)&&
+           (responseData.response.subCategoryId===null||responseData.response.subCategoryId===undefined)&&
+        (responseData.response.productId===null||responseData.response.productId===undefined)&&
         (responseData.response.userId===null||responseData.response.userId===undefined)
                ) {
             Swal.fire({
