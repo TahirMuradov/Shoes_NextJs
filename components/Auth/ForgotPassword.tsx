@@ -4,7 +4,8 @@ import forgot from "@/public/forgoutPassword.png"
 import logo from "@/public/İSTANBUL.png"
 import Image from "next/image"
 import { Locale } from "@/i18n-config"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
+
 const ForgotPassword:React.FC<{lang:Locale,apiDomen:string|undefined}>=({apiDomen,lang})=>{
     const route=useRouter();
     function Submit(e:React.FormEvent<HTMLFormElement>){
@@ -12,7 +13,7 @@ const ForgotPassword:React.FC<{lang:Locale,apiDomen:string|undefined}>=({apiDome
         const form = new FormData(e.currentTarget);
         const email=form.get("email");
         if (email===null||email===undefined) {
-            route.reload();
+            route.refresh();
         }
         fetch(`${apiDomen}api/Auth/SendEmailTokenForForgotPassword?Email=${email}`, {
             headers: {
@@ -32,7 +33,7 @@ const ForgotPassword:React.FC<{lang:Locale,apiDomen:string|undefined}>=({apiDome
            <div className="hidden w-full xl:block xl:w-1/2">
              <div className="px-26 py-17.5 text-center">
                <Link className="mb-5.5 inline-block" href="/">
-              
+           
                  <Image
                    className=""
                    src={logo}
