@@ -5,7 +5,7 @@ import logo from "@/public/İSTANBUL.png"
 import Image from "next/image"
 import { Locale } from "@/i18n-config"
 import { useRouter } from "next/router"
-const ForgotPassword:React.FC<{lang:Locale,apiDomen:string}>=({apiDomen,lang})=>{
+const ForgotPassword:React.FC<{lang:Locale,apiDomen:string|undefined}>=({apiDomen,lang})=>{
     const route=useRouter();
     function Submit(e:React.FormEvent<HTMLFormElement>){
         e.preventDefault();
