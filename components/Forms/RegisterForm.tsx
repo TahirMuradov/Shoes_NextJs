@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 const RegisterForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}>=({params:{apiDomen,lang}})=>{
     const router=useRouter();
     const[loader,SetLoader]=useState<boolean>(false)
+  
     function HandleSubmit(e:React.FormEvent<HTMLFormElement>){
 
         e.preventDefault();

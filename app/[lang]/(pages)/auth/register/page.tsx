@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 
 const SignUp: React.FC<{params:{lang:Locale}}> = ({params:{lang}}) => {
   const apiDomen = process.env.apiDomen;
+
   return (
     <div className="w-4/5 mx-auto">
-
 
 
       <div className="rounded-sm border border-stroke bg-white shadow-default">
@@ -170,6 +170,7 @@ const SignUp: React.FC<{params:{lang:Locale}}> = ({params:{lang}}) => {
               <h2 className="mb-9 text-2xl font-bold text-black sm:text-title-xl2">
             Register
               </h2>
+
 <RegisterForm params={{apiDomen,lang}}/>
           
             </div>
