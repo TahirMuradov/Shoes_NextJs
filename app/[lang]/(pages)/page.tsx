@@ -1,7 +1,7 @@
 import HomeSlider from "@/components/HomeSlider/HomeSlider";
 import NewArriwal from "@/components/NewArriwal/NewArriwal";
 import TopCategory from "@/components/TopCategory/TopCategory";
-import DisCountArea from "@/components/TopDiscountArea/DisCountArea";
+
 import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n-config";
 import { HomeLaunguage } from "@/types/DictionaryTypes/Dictionary";
@@ -89,7 +89,7 @@ export default async function Home({params:{lang}}:{params:{lang:Locale}}) {
   const NewArriwalProduct:Result<GetNewArriwalProduct[]>=await responseNewArriwalProduct.json();
     return (
       <main className="">
-        <DisCountArea params={{Lang:lang}}/>
+        {/* <DisCountArea params={{Lang:lang}}/> */}
   
     {
       HomeSliderData.isSuccess?
