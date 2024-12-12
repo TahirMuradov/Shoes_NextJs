@@ -12,7 +12,7 @@ const Page: React.FC<{params:{lang:Locale}}> = async ({params:{lang}}) => {
 
 
  return (
-     <SubCategoryCreateForm params={{lang:lang,apiDomen:apiDomen}}/>
+     <SubCategoryCreateForm params={{lang:lang,apiDomen:apiDomen}} key={1}/>
  );
 
   

@@ -292,6 +292,7 @@ formData.append("ProductName",JSON.stringify( productName))
     });
 
 }else if(!response.ok){
+  console.log(response)
   Swal.fire({
     title: 'Error!',
     text: 'An unexpected error occurred!',

@@ -7,15 +7,14 @@ import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
 import Loader from "@/dashboardComponents/common/Loader";
 import { signOut, useSession } from "next-auth/react";
 import Result from "@/types/ApiResultType";
+import GetAllCategoryForSelect from "@/types/CategoryTypes/GetAllCategoryForSelect";
 const SubCategoryCreateForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const router=useRouter();
-    const [Categories, SetCategories] = useState<Result<GetCategoryAllDashboard[]>>();
-
-    const session=useSession();
+    const [Categories, SetCategories] = useState<Result<GetAllCategoryForSelect[]>>();
     const sessions=useSession();
     const[loader,SetLoader]=useState<boolean>(false)
 useEffect(()=>{
-    fetch(`${apiDomen}api/Category/GetAllCategory`, {
+    fetch(`${apiDomen}api/Category/GetAllCategoryForSelect`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -60,7 +59,7 @@ useEffect(()=>{
         }
        return res.json()})
       .then(data=>{
-        
+   
         if (data.isSuccess) {
             
             
@@ -274,7 +273,7 @@ if (res.isConfirmed) {
    {
     Categories?.response.map((category)=>(
 
-        <option value={category.id}>{category.content}</option>
+        <option value={category.id}>{category.name}</option>
     ))
    }
   
