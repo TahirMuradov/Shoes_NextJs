@@ -6,9 +6,9 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Loader from "@/dashboardComponents/common/Loader";
 import { signOut, useSession } from "next-auth/react";
 import Result from "@/types/ApiResultType";
-import GetSubCategoryForUI from "@/types/SubCategoriesType/GetSubCategoryForUI";
+
 import GetProductForSelect from "../ProductComponents/GetProductForSelect";
-const CreateCuponForSubCategoryForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
+const CreateCuponForProductForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const router=useRouter();
     const [Products, SetProducts] = useState<Result<GetProductForSelect[]>>();
    const sessions=useSession();
@@ -94,6 +94,16 @@ useEffect(()=>{
      
       
 },[])
+function HandlerSearchProduct(e:ChangeEvent<HTMLInputElement>){
+let options=document.querySelectorAll(".optionProduct")
+options.forEach(element => {
+    if (!element.textContent?.includes(e.target.value)) {
+        element.classList.add("hidden");
+    } else {
+        element.classList.remove("hidden");
+    }
+});
+}
 function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
     if (Number.parseFloat(e.target.value) < 1||Number.parseFloat(e.target.value) >100) {
       e.target.value = "";
@@ -247,9 +257,8 @@ if (res.isConfirmed) {
             <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
                 
             <input
-                    onChange={(e)=>NumberInputCheckedValue(e)}
-                    min={0}
-                    max={100}
+                    onChange={(e)=>HandlerSearchProduct(e)}
+                   
                       placeholder="Search ProductCode"
                         type="text"
 id="searchSelectOption"
@@ -264,9 +273,11 @@ id="searchSelectOption"
    {
     Products?.response.map((product)=>(
 
-        <option value={product.id}>{product.productcode}</option>
+        <option className="optionProduct" value={product.id}>{product.productcode}</option>
     ))
-   }
+    
+}
+
   
   </select>
            
@@ -282,4 +293,4 @@ id="searchSelectOption"
         </button>
     </form>)
 }
-export default CreateCuponForSubCategoryForm;
+export default CreateCuponForProductForm;

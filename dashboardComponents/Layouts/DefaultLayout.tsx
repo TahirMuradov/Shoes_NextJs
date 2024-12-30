@@ -21,6 +21,7 @@ export default function DefaultLayout({
   const [discountarea,setDisCountAre]=useState<boolean>(false)
   const [HomeSliderItem,setHomeSliderItem]=useState<boolean>(false)
   const [TopCategory,setTopCategory]=useState<boolean>(false)
+  const [Cupon,setCupon]=useState<boolean>(false)
   return (
     <>
     
@@ -288,6 +289,35 @@ export default function DefaultLayout({
             <Link href="/dashboard/webui/topcategoryarea/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">TopCategoryArea Create</Link>
          </li>
       
+   </ul>
+</ul>
+<ul>
+
+<button onClick={()=>setCupon(!Cupon)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Cupon</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${Cupon?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/cupon/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">ALL Cupons</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/cupon/createforuser" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Cupon Create For User</Link>
+         </li>  
+         <li>
+            <Link href="/dashboard/cupon/createforproduct" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Cupon Create For Product</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/cupon/createforcategory" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Cupon Create For Category</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/cupon/createforsubcategory" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Cupon Create For SubCategory</Link>
+         </li>
    </ul>
 </ul>
          <li>
