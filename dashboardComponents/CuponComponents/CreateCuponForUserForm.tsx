@@ -138,6 +138,7 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                 });
                 return;
             }else if(!response.ok){
+               
                 Swal.fire({
                     title: 'Error!',
                     text: 'An unexpected error occurred!',
@@ -152,7 +153,7 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                     router.refresh();
                   }
                 });
-                return;
+                return ;
             }
        return     response.json()
         } )

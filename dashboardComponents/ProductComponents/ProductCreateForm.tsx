@@ -171,7 +171,7 @@ return response.json();
       e.target.value = "";
     }
   }
-
+  function isNumber(n:any) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
   // const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   //   const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
   //   setSubCategories(selectedOptions);
@@ -191,7 +191,7 @@ if (sizes?.response) {
     const sizeInput = document.getElementById(`${size.id}`) as HTMLInputElement | null;
     if (sizeInput) {
       const sizeValue = sizeInput.value;
-      if (Number.parseInt( sizeValue) <= 0) {
+      if (Number.parseInt(sizeValue) <= 0||!isNumber(sizeValue)) {
         formData.delete(`SizeId-${size.id}`);
         continue;
       }
@@ -205,6 +205,7 @@ if (sizes?.response) {
     }
   }
 }
+console.log(Size)
     formData.append("Sizes",JSON.stringify(Size))
     //productName
     const productName: { key: string, value: string | null }[] = [];
@@ -292,7 +293,7 @@ formData.append("ProductName",JSON.stringify( productName))
     });
 
 }else if(!response.ok){
-  console.log(response)
+  console.log(await response.json())
   Swal.fire({
     title: 'Error!',
     text: 'An unexpected error occurred!',
