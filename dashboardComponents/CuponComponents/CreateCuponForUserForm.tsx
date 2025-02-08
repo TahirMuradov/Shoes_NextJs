@@ -7,6 +7,7 @@ import Loader from "@/dashboardComponents/common/Loader";
 import { signOut, useSession } from "next-auth/react";
 import Result from "@/types/ApiResultType";
 import GetAllUserForSelect from "@/types/userTypes/GetAllUserForSelect";
+
 const CreateCuponForUserForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const router=useRouter();
     const [Users, SetUsers] = useState<Result<GetAllUserForSelect[]>>();
@@ -59,7 +60,7 @@ useEffect(()=>{
       .then(data=>{
         
         if (data.isSuccess) {
-            
+        
             
             SetUsers(data)
         }else{
@@ -98,16 +99,19 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
       e.target.value = "";
     }
   }
-    function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async  function  HandleSubmit  (e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true);
 
         const form = new FormData(e.currentTarget);
        
 
-     
+     console.log(JSON.stringify({
+        userId:form.get("userId"),
+        disCountPercent:form.get("discountpercent")
+    }))
        
-        fetch(`${apiDomen}api/Cupon/AddSpecificCuponForCategory`, {
+ var response=   await    fetch(`${apiDomen}api/Cupon/AddSpecificCuponForUser`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,9 +124,37 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                 disCountPercent:form.get("discountpercent")
             }),
         })
-        .then(response =>{
-            if (response.status==401) {
-                Swal.fire({
+  if (!response.ok) {
+   var a= await response.json();
+  
+      let errors = "<ul>";
+                       if (Array.isArray(a.messages)) {
+                       
+                           a.messages.forEach((message:string)=> {
+                               errors += `<li>${message}</li>`;
+                           });
+                       } else if (result.message) {
+                        
+                           errors += `<li>${result.message}</li>`;
+                       }
+                       errors += "</ul>";
+               
+                       Swal.fire({
+                           title: 'Error!',
+                           html: errors, 
+                           icon: 'error',
+                           confirmButtonText: 'Cool',
+                           allowEscapeKey:false,
+                           allowOutsideClick:false
+                       }).then(res => {
+                           if (res.isConfirmed) {
+                               SetLoader(false);
+                               router.refresh();
+                           }
+                       });
+  }
+  if (response.status==401) {
+   Swal.fire({
                     title: 'Authorization Error!',
                     text: 'Your session has expired. Please log in again.',
                     icon: 'info',
@@ -136,42 +168,21 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                         router.refresh();
                     }
                 });
-                return;
-            }else if(!response.ok){
-               
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return ;
-            }
-       return     response.json()
-        } )
-        .then(result => {
-            if (result) {
-                
-                if (result.isSuccess) {
+  }
+  if (response.ok) {
+    var result=await response.json()
+ if (result.isSuccess) {
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Category added successfully!',
+                        text: 'Cupon added successfully!',
                         icon: 'success',
                         confirmButtonText: 'Cool'
                     }).then((res) => {
                         if (res.isConfirmed) {
                             SetLoader(false)
-                            // setItems([]); 
+                         
                         
-                            router.push("/dashboard/subcategory/1")// Clear the form
+                            router.push("/dashboard/cupon/1")// Clear the form
                         }
                     });
                 } else {
@@ -201,23 +212,9 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                         }
                     });
                 }
-            }
-        })
-        .catch(error => {
 
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then((res)=>{
-if (res.isConfirmed) {
-    SetLoader(false)
-    // setItems([]);
-    router.refresh();
-}
-            });
-        });
+  }
+  
     }
     if (loader) {
         return <Loader/>
@@ -250,7 +247,7 @@ if (res.isConfirmed) {
    {
     Users?.response.map((user)=>(
 
-        <option value={user.id}>{user.email}</option>
+        <option value={user.userid}>{user.email}</option>
     ))
    }
   

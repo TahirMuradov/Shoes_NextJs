@@ -1,4 +1,4 @@
 export default interface GetAllUserForSelect{
-    id:string,
+    userid:string,
     email:string
 }
