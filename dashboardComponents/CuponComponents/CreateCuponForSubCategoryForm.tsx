@@ -163,7 +163,7 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                 if (result.isSuccess) {
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Category added successfully!',
+                        text: 'Cupon added successfully!',
                         icon: 'success',
                         confirmButtonText: 'Cool'
                     }).then((res) => {
@@ -171,7 +171,7 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                             SetLoader(false)
                             // setItems([]); 
                         
-                            router.push("/dashboard/subcategory/1")// Clear the form
+                            router.push("/dashboard/cupon/1")// Clear the form
                         }
                     });
                 } else {

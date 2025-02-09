@@ -163,7 +163,7 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                 if (result.isSuccess) {
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Category added successfully!',
+                        text: 'Cupon added successfully!',
                         icon: 'success',
                         confirmButtonText: 'Cool'
                     }).then((res) => {
