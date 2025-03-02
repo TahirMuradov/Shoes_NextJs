@@ -33,16 +33,17 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 
 const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDomen:string|undefined}) => {
-    const[shippingMethods,SetShippingMethods]=useState<Result<PaginatedList<GetAllShippingMethod>>>();
-    const router=useRouter();
+    const[shippingMethods,SetShippingMethods]=useState<Result<PaginatedList<GetAllShippingMethod>>|null>(null);
+    const [loader,SetLoader]=useState<boolean>(false)
+        const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
-    
+    SetLoader(true)
       fetch(`${apiDomen}api/ShippingMethod/GetAllShippingMethod?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+          'langCode': `${lang}` , 
           'Accept-Language': `${lang}`,
              'Authorization':`Bearer ${sessions.data?.user.token}`
         },
@@ -67,30 +68,17 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
           } 
           );
           return;
-      }else if(!res.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      }); 
-      return;
       }
-       return res.json()}).then(x=>{
+       return res.json()})
+       .then(x=>{
         if (x) {
 
           if (x.isSuccess) {
             
             SetShippingMethods(x)
+            SetLoader(false)
           }else{
+       
             let errors = "<ul>";
             if (Array.isArray(x.messages)) {
             
@@ -100,6 +88,14 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
             } else if (x.message) {
              
                 errors += `<li>${x.message}</li>`;
+            }
+            else if(x.errors){
+       
+              Object.keys(x.errors).forEach((key) => {
+                x.errors[key].forEach((message: string) => {
+                                            errors += `<li>${message}</li>`;
+                });
+            });
             }
             errors += "</ul>";
     
@@ -111,33 +107,44 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
                 allowEscapeKey:false,
                 allowOutsideClick:false
             }).then(res => {
-          
-  if (res) {
-    
-    if ( res.isConfirmed) {
-        SetLoader(false);
-        router.refresh();
-    }
-  }
-           
+                if (res.isConfirmed) {
+                    SetLoader(false);                  
+                    router.refresh();
+                }
             });
+    
           }
         }
     
         
       }
-      );
+      )
+      .catch(err=>{
+        Swal.fire({
+          title: 'Error!',
+          html: err, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+            
+              router.refresh();
+          }
+      });
+      });
         
         
     },[])
-     const [loader,SetLoader]=useState<boolean>(false)
       function ShippingMethodDelete(id:string){
         SetLoader(true)
        fetch(`${apiDomen}api/ShippingMethod/DeleteShippingMethod?Id=${id}`, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${lang}`, 
             'Accept-Language': `${lang}`,
                'Authorization':`Bearer ${sessions.data?.user.token}`
           },
@@ -160,29 +167,12 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
             });
             return;
         }
-        else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
-        }
+       
         return  response.json()
         
         })
         .then(responsData=>{
-          if (!responsData) 
-            return;
+        
           if (responsData.isSuccess) {
             Swal.fire({
                 title: 'Success!',
@@ -191,38 +181,75 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
                 confirmButtonText: 'Cool'
             }).then((res) => {
                 if (res.isConfirmed) {
+                  SetShippingMethods(prevShippingMethods => {
+                    if (!prevShippingMethods) return null;
+            
+                    return {
+                        ...prevShippingMethods,
+                        response: {
+                            ...prevShippingMethods.response,
+                            data: prevShippingMethods.response.data.filter(edu => edu.id !== id)
+                        }
+                    };
+                });
                   SetLoader(false)
-                    router.refresh();// Clear the form
+                    router.refresh();
                 }
             })
           
         }else{
+      
+          let errors = "<ul>";
+          if (Array.isArray(responsData.messages)) {
+          
+              responsData.messages.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+          } else if (responsData.message) {
+           
+              errors += `<li>${responsData.message}</li>`;
+          }
+          else if(responsData.errors){
+     
+             responsData.errors.Description.forEach((message:string)=> {
+                 errors += `<li>${message}</li>`;
+             });
+          }
+          errors += "</ul>";
+  
           Swal.fire({
-            title: 'Error!',
-         
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then((res) => {
-            if (res.isConfirmed) {
-              fetch(`${apiDomen}api/ShippingMethod/GetAllShippingMethod?page=${page}`, {
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
-                  'Accept-Language': `${lang}`,
-                     'Authorization':`Bearer ${sessions.data?.user.token}`
-                },
-                cache:"no-store",
-                method: "GET",
-              }).then(res=>res.json()).then(x=>SetShippingMethods(x));
-              SetLoader(false)
-              router.refresh(); // Clear the form
-
-            }
-        })
+              title: 'Error!',
+              html: errors, 
+              icon: 'error',
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false
+          }).then(res => {
+              if (res.isConfirmed) {
+                  SetLoader(false);
+                
+                  router.refresh();
+              }
+          });
       
         }
       
+      })
+      .catch(err=>{
+        
+      Swal.fire({
+        title: 'Error!',
+        html: err, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+            router.refresh();
+        }
+    });
       })
         
         ;

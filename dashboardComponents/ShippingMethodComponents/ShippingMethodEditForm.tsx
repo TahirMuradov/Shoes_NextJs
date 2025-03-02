@@ -20,6 +20,7 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
     const sessions=useSession();
     const router=useRouter();
     useEffect(()=>{
+        SetLoader(true);
         fetch(`${apiDomen}api/ShippingMethod/GetShippingMethodForUpdate?Id=${id}`, {
           method: 'GET',
           headers: {
@@ -46,21 +47,6 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
               }
           });
           return;
-      }else if(!response.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-        }
-      });
-      return;
       }
    return     response.json()
       })
@@ -69,35 +55,45 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
             
             if (result.isSuccess) {
           SetShippingMethod(result)
+          SetLoader(false)
          
        
          
             } else {
-              let errors = "<ul>";
-              if (Array.isArray(result.messages)) {
-              
-                  result.messages.forEach((message:string)=> {
-                      errors += `<li>${message}</li>`;
-                  });
-              } else if (result.message) {
-               
-                  errors += `<li>${result.message}</li>`;
-              }
-              errors += "</ul>";
-      
-              Swal.fire({
-                  title: 'Error!',
-                  html: errors, 
-                  icon: 'error',
-                  confirmButtonText: 'Cool',
-                  allowEscapeKey:false,
-                  allowOutsideClick:false
-              }).then(res => {
-                  if (res.isConfirmed) {
-                      SetLoader(false);
-                      router.refresh();
-                  }
-              });
+           
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+           
+                   result.errors.Description.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                      
+                        router.refresh();
+                    }
+                });      
+             
             }
         }
       })
@@ -105,9 +101,15 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
       
           Swal.fire({
               title: 'Error!',
-              text: 'An unexpected error occurred!',
+              text: `${error}`,
               icon: 'error',
-              confirmButtonText: 'Cool'
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false
+          }).then(x=>{
+            if (x.isConfirmed) {
+                router.refresh();
+            }
           });
       });
       },[])
@@ -133,26 +135,13 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                    value: inputValue as string,
                });
       
-           } else {
-               Swal.fire({
-                   title: 'Error!',
-                   text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                   icon: 'error',
-                   confirmButtonText: 'Cool'
-                 }).then(res=>{
-                   if (res.isConfirmed) {
-                      
-                       router.refresh(); // Reload the page if the locale doesn't match
-                   }
-                 })
-               return;
-           }
+           } 
        }    
        fetch(`${apiDomen}api/ShippingMethod/UpdateShippingMethod?Id=${id}`, {
            method:'PUT',
            headers: {
                'Content-Type': 'application/json',
-               'LangCode': `${lang}`, // Or whatever language code you want to send
+               'LangCode': `${lang}`, 
                'Accept-Language': `${lang}`,
                   'Authorization':`Bearer ${sessions.data?.user.token}`
            },
@@ -184,22 +173,6 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
               }
           });
           return;
-      }else if(!response.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
        return response.json()})
        .then(result => {
@@ -210,52 +183,66 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                     title: 'Success!',
                     text: 'Shipping Method updated successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
-                      SetLoader(false)                
+                         
                                      
                         router.push("/dashboard/shippingmethod/1")
                     }
                 });
             } else {
-             let errors = "<ul>";
-             if (Array.isArray(result.messages)) {
-             
-                 result.messages.forEach((message:string)=> {
-                     errors += `<li>${message}</li>`;
-                 });
-             } else if (result.message) {
-              
-                 errors += `<li>${result.message}</li>`;
-             }
-             errors += "</ul>";
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                    
+                  
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+           
+                    Object.keys(result.errors).forEach((key) => {
+                        result.errors[key].forEach((message: string) => {
+                                                    errors += `<li>${message}</li>`;
+                        });
+                    });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                              SetLoader(false)               
+                        router.refresh();
+                    }
+                });
      
-             Swal.fire({
-                 title: 'Error!',
-                 html: errors, 
-                 icon: 'error',
-                 confirmButtonText: 'Cool',
-                 allowEscapeKey:false,
-                 allowOutsideClick:false
-             }).then(res => {
-                 if (res.isConfirmed) {
-                     SetLoader(false);
-                     router.refresh();
-                 }
-             });
+            
             }
         }
        })
        .catch(error => {
            Swal.fire({
                title: 'Error!',
-               text: 'An unexpected error occurred!',
+               text: `${error}`,
                icon: 'error',
-               confirmButtonText: 'Cool'
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
            }).then(x=>{
-             SetLoader(false)
-          
+                     SetLoader(false)
              router.refresh();
            });
        });

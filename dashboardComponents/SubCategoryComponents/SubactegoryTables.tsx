@@ -31,11 +31,11 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
     const [loader,SetLoader]=useState<boolean>(false)
-    const [SubCategory,SetSubCategory]=useState<Result<PaginatedList<GetSubCategory>>>();
+    const [SubCategory,SetSubCategory]=useState<Result<PaginatedList<GetSubCategory>>|null>(null);
     const sessions=useSession();
     const router=useRouter();
     useEffect(()=>{
-
+SetLoader(true)
       fetch(`${apiDomen}api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
         headers: {
           'Accept': 'application/json',
@@ -64,22 +64,6 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
               }
           });
           return;
-      }else if(!res.ok) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
 
         return res.json()
@@ -91,7 +75,9 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
           if(x.isSuccess){
   
             SetSubCategory(x)
+            SetLoader(false)
           }else{
+          
             let errors = "<ul>";
             if (Array.isArray(x.messages)) {
             
@@ -101,6 +87,12 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
             } else if (x.message) {
              
                 errors += `<li>${x.message}</li>`;
+            }
+            else if(x.errors){
+       
+               x.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
             }
             errors += "</ul>";
     
@@ -113,13 +105,30 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
                 allowOutsideClick:false
             }).then(res => {
                 if (res.isConfirmed) {
-                    SetLoader(false);
+                    SetLoader(false);                  
                     router.refresh();
                 }
-            });
+            });   
+           
           }
         }
         
+      })
+      .catch(err=>{
+        Swal.fire({
+          title: 'Error!',
+          html: err, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+            
+              router.refresh();
+          }
+      });
       });
     },[])
     function SubCategoryDelete(id:string){
@@ -151,23 +160,7 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
             });
             return;
         }
-        else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
-        }
+        
           
           
         return response.json()})
@@ -179,44 +172,85 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
                   title: 'Success!',
                   text: 'SubCategory delete successfully!',
                   icon: 'success',
-                  confirmButtonText: 'Cool'
+                  confirmButtonText: 'Cool',
+                  allowEscapeKey:false,
+                  allowOutsideClick:false
               }).then((res) => {
                   if (res.isConfirmed) {
-                    fetch(`${apiDomen}api/SubCategory/GetAllSubCategoryForTable?page=${page}`, {
-                      headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
-                        'Accept-Language': `${Lang}`,
-     'Authorization':`Bearer ${sessions.data?.user.token}`
-                      },
-                      cache:"no-store",
-                      method: "GET",
-                    }).then(res=>res.json()).then(x=>SetSubCategory(x));
+                    SetSubCategory(prevSubCategory => {
+                      if (!prevSubCategory) return null;
+              
+                      return {
+                          ...prevSubCategory,
+                          response: {
+                              ...prevSubCategory.response,
+                              data: prevSubCategory.response.data.filter(sbc => sbc.id !== id)
+                          }
+                      };
+                  });
                     SetLoader(false)
-                      router.refresh();// Clear the form
+                      router.refresh();
                   }
               })
            
           }else{
+          
+            let errors = "<ul>";
+            if (Array.isArray(responsData.messages)) {
+            
+                responsData.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (responsData.message) {
+             
+                errors += `<li>${responsData.message}</li>`;
+            }
+            else if(responsData.errors){
+       
+               responsData.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+            }
+            errors += "</ul>";
+    
             Swal.fire({
-              title: 'Error!',
-           
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then((res) => {
-              if (res.isConfirmed) {
-                SetLoader(false)
-                  router.push("/dashboard/subCategory/1")// Clear the form
-              }
-          })
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                  
+                    router.refresh();
+                }
+            });
       
           }
           }
       
-      }).catch(error=>signOut())
+      }).catch(error=>  
+        {
+
+          Swal.fire({
+            title: 'Error!',
+            html: error, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
+        })
         
-        ;
+       
       }
       if (loader) {
         return <Loader/>
@@ -250,7 +284,7 @@ const SubCategoryTable:React.FC<{Lang:string,page:number,apiDomen:string|undefin
   <button onClick={()=>SubCategoryDelete(row.id)} className=" mx-3 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
     Delete
   </button>
-  <Link href={`/dashboard/Subcategory/edit/${row.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+  <Link href={`/dashboard/subcategory/edit/${row.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
     Edit
   </Link>
                       </StyledTableCell>

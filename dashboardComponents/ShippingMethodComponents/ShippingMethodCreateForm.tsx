@@ -32,32 +32,19 @@ const ShippingMethodCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>
                     value: inputValue as string,
                 });
        
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
-                return;
-            }
+            } else{continue;}
         }    
         fetch(`${apiDomen}api/ShippingMethod/AddShippingMethod`, {
             method:'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'LangCode': `${lang}`, // Or whatever language code you want to send
+                'Content-Type': 'application/json',             
+                'LangCode': `${lang}`,
                 'Accept-Language': `${lang}`,
                    'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body: JSON.stringify({
-                discountPrice:form.get("discountPrice"),
-                price:form.get("price"),
+                discountPrice:form.get("discountPrice")??0,
+                price:form.get("price")??0,
                 LangContent: newItems.reduce((acc, item) => {
                     acc[item.key] = item.value;
                     return acc;
@@ -80,26 +67,11 @@ const ShippingMethodCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>
                     }
                 });
                 return;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
             }
             
            return response.json()})
         .then(result => {
+            console.log(result)
             if(result){
 
                 if (result.isSuccess) {
@@ -107,49 +79,62 @@ const ShippingMethodCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>
                         title: 'Success!',
                         text: 'Shipping Method added successfully!',
                         icon: 'success',
-                        confirmButtonText: 'Cool'
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
                     }).then((res) => {
                         if (res.isConfirmed) {
-                          SetLoader(false)
-                        
-                      
+                          SetLoader(false)                          
                         
                             router.push("/dashboard/shippingmethod/1")
                         }
                     });
                 } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
-            
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);
-                            router.refresh();
-                        }
+                  
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((message: string) => {
+                                                errors += `<li>${message}</li>`;
                     });
+                });
+             
+            
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                   
+                     router.refresh();
+                 }
+             });
+            
+                  
                 }
             }
         })
         .catch(error => {
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
                 confirmButtonText: 'Cool'
             }).then(x=>{

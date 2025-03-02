@@ -1,11 +1,9 @@
 "use client"
 import Result from "@/types/ApiResultType";
 import PaginatedList from "@/types/Paginated.type";
-
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../common/Loader";
@@ -37,15 +35,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
       const [loader,SetLoader]=useState<boolean>(false)
-    const [Products,SetProducts]=useState<Result<PaginatedList<GetProduct>>>();
+    const [Products,SetProducts]=useState<Result<PaginatedList<GetProduct>>|null>(null);
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
+      SetLoader(true)
       fetch(`${apiDomen}api/Product/GetAllProductDashboard?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${Lang}`, 
           'Accept-Language': `${Lang}`,
          'Authorization':`Bearer ${sessions.data?.user.token}`
 
@@ -69,22 +68,6 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
               }
           });
           return;
-      }else if(!x.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
         return x.json()
       }
@@ -93,34 +76,44 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
    if (res) {
     
      if (res.isSuccess) {
-       
        SetProducts(res)
+       SetLoader(false)
      }else {
-       let errors = "<ul>";
-       if (Array.isArray(res.messages)) {
+   
+      let errors = "<ul>";
+      if (Array.isArray(res.messages)) {
+      
+          res.messages.forEach((message:string)=> {
+              errors += `<li>${message}</li>`;
+          });
+      } else if (res.message) {
        
-           res.messages.forEach((message:string)=> {
-               errors += `<li>${message}</li>`;
-           });
-       } else if (res.message) {
-        
-           errors += `<li>${res.message}</li>`;
-       }
-       errors += "</ul>";
+          errors += `<li>${res.message}</li>`;
+      }
+      else if(res.errors){
+ 
+         res.errors.Description.forEach((message:string)=> {
+             errors += `<li>${message}</li>`;
+         });
+      }
+      errors += "</ul>";
 
-       Swal.fire({
-           title: 'Error!',
-           html: errors, 
-           icon: 'error',
-           confirmButtonText: 'Cool',
-           allowEscapeKey:false,
-           allowOutsideClick:false
-       }).then(res => {
-           if (res.isConfirmed) {
-               SetLoader(false);
-               router.refresh();
-           }
-       });
+      Swal.fire({
+          title: 'Error!',
+          html: errors, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+            
+              router.refresh();
+          }
+      });
+
+   
      }
      
    }
@@ -134,7 +127,7 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${Lang}`, 
             'Accept-Language': `${Lang}`,
    'Authorization':`Bearer ${sessions.data?.user.token}`
           },
@@ -156,22 +149,6 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
                 }
             });
             return;
-        }else if(!response.ok){
-          Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
-
-         signOut()
-           
-          }
-        });
-        return;
         }
          return response.json()
         })
@@ -187,6 +164,17 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
               }).then((res) => {
                   if (res.isConfirmed) {
                  router.refresh();
+                 SetProducts(prevProducts => {
+                  if (!prevProducts) return null;
+          
+                  return {
+                      ...prevProducts,
+                      response: {
+                          ...prevProducts.response,
+                          data: prevProducts.response.data.filter(edu => edu.id !== id)
+                      }
+                  };
+              });
                     SetLoader(false)
                   }
               })

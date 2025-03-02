@@ -126,7 +126,14 @@ export interface HeaderLaunguage {
     proceedToCheckout: string;
     emptyCart: string;
   }
-  
+  export interface CategoryTable{
+    categoryId:string,
+    categoryName:string,
+    categoryIsFeatured:string,
+    action:string,
+    delete:string,
+    edit:string
+  }
  export default interface Dictionary {
     header: HeaderLaunguage;
     footer: FooterLaunguage;
@@ -136,6 +143,7 @@ export interface HeaderLaunguage {
     Contact: ContactLaunguage;
     ProductDetail: ProductDetailLaunguage;
     CheckOut:CheckOutLaunguage,
-    Cart:CartLanguage
+    Cart:CartLanguage,
+  
   }
   

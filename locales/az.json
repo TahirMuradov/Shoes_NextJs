@@ -120,6 +120,19 @@
 },
 "NotFound":{
   "ReturnHome":"Ana Səhifəyə Qayıt"
+},
+"Dashboard":{
+"Category":{
+  "Table":{
+    "categoryId":"Kateqoriya id",
+    "categoryName":"Kateqoriya Adı",
+    "categoryIsFeatured":"Önə çıxma vəziyyəti",
+    "action":"Digər",
+    "delete":"Sil",
+    "edit":"Redaktə et"
+  }
+
+}
 }
 
   }

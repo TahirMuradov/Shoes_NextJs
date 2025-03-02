@@ -2,7 +2,6 @@
 import { Locale } from "@/i18n-config";
 import PaginatedList from "@/types/Paginated.type";
 import GetSize from "@/types/SizeTypes/GetAllSize";
-
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,16 +31,16 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefined}}>=({params:{lang,page,apiDomen}})=>{
     const [loader,SetLoader]=useState<boolean>(false)
-    const [size,SetSizes]=useState<Result<PaginatedList<GetSize>>>()
+    const [size,SetSizes]=useState<Result<PaginatedList<GetSize>>|null>(null)
     const sessions=useSession();
     const router=useRouter();
     useEffect(()=>{
-
+SetLoader(true)
       fetch(`${apiDomen}api/Size/GetAllSizeForTable?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
+          'langCode': `${lang}`,
           'Accept-Language': `${lang}`,
              'Authorization':`Bearer ${sessions.data?.user.token}`
         },
@@ -64,27 +63,71 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
               }
           });
           return;
-      }else if(!x.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-            SetLoader(false)
-       signOut()        
-        }
-      });
-      return;
       }
       return  x.json()
-      }).then(res=>{
-        if (res) {
-          
-          SetSizes(res)
-        }
-      });
+      }).then(result=>{
+    
+       
+          if (result) {
+              if (result.isSuccess) {
+                SetSizes(result)
+                SetLoader(false)
+              }else                
+               {
+    
+               let errors = "<ul>";
+               if (Array.isArray(result.messages)) {
+               
+                   result.messages.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+               } else if (result.message) {
+                
+                   errors += `<li>${result.message}</li>`;
+               }
+               else{
+                  result.errors.Description.forEach((message:string)=> {
+                      errors += `<li>${message}</li>`;
+                  });
+               }
+               errors += "</ul>";
+       
+               Swal.fire({
+                   title: 'Error!',
+                   html: errors, 
+                   icon: 'error',
+                   confirmButtonText: 'Cool',
+                   allowEscapeKey:false,
+                   allowOutsideClick:false
+               }).then(res => {
+                   if (res.isConfirmed) {
+                       SetLoader(false);
+                       router.refresh();
+                   }
+               });
+              }
+  
+          }
+  
+        
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Error!',
+                text: `${error}`,
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEnterKey:false,
+                allowOutsideClick:false
+            }).then((x)=>{
+             if(x.isConfirmed){
+ 
+                 SetLoader(false)
+              
+                 router.refresh();
+             }
+            });
+        });
     },[])
     function SizeDelete(id:string){
         SetLoader(true)
@@ -92,7 +135,7 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
            headers: {
              'Accept': 'application/json',
              'Content-Type': 'application/json',
-             'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+             'langCode': `${lang}` ,
              'Accept-Language': `${lang}`,
                 'Authorization':`Bearer ${sessions.data?.user.token}`
             },
@@ -115,20 +158,6 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
                 }
             });
             return;
-        }else if(!response.ok){
-          Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-              SetLoader(false)
-         signOut()
-        
-          }
-        });
-        return;
         }
           
           return response.json()})
@@ -143,19 +172,19 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
                   confirmButtonText: 'Cool'
               }).then((res) => {
                   if (res.isConfirmed) {
-                   fetch(`${apiDomen}api/Size/GetAllSizeForTable?page=${page}`, {
-                     headers: {
-                       'Accept': 'application/json',
-                       'Content-Type': 'application/json',
-                       'langCode': `${lang}`,  // You can dynamically set this value based on user selection or other logic
-                       'Accept-Language': `${lang}`,
-                          'Authorization':`Bearer ${sessions.data?.user.token}`
-                     },
-                     cache:"no-store",
-                     method: "GET",
-                   }).then(x=>x.json()).then(res=>SetSizes(res));
+                    SetSizes(prevSizes => {
+                      if (!prevSizes) return null;
+              
+                      return {
+                          ...prevSizes,
+                          response: {
+                              ...prevSizes.response,
+                              data: prevSizes.response.data.filter(edu => edu.id !== id)
+                          }
+                      };
+                  });
                     SetLoader(false)
-                      router.refresh();// Clear the form
+                      router.refresh();
                   }
               })
           }else{
@@ -188,6 +217,21 @@ const SizeTable:React.FC<{params:{lang:Locale,page:number,apiDomen:string|undefi
           }
           }
        
+       }).catch(err=>{
+        Swal.fire({
+          title: 'Error!',
+          html: err, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+            
+              router.refresh();
+          }
+      });
        })
     }
     if (loader) {

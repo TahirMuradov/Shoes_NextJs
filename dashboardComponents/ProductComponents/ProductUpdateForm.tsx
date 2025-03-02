@@ -22,8 +22,8 @@ const [Product,SetProduct]=useState<Result<GetProductForUpdate>>()
     const PictureinputRef = useRef<HTMLInputElement | null>(null);
     const sessions=useSession();
   const router=useRouter();
-useEffect(()=>{
-  fetch(`${apiDomen}api/Size/GetAllSize`, {
+  function getData(){
+    fetch(`${apiDomen}api/Size/GetAllSize`, {
       method: "GET",
   headers:{
         'Accept-Language': `${lang}`,
@@ -48,28 +48,14 @@ useEffect(()=>{
     });
     return;
 }
-else if(!response.ok){
-  Swal.fire({
-    title: 'Error!',
-    text: 'An unexpected error occurred!',
-    icon: 'error',
-    confirmButtonText: 'Cool'
-}).then(x=>{
-  if (x.isConfirmed) {
-    
-      SetLoader(false)
 
- signOut()
-    router.refresh();
-  }
-});
-return;
-}
 return response.json()
 }).then(result=>{
   if (result.isSuccess) {
 SetSizes(result)
   }else{
+  
+    
     let errors = "<ul>";
     if (Array.isArray(result.messages)) {
     
@@ -79,6 +65,12 @@ SetSizes(result)
     } else if (result.message) {
      
         errors += `<li>${result.message}</li>`;
+    }
+    else if(result.errors){
+
+       result.errors.Description.forEach((message:string)=> {
+           errors += `<li>${message}</li>`;
+       });
     }
     errors += "</ul>";
 
@@ -92,9 +84,11 @@ SetSizes(result)
     }).then(res => {
         if (res.isConfirmed) {
             SetLoader(false);
+          
             router.refresh();
         }
     });
+
   }
 });
 fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
@@ -121,28 +115,14 @@ method: "GET",
         }
     });
     return;
-}else if(!response.ok){
-  Swal.fire({
-    title: 'Error!',
-    text: 'An unexpected error occurred!',
-    icon: 'error',
-    confirmButtonText: 'Cool'
-}).then(x=>{
-  if (x.isConfirmed) {
-    
-      SetLoader(false)
-
- signOut()
-    router.refresh();
-  }
-});
-return;
 }
 return response.json()
 }).then(result=>{
 if (result.isSuccess) {
   SetSubCategories(result)
 }else{
+
+  
   let errors = "<ul>";
   if (Array.isArray(result.messages)) {
   
@@ -152,6 +132,12 @@ if (result.isSuccess) {
   } else if (result.message) {
    
       errors += `<li>${result.message}</li>`;
+  }
+  else if(result.errors){
+
+     result.errors.Description.forEach((message:string)=> {
+         errors += `<li>${message}</li>`;
+     });
   }
   errors += "</ul>";
 
@@ -165,11 +151,31 @@ if (result.isSuccess) {
   }).then(res => {
       if (res.isConfirmed) {
           SetLoader(false);
+        
           router.refresh();
       }
   });
+
+
+ 
 }
 
+}).catch(err=>{
+  
+  Swal.fire({
+    title: 'Error!',
+    html: err, 
+    icon: 'error',
+    confirmButtonText: 'Cool',
+    allowEscapeKey:false,
+    allowOutsideClick:false
+}).then(res => {
+    if (res.isConfirmed) {
+      
+      
+        router.refresh();
+    }
+});
 });
  fetch(`${apiDomen}api/Product/GetProductDetailDashboard?id=${id}`, {
   headers:{
@@ -196,28 +202,13 @@ method: "GET",
         }
     });
     return;
-}else if(!response.ok){
-  Swal.fire({
-    title: 'Error!',
-    text: 'An unexpected error occurred!',
-    icon: 'error',
-    confirmButtonText: 'Cool'
-}).then(x=>{
-  if (x.isConfirmed) {
-    
-      SetLoader(false)
-
- signOut()
-    router.refresh();
-  }
-});
-return;
 }
 return response.json()
 }).then(result=>{
   if (result.isSuccess) {
     SetProduct(result)
   }else{
+
     let errors = "<ul>";
     if (Array.isArray(result.messages)) {
     
@@ -227,6 +218,12 @@ return response.json()
     } else if (result.message) {
      
         errors += `<li>${result.message}</li>`;
+    }
+    else if(result.errors){
+
+       result.errors.Description.forEach((message:string)=> {
+           errors += `<li>${message}</li>`;
+       });
     }
     errors += "</ul>";
 
@@ -240,11 +237,19 @@ return response.json()
     }).then(res => {
         if (res.isConfirmed) {
             SetLoader(false);
+          
             router.refresh();
         }
     });
+
+  
   }
 });
+  }
+useEffect(()=>{
+  SetLoader(true);
+getData()
+SetLoader(false);
 
 },[])
 
@@ -337,40 +342,14 @@ if (sizes?.response) {
                 value: inputNameValue as string,
             });
    
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Inspect de duzelis etme datalar duzgun gelmir!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-              }).then(res=>{
-                if (res.isConfirmed) {
-                    // setItems([]);
-                    router.refresh(); // Reload the page if the locale doesn't match
-                }
-              })
-            return;
-        }
+        } 
         if (inputDescriptionValue !== null) {
           productDescription.push({
                 key,
                 value: inputDescriptionValue as string,
             });
    
-        } else {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Inspect de duzelis etme datalar duzgun gelmir!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-              }).then(res=>{
-                if (res.isConfirmed) {
-                    // setItems([]);
-                    router.refresh(); // Reload the page if the locale doesn't match
-                }
-              })
-            return;
-        }
+        } 
     }
     formData.append("Description",JSON.stringify(productDescription))
 formData.append("ProductName",JSON.stringify( productName))
@@ -406,22 +385,6 @@ formData.append("Id",id)
               }
           });
           return;
-      }else if(!response.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
         
       return  response.json()})
@@ -445,6 +408,7 @@ formData.append("Id",id)
               });
           } else {
       
+          
             let errors = "<ul>";
             if (Array.isArray(result.messages)) {
             
@@ -454,6 +418,12 @@ formData.append("Id",id)
             } else if (result.message) {
              
                 errors += `<li>${result.message}</li>`;
+            }
+            else if(result.errors){
+       
+               result.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
             }
             errors += "</ul>";
     
@@ -467,6 +437,7 @@ formData.append("Id",id)
             }).then(res => {
                 if (res.isConfirmed) {
                     SetLoader(false);
+                  
                     router.refresh();
                 }
             });
@@ -479,7 +450,7 @@ formData.append("Id",id)
     } catch (error) {
         Swal.fire({
             title: 'Error!',
-            text: 'An unexpected error occurred!',
+            html: `${error}`,
             icon: 'error',
             confirmButtonText: 'Cool'
         }).then(x=>{

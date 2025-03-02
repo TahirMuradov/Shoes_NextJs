@@ -11,13 +11,14 @@ import Result  from "@/types/ApiResultType";
 
 const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lang,apiDomen})=>{
 
-  // const [subCategories, setSubCategories] = useState<string[]>([]);
+
   const [sizes,SetSizes]=useState<Result<GetSize[]>>();
   const [subCategories,setSubCategories]=useState<Result<GetSubCategory[]>>();
   const [loader,SetLoader]=useState<boolean>(false);
   const router=useRouter();
   const sessions=useSession();
   useEffect(()=>{
+    SetLoader(true);
     fetch(`${apiDomen}api/Size/GetAllSize`, {
     headers:{
           'Accept-Language': `${lang}`,
@@ -43,26 +44,13 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lan
           }
       });
       return;
-  }else if (!res.ok) {
-    Swal.fire({
-      title: 'Error!',
-      text: 'An unexpected error occurred!',
-      icon: 'error',
-      confirmButtonText: 'Cool'
-  }).then(x=>{
-    if (x.isConfirmed) {
-   SetLoader(false)
-   signOut()
-      router.refresh();
-    }
-  });
-  return;
   }
   return res.json();
   }).then(data=>{
     if (data.isSuccess) {
       SetSizes(data)
-    }else{
+        }else{
+      
       let errors = "<ul>";
       if (Array.isArray(data.messages)) {
       
@@ -72,6 +60,12 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lan
       } else if (data.message) {
        
           errors += `<li>${data.message}</li>`;
+      }
+      else if(data.errors){
+ 
+         data.errors.Description.forEach((message:string)=> {
+             errors += `<li>${message}</li>`;
+         });
       }
       errors += "</ul>";
 
@@ -85,10 +79,27 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lan
       }).then(res => {
           if (res.isConfirmed) {
               SetLoader(false);
+            
               router.refresh();
           }
       });
     }
+  })
+  .catch(err=>{
+    
+    Swal.fire({
+      title: 'Error!',
+      html: `${err}`, 
+      icon: 'error',
+      confirmButtonText: 'Cool',
+      allowEscapeKey:false,
+      allowOutsideClick:false
+  }).then(res => {
+      if (res.isConfirmed) {
+          SetLoader(false);
+                  router.refresh();
+      }
+  });
   });
   fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
     headers:{
@@ -114,20 +125,6 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lan
         }
     });
     return;
-}else if(!response.ok){
-  Swal.fire({
-    title: 'Error!',
-    text: 'An unexpected error occurred!',
-    icon: 'error',
-    confirmButtonText: 'Cool'
-}).then(x=>{
-  if (x.isConfirmed) {
-      SetLoader(false)
-      signOut()
-    router.refresh();
-  }
-});
-return;
 }
 return response.json();
 }).then(result=>{
@@ -135,7 +132,9 @@ return response.json();
 
     if (result.isSuccess) {
       setSubCategories(result)
+      SetLoader(false)
     }else{
+    
       let errors = "<ul>";
       if (Array.isArray(result.messages)) {
       
@@ -146,8 +145,14 @@ return response.json();
        
           errors += `<li>${result.message}</li>`;
       }
+      else if(result.errors){
+ 
+         result.errors.Description.forEach((message:string)=> {
+             errors += `<li>${message}</li>`;
+         });
+      }
       errors += "</ul>";
-  
+
       Swal.fire({
           title: 'Error!',
           html: errors, 
@@ -158,9 +163,12 @@ return response.json();
       }).then(res => {
           if (res.isConfirmed) {
               SetLoader(false);
+            
               router.refresh();
           }
       });
+  
+  
     }
   }
 });
@@ -172,14 +180,11 @@ return response.json();
     }
   }
   function isNumber(n:any) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
-  // const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-  //   setSubCategories(selectedOptions);
-  // };
+ 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+SetLoader(true)
     const form = e.currentTarget;
     const formData = new FormData(form);
 
@@ -205,7 +210,7 @@ if (sizes?.response) {
     }
   }
 }
-console.log(Size)
+
     formData.append("Sizes",JSON.stringify(Size))
     //productName
     const productName: { key: string, value: string | null }[] = [];
@@ -292,20 +297,6 @@ formData.append("ProductName",JSON.stringify( productName))
         }
     });
 
-}else if(!response.ok){
-  console.log(await response.json())
-  Swal.fire({
-    title: 'Error!',
-    text: 'An unexpected error occurred!',
-    icon: 'error',
-    confirmButtonText: 'Cool'
-}).then(x=>{
-  if (x.isConfirmed) {    
-      SetLoader(false)
- signOut()
-    router.refresh();
-  }
-});
 }
 var apiResponse=await response.json();
 if (apiResponse.isSuccess) {
@@ -321,6 +312,8 @@ if (apiResponse.isSuccess) {
     }
 })
 }else {
+
+  
   let errors = "<ul>";
   if (Array.isArray(apiResponse.messages)) {
   
@@ -330,6 +323,12 @@ if (apiResponse.isSuccess) {
   } else if (apiResponse.message) {
    
       errors += `<li>${apiResponse.message}</li>`;
+  }
+  else if(apiResponse.errors){
+
+     apiResponse.errors.Description.forEach((message:string)=> {
+         errors += `<li>${message}</li>`;
+     });
   }
   errors += "</ul>";
 
@@ -343,14 +342,17 @@ if (apiResponse.isSuccess) {
   }).then(res => {
       if (res.isConfirmed) {
           SetLoader(false);
+        
           router.refresh();
       }
   });
+
 }
-    } catch (error) {
+    } 
+    catch (error) {
       Swal.fire({
         title: 'Error!',
-        text: 'An unexpected error occurred!',
+        text: `${error}`,
         icon: 'error',
         confirmButtonText: 'Cool'
     }).then(x=>{

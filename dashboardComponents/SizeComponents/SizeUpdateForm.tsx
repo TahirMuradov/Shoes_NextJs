@@ -9,27 +9,29 @@ import Loader from "../common/Loader";
 import { signOut, useSession } from "next-auth/react";
 
 
+
 const SizeUpdateForm:React.FC<{params:{lang:Locale,id:string,apiDomen:string|undefined}}> = ({params:{id,lang,apiDomen}}) => {
-    const[size,SetSize]=useState<Result<GetSize>>();
-    
-    const router=useRouter();
+    const[size,SetSize]=useState<Result<GetSize>|null>(null);
+    const[loader,SetLoader]=useState<boolean>(false)
+        const router=useRouter();
     const sessions=useSession();
 
 
 useEffect(()=>{
+    SetLoader(true)
     fetch(`${apiDomen}api/Size/GetSize?Id=${id}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'langCode': `${lang}` , // You can dynamically set this value based on user selection or other logic
+          'langCode': `${lang}` ,
             'Accept-Language': `${lang}`,
              'Authorization':`Bearer ${sessions.data?.user.token}`
         },
         cache:"no-store",
         method: "GET",
-      }).then(res=>{
-
-        if (res.status==401) {
+      })
+       .then(response => {
+        if (response.status==401) {
             Swal.fire({
                 title: 'Authorization Error!',
                 text: 'Your session has expired. Please log in again.',
@@ -45,31 +47,75 @@ useEffect(()=>{
                 }
             });
             return;
-        }else if(!res.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
-        return res.json();
-
-      })
-      .then(x=>{
-        if (x) {
-            
-            SetSize(x)
-        }
+        
+        return response.json()
     })
-      ;
+       .then(result => {
+        
+        if (result) {
+            if (result.isSuccess) {
+              SetSize(result)
+              SetLoader(false)
+            }
+            if (!result.isSuccess) {
+  
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                     SetSize(null);
+                     router.refresh();
+                 }
+             });
+            }
+
+        }
+
+       })
+       .catch(error => {
+           Swal.fire({
+               title: 'Error!',
+               text: `An unexpected error occurred!${error}`,
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEnterKey:false,
+               allowOutsideClick:false
+           }).then((x)=>{
+            if(x.isConfirmed){
+SetSize(null)
+                SetLoader(false)
+             
+                router.refresh();
+            }
+           });
+       });
+
+      
 },[])
 
 
@@ -79,7 +125,6 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
  } 
 
 }
-    const[loader,SetLoader]=useState<boolean>(false)
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true)
@@ -88,12 +133,12 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
             method:'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'LangCode': `${lang}`, // Or whatever language code you want to send
+                'LangCode': `${lang}`, 
                 'Accept-Language': `${lang}`,
                    'Authorization':`Bearer ${sessions.data?.user.token}`
             },
             body:JSON.stringify({
-              id:id, // ID of the size being updated
+              id:id, 
               NewSizeNumber:form.get("Size")
           }),
         })
@@ -114,25 +159,7 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
                     }
                 });
                 return;
-            } else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
-            } 
+            }  
           return  response.json()
         })
         .then(result => {
@@ -149,43 +176,51 @@ function CheckedSizeNumber(e:ChangeEvent<HTMLInputElement>){
                     }).then((res) => {
                         if (res.isConfirmed) {
                           SetLoader(false)                 
-                         router.push("/dashboard/size/1")// Clear the form
+                         router.push("/dashboard/size/1")
                         }
                     });
                 } else {
               
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
-            
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);                      
-                            router.refresh();
-                        }
-                    });
+                  
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                   
+                     router.refresh();
+                 }
+             });
                 }
             }
         })
         .catch(error => {
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
                 confirmButtonText: 'Cool',
                 allowEscapeKey:false,

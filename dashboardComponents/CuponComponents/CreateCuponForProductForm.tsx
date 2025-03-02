@@ -91,6 +91,22 @@ useEffect(()=>{
             });
         }
     })
+    .catch(error => {
+        
+      Swal.fire({
+        title: 'Error!',
+        html: error, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);          
+            router.refresh();
+        }
+    });
+    })
     
      
       
@@ -149,22 +165,6 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                     }
                 });
                 return;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
             }
        return     response.json()
         } )
@@ -176,41 +176,51 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                         title: 'Success!',
                         text: 'Cupon added successfully!',
                         icon: 'success',
-                        confirmButtonText: 'Cool'
-                    }).then((res) => {
-                        if (res.isConfirmed) {
-                            SetLoader(false)
-                            // setItems([]); 
-                        
-                            router.push("/dashboard/cupon/1")// Clear the form
-                        }
-                    });
-                } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
-            
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
                         confirmButtonText: 'Cool',
                         allowEscapeKey:false,
                         allowOutsideClick:false
-                    }).then(res => {
+                    }).then((res) => {
                         if (res.isConfirmed) {
-                            SetLoader(false);
-                            router.refresh();
+                            SetLoader(false)                        
+                            router.push("/dashboard/cupon/1")
                         }
                     });
+                } else {
+              
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                   
+                     router.refresh();
+                 }
+             });
+            
+               
                 }
             }
         })
@@ -218,13 +228,14 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
 
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
-                confirmButtonText: 'Cool'
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
             }).then((res)=>{
 if (res.isConfirmed) {
-    SetLoader(false)
-    // setItems([]);
+    SetLoader(false);
     router.refresh();
 }
             });

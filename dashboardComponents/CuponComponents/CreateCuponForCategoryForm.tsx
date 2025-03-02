@@ -9,10 +9,11 @@ import Result from "@/types/ApiResultType";
 import GetAllCategoryForSelect from "@/types/CategoryTypes/GetAllCategoryForSelect";
 const CreateCuponForCategoryForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const router=useRouter();
-    const [Categories, SetCategories] = useState<Result<GetAllCategoryForSelect[]>>();
-   const sessions=useSession();
+    const sessions=useSession();
+    const [Categories, SetCategories] = useState<Result<GetAllCategoryForSelect[]>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
 useEffect(()=>{
+    SetLoader(true)
     fetch(`${apiDomen}api/Category/GetAllCategoryForSelect`, {
         headers: {
           'Accept': 'application/json',
@@ -40,21 +41,6 @@ useEffect(()=>{
                     router.refresh();
                 }
             });
-        }else if(!res.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
         }
        return res.json()})
       .then(data=>{
@@ -63,7 +49,10 @@ useEffect(()=>{
             
             
             SetCategories(data)
+            SetLoader(false)
         }else{
+     
+            
             let errors = "<ul>";
             if (Array.isArray(data.messages)) {
             
@@ -73,6 +62,12 @@ useEffect(()=>{
             } else if (data.message) {
              
                 errors += `<li>${data.message}</li>`;
+            }
+            else if(data.errors){
+       
+               data.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
             }
             errors += "</ul>";
     
@@ -85,10 +80,11 @@ useEffect(()=>{
                 allowOutsideClick:false
             }).then(res => {
                 if (res.isConfirmed) {
-                    SetLoader(false);
+                    SetLoader(false);                  
                     router.refresh();
                 }
             });
+         
         }
     })
      
@@ -104,9 +100,7 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
         SetLoader(true);
 
         const form = new FormData(e.currentTarget);
-       
-
-     
+          
        
         fetch(`${apiDomen}api/Cupon/AddSpecificCuponForCategory`, {
             method: 'POST',
@@ -138,22 +132,6 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                     }
                 });
                 return;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
             }
        return     response.json()
         } )
@@ -168,38 +146,44 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                         confirmButtonText: 'Cool'
                     }).then((res) => {
                         if (res.isConfirmed) {
-                            SetLoader(false)
-                            // setItems([]); 
-                        
-                            router.push("/dashboard/subcategory/1")// Clear the form
+                            SetLoader(false)                                                 
+                            router.push("/dashboard/subcategory/1")
                         }
                     });
                 } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
+                 
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);                   
+                     router.refresh();
+                 }
+             });
             
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);
-                            router.refresh();
-                        }
-                    });
                 }
             }
         })
@@ -207,14 +191,15 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
 
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
-                confirmButtonText: 'Cool'
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
             }).then((res)=>{
 if (res.isConfirmed) {
     SetLoader(false)
-    // setItems([]);
-    router.refresh();
+      router.refresh();
 }
             });
         });

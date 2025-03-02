@@ -44,11 +44,12 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
   const router=useRouter();
   const sessions=useSession();
   
-  const [categories, SetCategories] = React.useState<Result<PaginatedList<GetCategoryAllDashboard>>>()
+  const [categories, SetCategories] = React.useState<Result<PaginatedList<GetCategoryAllDashboard>>|null>(null)
   const [loader, SetLoader] = React.useState<boolean>(false);
 
   const fetchCategories = async () => {
     try {
+      SetLoader(true)
       const res = await fetch(`${apiDomen}api/Category/GetAllCategoryForTable?page=${page}`, {
         headers: {
           'Accept': 'application/json',
@@ -60,14 +61,7 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
         cache: "no-store",
         method: "GET",
       });
-      
-      if (res.ok) {
-        const data = await res.json();
-        if (data) {
-          
-          SetCategories(data); 
-        }
-      } 
+ 
       if (res.status === 401) {
         Swal.fire({
             title: 'Authorization Error!',
@@ -85,30 +79,67 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
         });
         return;
     }
-    else if(!res.ok){
-        Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
+    const data=await res.json();
+   if(!res.ok){
+    
+      let errors = "<ul>";
+      if (Array.isArray(data.messages)) {
+      
+          data.messages.forEach((message:string)=> {
+              errors += `<li>${message}</li>`;
+          });
+      } else if (data.message) {
+       
+          errors += `<li>${data.message}</li>`;
+      }
+      else if(data.errors){
+ 
+         data.errors.Description.forEach((message:string)=> {
+             errors += `<li>${message}</li>`;
+         });
+      }
+      errors += "</ul>";
 
-         signOut()
-            router.refresh();
+      Swal.fire({
+          title: 'Error!',
+          html: errors, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+            
+              router.refresh();
           }
-        });
-        return;
+      });
+    }else{
+      SetCategories(data)
+      SetLoader(false)
     }
     } catch (error) {
-      console.log(error);
+      
+      Swal.fire({
+        title: 'Error!',
+        html: `${error}`, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+          
+            router.refresh();
+        }
+    });
     }
   };
   React.useEffect(() => {    
+    
     fetchCategories(); 
-  }, [apiDomen, lang, page, sessions.data?.user.token]);
+  }, []);
 
   const CategoryDelete = async (id: string) => {
     SetLoader(true);
@@ -121,6 +152,7 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
           'Accept-Language': `${lang}`,
           'Authorization': `Bearer ${sessions.data?.user.token}`,
         },
+        cache:"no-cache",
         method: "DELETE",
       });
       if (res.status === 401) {
@@ -159,6 +191,18 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
       if (responsData) {
         
         if (responsData.isSuccess) {
+
+          SetCategories(prevCategories => {
+            if (!prevCategories) return null;
+    
+            return {
+                ...prevCategories,
+                response: {
+                    ...prevCategories.response,
+                    data: prevCategories.response.data.filter(edu => edu.id !== id)
+                }
+            };
+        });
           Swal.fire({
             title: 'Success!',
             text: 'Category deleted successfully!',
@@ -169,7 +213,7 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
           }).then((res) => {
             if (res.isConfirmed) {
               SetLoader(false);
-              fetchCategories();  // Refetch categories after deletion
+          
             }
           });
         } else {
@@ -212,7 +256,7 @@ export default function CategoryTable({lang,page,apiDomen}:{lang:Locale,page:num
   if (loader) {
     return <Loader />;
   }
-
+console.log(categories)
   return (
     <TableContainer component={Paper} >
       <Table sx={{ minWidth: 700 }} aria-label="customized table">

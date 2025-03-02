@@ -43,10 +43,11 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
   const router=useRouter();
   const sessions=useSession();
   
-  const [categories, SetCupons] = React.useState<Result<PaginatedList<GetAllCupon>>>()
+  const [categories, SetCupons] = React.useState<Result<PaginatedList<GetAllCupon>>|null>(null)
   const [loader, SetLoader] = React.useState<boolean>(false);
 
   const fetchCupons = async () => {
+    SetLoader(true)
     try {
       const res = await fetch(`${apiDomen}api/Cupon/GetAllCupon?Page=${page}`, {
         headers: {
@@ -61,11 +62,47 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
       });
       
       if (res.ok) {
-        const data: Result<PaginatedList<GetAllCupon>>= await res.json();
-        if (data) {
+        const data= await res.json();
+        if (data.isSuccess) {
           
-          SetCupons(data); 
+          SetCupons(data);
+          SetLoader(false) 
         }
+      }else{
+        const data= await res.json();
+        
+        let errors = "<ul>";
+        if (Array.isArray(data.messages)) {
+        
+            data.messages.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+        } else if (data.message) {
+         
+            errors += `<li>${data.message}</li>`;
+        }
+        else if(data.errors){
+   
+           data.errors.Description.forEach((message:string)=> {
+               errors += `<li>${message}</li>`;
+           });
+        }
+        errors += "</ul>";
+
+        Swal.fire({
+            title: 'Error!',
+            html: errors, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
       } 
       if (res.status === 401) {
         Swal.fire({
@@ -84,25 +121,22 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
         });
         return;
     }
-    else if(!res.ok){
-        Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
-
-         signOut()
-            router.refresh();
-          }
-        });
-        return;
-    }
+   
     } catch (error) {
-      console.log(error);
+      Swal.fire({
+        title: 'Error!',
+        html: `${error}`, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+          
+            router.refresh();
+        }
+    });
     }
   };
   React.useEffect(() => {    
@@ -137,23 +171,7 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
         });
         return;
       }
-      if(!res.ok){
-        Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
-
-         signOut()
-            router.refresh();
-          }
-        });
-        return;
-    }
+    
       const responsData = await res.json();
       if (responsData) {
         
@@ -167,44 +185,75 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
             allowOutsideClick:false,
           }).then((res) => {
             if (res.isConfirmed) {
+
+              SetCupons(prevCupons => {
+                if (!prevCupons) return null;
+        
+                return {
+                    ...prevCupons,
+                    response: {
+                        ...prevCupons.response,
+                        data: prevCupons.response.data.filter(cupon => cupon.cuponId !== id)
+                    }
+                };
+            });
               SetLoader(false);
-              fetchCupons();
+             
             }
           });
         } else {
-          let errorMessage = '<ul>';
-    
-                if (responsData.message) {
-                    errorMessage += `<li>${responsData.message}</li>`;
-                }
-    
-                if (responsData.messages && Array.isArray(responsData.messages)) {
-                    responsData.messages.forEach((msg: string) => {
-                        errorMessage += `<li>${msg}</li>`;
-                    });
-                }
-    
-                errorMessage += '</ul>';
-    
-                Swal.fire({
-                    title: 'Error!',
-                    html: errorMessage || 'Failed to update category!',
-                    icon: 'error',
-                    allowOutsideClick: false, 
-                    allowEscapeKey:false,
-                    confirmButtonText: 'Cool'
+        
+          let errors = "<ul>";
+          if (Array.isArray(responsData.messages)) {
+          
+              responsData.messages.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+          } else if (responsData.message) {
+           
+              errors += `<li>${responsData.message}</li>`;
+          }
+          else if(responsData.errors){
+     
+             responsData.errors.Description.forEach((message:string)=> {
+                 errors += `<li>${message}</li>`;
+             });
+          }
+          errors += "</ul>";
   
-                }).then((res) => {
-                  if (res.isConfirmed) {
-                    
-                    SetLoader(false);
-                    router.refresh();
-                  }
-                });
+          Swal.fire({
+              title: 'Error!',
+              html: errors, 
+              icon: 'error',
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false
+          }).then(res => {
+              if (res.isConfirmed) {
+                  SetLoader(false);
+                
+                  router.refresh();
+              }
+          }); 
+              
         }
       }
     } catch (error) {
-      console.log(error);
+    
+      Swal.fire({
+        title: 'Error!',
+        html: `${error}`, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+          
+            router.refresh();
+        }
+    });
     }
   };
 

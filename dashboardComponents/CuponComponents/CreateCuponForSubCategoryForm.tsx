@@ -9,10 +9,11 @@ import Result from "@/types/ApiResultType";
 import GetSubCategoryForUI from "@/types/SubCategoriesType/GetSubCategoryForUI";
 const CreateCuponForSubCategoryForm:React.FC<{params:{lang:Locale,apiDomen:string|undefined}}> = ({params:{lang,apiDomen}}) => {
     const router=useRouter();
-    const [SubCategories, SetSubCategories] = useState<Result<GetSubCategoryForUI[]>>();
-   const sessions=useSession();
+    const [SubCategories, SetSubCategories] = useState<Result<GetSubCategoryForUI[]>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
+   const sessions=useSession();
 useEffect(()=>{
+SetLoader(true)
     fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
         headers: {
           'Accept': 'application/json',
@@ -40,30 +41,15 @@ useEffect(()=>{
                     router.refresh();
                 }
             });
-        }else if(!res.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
         }
        return res.json()})
       .then(data=>{
         
         if (data.isSuccess) {
-            
-            
             SetSubCategories(data)
+            SetLoader(false)
         }else{
+           
             let errors = "<ul>";
             if (Array.isArray(data.messages)) {
             
@@ -73,6 +59,12 @@ useEffect(()=>{
             } else if (data.message) {
              
                 errors += `<li>${data.message}</li>`;
+            }
+            else if(data.errors){
+       
+               data.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
             }
             errors += "</ul>";
     
@@ -85,11 +77,28 @@ useEffect(()=>{
                 allowOutsideClick:false
             }).then(res => {
                 if (res.isConfirmed) {
-                    SetLoader(false);
+                    SetLoader(false);                  
                     router.refresh();
                 }
-            });
+            });   
+          
         }
+    })
+    .catch(error => {
+        
+      Swal.fire({
+        title: 'Error!',
+        html: error, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);          
+            router.refresh();
+        }
+    });
     })
      
       
@@ -138,22 +147,6 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                     }
                 });
                 return;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
             }
        return     response.json()
         } )
@@ -165,41 +158,49 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                         title: 'Success!',
                         text: 'Cupon added successfully!',
                         icon: 'success',
-                        confirmButtonText: 'Cool'
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
                     }).then((res) => {
                         if (res.isConfirmed) {
-                            SetLoader(false)
-                            // setItems([]); 
-                        
+                            SetLoader(false)                                                  
                             router.push("/dashboard/cupon/1")// Clear the form
                         }
                     });
                 } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
-            
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);
-                            router.refresh();
-                        }
-                    });
+                
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);                   
+                     router.refresh();
+                 }
+             });           
+                  
                 }
             }
         })
@@ -207,14 +208,15 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
 
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
-                confirmButtonText: 'Cool'
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
             }).then((res)=>{
 if (res.isConfirmed) {
     SetLoader(false)
-    // setItems([]);
-    router.refresh();
+     router.refresh();
 }
             });
         });

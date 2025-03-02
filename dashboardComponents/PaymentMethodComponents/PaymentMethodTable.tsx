@@ -2,7 +2,6 @@
 import { Locale } from "@/i18n-config";
 import Result from "@/types/ApiResultType";
 import PaginatedList from "@/types/Paginated.type";
-import GetAllShippingMethod from "@/types/ShippingMethodType/GetALLShippingMethod";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -34,7 +33,8 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 
 const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDomen:string|undefined}) => {
-    const[paymentMethods,SetPaymentMethods]=useState<Result<PaginatedList<GetAllPaymentMethod>>>();
+    const[paymentMethods,SetPaymentMethods]=useState<Result<PaginatedList<GetAllPaymentMethod>>|null>(null);
+    const [loader,SetLoader]=useState<boolean>(false)
     const router=useRouter();
     const sessions=useSession();
   
@@ -50,11 +50,9 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
         },
         cache:"no-store",
         method: "GET",
-      }).then(res=>{
-
-        if(res.status==401){ 
-
-          Swal.fire({
+      }).then(response => {
+      if (response.status==401) {
+        Swal.fire({
             title: 'Authorization Error!',
             text: 'Your session has expired. Please log in again.',
             icon: 'info',
@@ -69,38 +67,74 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
             }
         });
         return;
-        }
-      else if(!res.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool',
-          allowEscapeKey:false,
-          allowOutsideClick:false
-        }
-     
-    ).then(x=>{
-        if (x.isConfirmed) {
-                      SetLoader(false)
-       signOut()
+    }
     
-        }
-      });
-      return;
-      }
-        return    res.json();
-      }
-        
+    return response.json()
+})
+   .then(result => {
     
-    ).then(x=>{
-      if (x) {
-        
-        SetPaymentMethods(x)
-      }
-    });
+    if (result) {
+        if (result.isSuccess) {
+          SetPaymentMethods(result)
+          SetLoader(false)
+        }
+        if (!result.isSuccess) {
+
+         let errors = "<ul>";
+         if (Array.isArray(result.messages)) {
+         
+             result.messages.forEach((message:string)=> {
+                 errors += `<li>${message}</li>`;
+             });
+         } else if (result.message) {
+          
+             errors += `<li>${result.message}</li>`;
+         }
+         else if(result.errors){
+    
+            result.errors.Description.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+         }
+         errors += "</ul>";
+ 
+         Swal.fire({
+             title: 'Error!',
+             html: errors, 
+             icon: 'error',
+             confirmButtonText: 'Cool',
+             allowEscapeKey:false,
+             allowOutsideClick:false
+         }).then(res => {
+             if (res.isConfirmed) {
+                 SetLoader(false);
+                 SetPaymentMethods(null);
+                 router.refresh();
+             }
+         });
+        }
+
+    }
+
+   })
+   .catch(error => {
+       Swal.fire({
+           title: 'Error!',
+           text: `An unexpected error occurred!${error}`,
+           icon: 'error',
+           confirmButtonText: 'Cool',
+           allowEnterKey:false,
+           allowOutsideClick:false
+       }).then((x)=>{
+        if(x.isConfirmed){
+SetPaymentMethods(null)
+            SetLoader(false)
+         
+            router.refresh();
+        }
+       });
+   });
     },[])
-     const [loader,SetLoader]=useState<boolean>(false)
       function PaymentMethodDelete(id:string){
         SetLoader(true)
        fetch(`${apiDomen}api/PaymentMethod/DeletePaymentMethod?Id=${id}`, {

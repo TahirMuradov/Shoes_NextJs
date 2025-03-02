@@ -2,7 +2,7 @@
 import Loader from "@/dashboardComponents/common/Loader";
 import { i18n, Locale } from "@/i18n-config"
 import Result from "@/types/ApiResultType";
-import GetCategoryAllDashboard from "@/types/CategoryTypes/GetALLCategory";
+import GetAllCategoryForSelect from "@/types/CategoryTypes/GetAllCategoryForSelect";
 import GetSubCategoryForUpdate from "@/types/SubCategoriesType/GetSubCategoryForUpdate"
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import Swal from "sweetalert2";
 const SubCategoryEditForm:React.FC<{lang:Locale,id:string,apiDomen:string|undefined}>=({lang,apiDomen,id})=>{
     const router=useRouter();
     const sessions=useSession();
-    const [categories,SetCategories]=useState<Result<GetCategoryAllDashboard[]>>()
+    const [categories,SetCategories]=useState<Result<GetAllCategoryForSelect[]>>()
 const [SubCategory,SetSubCategory]=useState<Result<GetSubCategoryForUpdate>>();
     const [items, setItems] = useState<{ key: string, value: string | null }[]>([]);
     const[loader,SetLoader]=useState<boolean>(false)
@@ -45,22 +45,6 @@ useEffect(()=>{
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
         return response.json();
       }).then(result=>{
@@ -68,6 +52,7 @@ useEffect(()=>{
         if (result.isSuccess) {
             SetSubCategory(result)
         }else{
+          
             let errors = "<ul>";
             if (Array.isArray(result.messages)) {
             
@@ -77,6 +62,12 @@ useEffect(()=>{
             } else if (result.message) {
              
                 errors += `<li>${result.message}</li>`;
+            }
+            else if(result.errors){
+       
+               result.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
             }
             errors += "</ul>";
     
@@ -90,10 +81,26 @@ useEffect(()=>{
             }).then(res => {
                 if (res.isConfirmed) {
                     SetLoader(false);
+                  
                     router.refresh();
                 }
             });
         }
+      }).catch(error=>{
+  Swal.fire({
+             title: 'Error!',
+             html: `${error}`, 
+             icon: 'error',
+             confirmButtonText: 'Cool',
+             allowEscapeKey:false,
+             allowOutsideClick:false
+         }).then(res => {
+             if (res.isConfirmed) {
+                 SetLoader(false);
+               
+                 router.refresh();
+             }
+         });
       });
       fetch(`${apiDomen}api/Category/GetAllCategory`, {
         headers: {
@@ -122,22 +129,6 @@ useEffect(()=>{
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                
-                  SetLoader(false)
-  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
         return response.json();
       }).then(result=>{
@@ -146,34 +137,58 @@ useEffect(()=>{
             if (result.isSuccess) {
                 SetCategories(result)
             }else{
-                let errors = "<ul>";
-                if (Array.isArray(result.messages)) {
-                
-                    result.messages.forEach((message:string)=> {
-                        errors += `<li>${message}</li>`;
-                    });
-                } else if (result.message) {
-                 
-                    errors += `<li>${result.message}</li>`;
-                }
-                errors += "</ul>";
+               
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
         
-                Swal.fire({
-                    title: 'Error!',
-                    html: errors, 
-                    icon: 'error',
-                    confirmButtonText: 'Cool',
-                    allowEscapeKey:false,
-                    allowOutsideClick:false
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        SetLoader(false);
-                        setItems([]);
-                        router.refresh();
-                    }
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
                 });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                   
+                     router.refresh();
+                 }
+             });
+        
+             
             }
         }
+      }).catch(error=>{
+        Swal.fire({
+            title: 'Error!',
+            html: `${error}`, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
       });
 
 
@@ -197,20 +212,7 @@ useEffect(()=>{
                     value: inputValue as string,
                 });
        
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                        setItems([]);
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
-                return;
-            }
+            } 
         }
 
         setItems(newItems); 
@@ -220,7 +222,7 @@ useEffect(()=>{
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'LangCode': `${lang}`, // Or whatever language code you want to send
+                'LangCode': `${lang}`, 
                     'Accept-Language': `${lang}`,
              'Authorization':`Bearer ${sessions.data?.user.token}`
             },
@@ -251,22 +253,6 @@ useEffect(()=>{
                     }
                 });
                 return;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
             }
          return   response.json()})
         .then(result => {
@@ -277,41 +263,53 @@ useEffect(()=>{
                         title: 'Success!',
                         text: 'SubCategory update successfully!',
                         icon: 'success',
-                        confirmButtonText: 'Cool'
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
                     }).then((res) => {
                         if (res.isConfirmed) {
                             SetLoader(false)
                             setItems([]); 
                         
-                            router.push("/dashboard/subCategory/1")// Clear the form
+                            router.push("/dashboard/subcategory/1")
                         }
                     });
                 } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
+                   
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                   
+                     router.refresh();
+                 }
+             });
             
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);
-                            router.refresh();
-                        }
-                    });
+                
                 }
             }
         })
@@ -319,13 +317,12 @@ useEffect(()=>{
 
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
                 confirmButtonText: 'Cool'
             }).then((res)=>{
 if (res.isConfirmed) {
     SetLoader(false)
-    setItems([]);
     router.refresh();
     signOut();
 }
@@ -369,7 +366,7 @@ if (res.isConfirmed) {
    {
     categories?.response.map((category)=>(
 category.id==SubCategory?.response.categoryId?
-        <option selected value={category.id} >{category.content}</option>:  <option value={category.id} >{category.content}</option>
+        <option selected value={category.id} >{category.name}</option>:  <option value={category.id} >{category.name}</option>
     ))
    }
   

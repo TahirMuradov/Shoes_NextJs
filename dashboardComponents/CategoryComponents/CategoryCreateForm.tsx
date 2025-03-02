@@ -15,10 +15,8 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
     function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         SetLoader(true);
-
         const form = new FormData(e.currentTarget);
         const newItems: { key: string, value: string | null }[] = [];
-
         for (const key of i18n.locales) {
             const inputValue = form.get(`CategoryName${key}`);
 
@@ -28,23 +26,10 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                     value: inputValue as string,
                 });
        
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                        setItems([]);
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
-                return;
-            }
+            } 
         }
 
-        setItems(newItems); // Update state with the new items
+        setItems(newItems); 
    
         fetch(`${apiDomen}api/Category/AddCategory`, {
             method: 'POST',
@@ -62,9 +47,8 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                 }, {} as { [key: string]: string | null }),
             }),
         })
-        .then(async response => {
-                  
-            if (response.status === 401) {
+        .then(response => {
+            if (response.status==401) {
                 Swal.fire({
                     title: 'Authorization Error!',
                     text: 'Your session has expired. Please log in again.',
@@ -81,89 +65,82 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                 });
                 return;
             }
-            else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
-            }
-
-            const result = await response.json();
+            
+            return response.json()
+        })
+           .then(result => {
             if (result) {
                 
                 if (result.isSuccess) {
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Category added successfully!',
+                        text: 'Category creat successfully!',
                         icon: 'success',
                         confirmButtonText: 'Cool',
                         allowEscapeKey:false,
-                        allowOutsideClick:false,
-                    }).then(res => {
+                        allowOutsideClick:false
+                    }).then((res) => {
                         if (res.isConfirmed) {
-                            SetLoader(false);
-                            setItems([]);
-                            router.push("/dashboard/category/1");
+                          SetLoader(false)                
+                    router.push("/dashboard/category/1")
                         }
                     });
                 } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
+      
+                 let errors = "<ul>";
+                 if (Array.isArray(result.messages)) {
+                 
+                     result.messages.forEach((message:string)=> {
+                         errors += `<li>${message}</li>`;
+                     });
+                 } else if (result.message) {
+                  
+                     errors += `<li>${result.message}</li>`;
+                 }
+                 else if(result.errors){
+                    Object.keys(result.errors).forEach((key) => {
+                        result.errors[key].forEach((message: string) => {
+                                                    errors += `<li>${message}</li>`;
                         });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
-            
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);
-                            setItems([]);
-                            router.refresh();
-                        }
                     });
+                 }
+                 errors += "</ul>";
+         
+                 Swal.fire({
+                     title: 'Error!',
+                     html: errors, 
+                     icon: 'error',
+                     confirmButtonText: 'Cool',
+                     allowEscapeKey:false,
+                     allowOutsideClick:false
+                 }).then(res => {
+                     if (res.isConfirmed) {
+                         SetLoader(false);
+                         router.refresh();
+                     }
+                 });
                 }
+    
             }
-        })
-        .catch(error => {
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowEscapeKey:false,
-                allowOutsideClick:false,
-            }).then(res => {
-                if (res.isConfirmed) {
-                    SetLoader(false);
-                    setItems([]);
-                    signOut();
+    
+           })
+           .catch(error => {
+               Swal.fire({
+                   title: 'Error!',
+                   text: `An unexpected error occurred!${error}`,
+                   icon: 'error',
+                   confirmButtonText: 'Cool',
+                   allowEnterKey:false,
+                   allowOutsideClick:false
+               }).then((x)=>{
+                if(x.isConfirmed){
+    
+                    SetLoader(false)
+                 
                     router.refresh();
                 }
-            });
-        });
+               });
+           });
     }
 if (loader) {
     return <Loader/>
