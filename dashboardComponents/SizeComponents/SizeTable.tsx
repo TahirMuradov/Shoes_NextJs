@@ -57,9 +57,10 @@ SetLoader(true)
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;
@@ -152,9 +153,10 @@ SetLoader(true)
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
+
                 }
             });
             return;

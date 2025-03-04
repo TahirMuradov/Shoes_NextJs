@@ -9,7 +9,6 @@ import Swal from "sweetalert2";
 import { Locale } from "@/i18n-config";
 import { signOut, useSession } from "next-auth/react";
 import Loader from "@/dashboardComponents/common/Loader";
-import GetAllHomeSliderItemType from "@/types/WebUI/HomeSliderItem/GetAllHomeSliderItemType";
 import Image from "next/image";
 import GetTopCategoryArea from "@/types/WebUI/TopCategoryArea/GetTopCategoryArea";
 
@@ -36,16 +35,17 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
       const [loader,SetLoader]=useState<boolean>(false)
-    const [Products,SetProducts]=useState<Result<PaginatedList<GetTopCategoryArea>>>();
+    const [TopCategoryAreas,SetTopCategoryAreas]=useState<Result<PaginatedList<GetTopCategoryArea>>|null>(null);
     const router=useRouter();
     const sessions=useSession();
 
     useEffect(()=>{
+      SetLoader(true)
       fetch(`${apiDomen}api/TopCategoryArea/GetTopCategoryArea?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'LangCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+          'LangCode': `${Lang}`,  
           'Accept-Language': `${Lang}`,
          'Authorization':`Bearer ${sessions.data?.user.token}`
 
@@ -63,28 +63,12 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
               }
           });
           return;
-      }else if(!x.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
         return x.json()
       }
@@ -94,33 +78,42 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
     
      if (res.isSuccess) {
        
-       SetProducts(res)
+       SetTopCategoryAreas(res)
+       SetLoader(false)
      }else {
-       let errors = "<ul>";
-       if (Array.isArray(res.messages)) {
+   
+      let errors = "<ul>";
+      if (Array.isArray(res.messages)) {
+      
+          res.messages.forEach((message:string)=> {
+              errors += `<li>${message}</li>`;
+          });
+      } else if (res.message) {
        
-           res.messages.forEach((message:string)=> {
-               errors += `<li>${message}</li>`;
-           });
-       } else if (res.message) {
-        
-           errors += `<li>${res.message}</li>`;
-       }
-       errors += "</ul>";
+          errors += `<li>${res.message}</li>`;
+      }
+      else if(res.errors){
+ 
+         res.errors.Description.forEach((message:string)=> {
+             errors += `<li>${message}</li>`;
+         });
+      }
+      errors += "</ul>";
 
-       Swal.fire({
-           title: 'Error!',
-           html: errors, 
-           icon: 'error',
-           confirmButtonText: 'Cool',
-           allowEscapeKey:false,
-           allowOutsideClick:false
-       }).then(res => {
-           if (res.isConfirmed) {
-               SetLoader(false);
-               router.refresh();
-           }
-       });
+      Swal.fire({
+          title: 'Error!',
+          html: errors, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+            
+              router.refresh();
+          }
+      });
      }
      
    }
@@ -134,7 +127,7 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${Lang}`, 
             'Accept-Language': `${Lang}`,
    'Authorization':`Bearer ${sessions.data?.user.token}`
           },
@@ -150,28 +143,12 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
                 }
             });
             return;
-        }else if(!response.ok){
-          Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
-
-         signOut()
-           
-          }
-        });
-        return;
         }
          return response.json()
         })
@@ -186,7 +163,17 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
                   confirmButtonText: 'Cool'
               }).then((res) => {
                   if (res.isConfirmed) {
-                 router.refresh();
+                    SetTopCategoryAreas(prevTopCategoryAreas => {
+                      if (!prevTopCategoryAreas) return null;
+              
+                      return {
+                          ...prevTopCategoryAreas,
+                          response: {
+                              ...prevTopCategoryAreas.response,
+                              data: prevTopCategoryAreas.response.data.filter(edu => edu.id !== id)
+                          }
+                      };
+                  });
                     SetLoader(false)
                   }
               })
@@ -201,8 +188,14 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
              
                 errors += `<li>${responsData.message}</li>`;
             }
+            else if(responsData.errors){
+       
+               responsData.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+            }
             errors += "</ul>";
-    
+      
             Swal.fire({
                 title: 'Error!',
                 html: errors, 
@@ -213,20 +206,36 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
             }).then(res => {
                 if (res.isConfirmed) {
                     SetLoader(false);
+                  
                     router.refresh();
                 }
             });
           }
           }
       
+      })
+      .catch(error=>{
+        Swal.fire({
+          title: 'Error!',
+          html: error, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+              router.refresh();
+          }
+      });
       })       
         ;
       }
       if (loader) {
         return( <Loader/>)
       }
-      if (Products?.response.data) {
-        // console.log(Products)
+      if (TopCategoryAreas?.response.data) {
+     
         return(
             <TableContainer component={Paper} >
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -240,7 +249,7 @@ const TopCategoryAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|und
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Products?.response?.data?.map((row,index) => (
+                {TopCategoryAreas?.response?.data?.map((row,index) => (
                   
                   <StyledTableRow key={index}>
                     

@@ -58,9 +58,9 @@ const CategoryCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|undefine
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); ; 
                         SetLoader(false);
-                        router.refresh();
+                        router.push("/auth/login");
                     }
                 });
                 return;

@@ -38,9 +38,10 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lan
            allowOutsideClick:false                     
       }).then(res => {
           if (res.isConfirmed) {
-              signOut(); 
+              signOut({redirect:false}); 
+              router.push("/auth/login");
               SetLoader(false);
-              router.refresh();
+
           }
       });
       return;
@@ -119,9 +120,10 @@ const ProductCreateForm:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lan
          allowOutsideClick:false                     
     }).then(res => {
         if (res.isConfirmed) {
-            signOut(); 
+            signOut({redirect:false}); 
+            router.push("/auth/login");
             SetLoader(false);
-            router.refresh();
+
         }
     });
     return;
@@ -291,9 +293,9 @@ formData.append("ProductName",JSON.stringify( productName))
          allowOutsideClick:false                     
     }).then(res => {
         if (res.isConfirmed) {
-            signOut(); 
+            signOut({redirect:false}); 
+            router.push("/auth/login");
             SetLoader(false);
-            router.refresh();
         }
     });
 
@@ -357,9 +359,10 @@ if (apiResponse.isSuccess) {
         confirmButtonText: 'Cool'
     }).then(x=>{
       if (x.isConfirmed) {
+        signOut({redirect:false})
+        router.push("/auth/login");
                   SetLoader(false)
-     signOut()
-        router.refresh();
+
       }
     });
     }

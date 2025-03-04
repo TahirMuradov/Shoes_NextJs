@@ -34,17 +34,18 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
   }));
 const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
+  const [HomeSliders,SetHomeSliders]=useState<Result<PaginatedList<GetAllHomeSliderItemType>>|null>(null);
       const [loader,SetLoader]=useState<boolean>(false)
-    const [Products,SetProducts]=useState<Result<PaginatedList<GetAllHomeSliderItemType>>>();
     const router=useRouter();
     const sessions=useSession();
 
     useEffect(()=>{
+      SetLoader(true)
       fetch(`${apiDomen}api/HomeSliderItem/GetAllHomeSliderItem?page=${page}`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'LangCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+          'LangCode': `${Lang}`, 
           'Accept-Language': `${Lang}`,
          'Authorization':`Bearer ${sessions.data?.user.token}`
 
@@ -62,28 +63,13 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;
-      }else if(!x.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
         return x.json()
       }
@@ -93,33 +79,42 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
     
      if (res.isSuccess) {
        
-       SetProducts(res)
+       SetHomeSliders(res)
+       SetLoader(false);  
      }else {
-       let errors = "<ul>";
-       if (Array.isArray(res.messages)) {
+      
+      let errors = "<ul>";
+      if (Array.isArray(res.messages)) {
+      
+          res.messages.forEach((message:string)=> {
+              errors += `<li>${message}</li>`;
+          });
+      } else if (res.message) {
        
-           res.messages.forEach((message:string)=> {
-               errors += `<li>${message}</li>`;
-           });
-       } else if (res.message) {
-        
-           errors += `<li>${res.message}</li>`;
-       }
-       errors += "</ul>";
+          errors += `<li>${res.message}</li>`;
+      }
+      else if(res.errors){
+ 
+         res.errors.Description.forEach((message:string)=> {
+             errors += `<li>${message}</li>`;
+         });
+      }
+      errors += "</ul>";
 
-       Swal.fire({
-           title: 'Error!',
-           html: errors, 
-           icon: 'error',
-           confirmButtonText: 'Cool',
-           allowEscapeKey:false,
-           allowOutsideClick:false
-       }).then(res => {
-           if (res.isConfirmed) {
-               SetLoader(false);
-               router.refresh();
-           }
-       });
+      Swal.fire({
+          title: 'Error!',
+          html: errors, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);            
+              router.refresh();
+          }
+      });
+
      }
      
    }
@@ -133,7 +128,7 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${Lang}`,  
             'Accept-Language': `${Lang}`,
    'Authorization':`Bearer ${sessions.data?.user.token}`
           },
@@ -149,28 +144,13 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
+
                     SetLoader(false);
-                    router.refresh();
                 }
             });
             return;
-        }else if(!response.ok){
-          Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
-
-         signOut()
-           
-          }
-        });
-        return;
         }
          return response.json()
         })
@@ -185,7 +165,17 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
                   confirmButtonText: 'Cool'
               }).then((res) => {
                   if (res.isConfirmed) {
-                 router.refresh();
+                    SetHomeSliders(prevHomeSliders => {
+                      if (!prevHomeSliders) return null;
+              
+                      return {
+                          ...prevHomeSliders,
+                          response: {
+                              ...prevHomeSliders.response,
+                              data: prevHomeSliders.response.data.filter(edu => edu.id !== id)
+                          }
+                      };
+                  });
                     SetLoader(false)
                   }
               })
@@ -224,8 +214,7 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
       if (loader) {
         return( <Loader/>)
       }
-      if (Products?.response.data) {
-        // console.log(Products)
+   
         return(
             <TableContainer component={Paper} >
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -239,7 +228,7 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
                 </TableRow>
               </TableHead>
               <TableBody>
-                {Products?.response?.data?.map((row,index) => (
+                {HomeSliders?.response?.data?.map((row,index) => (
                   
                   <StyledTableRow key={index}>
                     
@@ -288,6 +277,6 @@ const HomeSliderItemTable:React.FC<{Lang:Locale,page:number,apiDomen:string|unde
             </Table>
           </TableContainer>
         )
-      }
+   
 }
 export default HomeSliderItemTable

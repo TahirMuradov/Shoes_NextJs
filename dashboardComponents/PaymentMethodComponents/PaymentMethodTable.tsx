@@ -61,9 +61,9 @@ const PaymentMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDom
              allowOutsideClick:false                     
         }).then(res => {
             if (res.isConfirmed) {
-                signOut(); 
+                signOut({redirect:false}); 
+                router.push("/auth/login");
                 SetLoader(false);
-                router.refresh();
             }
         });
         return;
@@ -159,9 +159,9 @@ SetPaymentMethods(null)
                    allowOutsideClick:false                     
               }).then(res => {
                   if (res.isConfirmed) {
-                      signOut(); 
+                      signOut({redirect:false}); 
+                      router.push("/auth/login");
                       SetLoader(false);
-                      router.refresh();
                   }
               });
               return;
@@ -174,10 +174,9 @@ SetPaymentMethods(null)
           }).then(x=>{
             if (x.isConfirmed) {
               
+                                     signOut({redirect:false})
+                         router.push("/auth/login");
                 SetLoader(false)
-
-           signOut()
-              router.refresh();
             }
           });
          return ;

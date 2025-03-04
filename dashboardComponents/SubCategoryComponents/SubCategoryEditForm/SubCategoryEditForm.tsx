@@ -39,9 +39,10 @@ useEffect(()=>{
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
+
                 }
             });
             return;
@@ -124,7 +125,8 @@ useEffect(()=>{
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+            router.push("/auth/login");
                     SetLoader(false);
                 }
             });
@@ -247,9 +249,10 @@ useEffect(()=>{
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); 
+                        router.push("/auth/login");
                         SetLoader(false);
-                        router.refresh();
+
                     }
                 });
                 return;
@@ -322,9 +325,10 @@ useEffect(()=>{
                 confirmButtonText: 'Cool'
             }).then((res)=>{
 if (res.isConfirmed) {
+    signOut({redirect:false});
+    router.push("/auth/login");
     SetLoader(false)
-    router.refresh();
-    signOut();
+
 }
             });
         });

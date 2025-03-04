@@ -1,5 +1,6 @@
 "use client"
 
+import Loader from "@/dashboardComponents/common/Loader";
 import { i18n, Locale } from "@/i18n-config"
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -7,13 +8,13 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 
 const HomeSliderItemCreateFrom:React.FC<{apiDomen:string|undefined,lang:Locale,}>=({lang,apiDomen})=>{
-    const router=useRouter();
     const[loader,SetLoader]=useState<boolean>(false)
+    const router=useRouter();
     const sessions=useSession();
    
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+    SetLoader(true);
         const form = e.currentTarget;
         const formData = new FormData(form);
       
@@ -23,9 +24,9 @@ const HomeSliderItemCreateFrom:React.FC<{apiDomen:string|undefined,lang:Locale,}
         for (const key of i18n.locales) {
             
             const title = formData.get(`Title${key}`);
-console.log(`TitleKey-${key}`,title);
+
 const description = formData.get(`Description${key}`);
-console.log(`DescriptionKey-${key}`,description);
+
             if (description !== null) {
                 Description.push({
                     key,
@@ -33,17 +34,7 @@ console.log(`DescriptionKey-${key}`,description);
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+              router.refresh()
                 return;
             }
             if (title !== null) {
@@ -53,17 +44,7 @@ console.log(`DescriptionKey-${key}`,description);
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+               router.refresh();
                 return;
             }
             formData.delete(`Description${key}`);            
@@ -72,9 +53,7 @@ console.log(`DescriptionKey-${key}`,description);
         }
         formData.append("Title",JSON.stringify(Title))
         formData.append("Description",JSON.stringify(Description))
-        formData.forEach((value, key) => {
-            console.log(`${key}: ${value}`);
-        });
+       
     
         fetch(`${apiDomen}api/HomeSliderItem/AddHomeSliderItem`, {
             method: 'POST',
@@ -85,7 +64,7 @@ console.log(`DescriptionKey-${key}`,description);
             },
             body: formData,
         })
-        .then(async response => {
+        .then(response => {
                   
             if (response.status === 401) {
                 Swal.fire({
@@ -97,32 +76,19 @@ console.log(`DescriptionKey-${key}`,description);
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false});
+                        router.push("/auth/login") ;
                         SetLoader(false);
-                        router.refresh();
+                       
                     }
                 });
                 return;
             }
-            else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
-            }
+         
 
-            const result = await response.json();
+        return response.json();
+           
+        }).then(result=>{
             if (result) {
                 
                 if (result.isSuccess) {
@@ -135,9 +101,8 @@ console.log(`DescriptionKey-${key}`,description);
                         allowOutsideClick:false,
                     }).then(res => {
                         if (res.isConfirmed) {
-                            SetLoader(false);
-                          
                             router.push("/dashboard/category/1");
+                            SetLoader(false);                          
                         }
                     });
                 } else {
@@ -151,8 +116,14 @@ console.log(`DescriptionKey-${key}`,description);
                      
                         errors += `<li>${result.message}</li>`;
                     }
+                    else if(result.errors){
+               
+                       result.errors.Description.forEach((message:string)=> {
+                           errors += `<li>${message}</li>`;
+                       });
+                    }
                     errors += "</ul>";
-            
+              
                     Swal.fire({
                         title: 'Error!',
                         html: errors, 
@@ -162,18 +133,19 @@ console.log(`DescriptionKey-${key}`,description);
                         allowOutsideClick:false
                     }).then(res => {
                         if (res.isConfirmed) {
-                            SetLoader(false);
-                           
+                            SetLoader(false);                          
                             router.refresh();
                         }
                     });
+            
+                 
                 }
             }
         })
         .catch(error => {
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
                 confirmButtonText: 'Cool',
                 allowEscapeKey:false,
@@ -181,8 +153,6 @@ console.log(`DescriptionKey-${key}`,description);
             }).then(res => {
                 if (res.isConfirmed) {
                     SetLoader(false);
-                 
-                    signOut();
                     router.refresh();
                 }
             });
@@ -194,6 +164,7 @@ console.log(`DescriptionKey-${key}`,description);
   
 
       };
+      if(loader)return <Loader/>
     return(
         <form id="addHomeSliderItemForm" onSubmit={handleSubmit}  encType="multipart/form-data">
 

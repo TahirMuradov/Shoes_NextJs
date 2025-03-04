@@ -41,9 +41,10 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;
@@ -167,9 +168,10 @@ const [shippingMethod,SetShippingMethod]=useState<Result<GetShippingMethodForUpd
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;

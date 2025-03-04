@@ -45,9 +45,10 @@ const SizeCreateForm:React.FC<{lang:Locale,apiDomen:string|undefined}>=({lang,ap
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); 
+                        router.push("/auth/login");
                         SetLoader(false);
-                        router.refresh();
+
                     }
                 });
                 return;

@@ -62,9 +62,10 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;
@@ -117,7 +118,21 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
      }
      
    }
+    })    .catch(err=>{
+      Swal.fire({
+        title: 'Error!',
+        html: err, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+            router.refresh();
+        }
     });
+    })  ;
     },[])
 
     function ProductDelete(id:string){
@@ -143,9 +158,10 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
+
                 }
             });
             return;
@@ -207,7 +223,22 @@ const ProductsTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}
           }
           }
       
-      })       
+      }) 
+      .catch(err=>{
+        Swal.fire({
+          title: 'Error!',
+          html: err, 
+          icon: 'error',
+          confirmButtonText: 'Cool',
+          allowEscapeKey:false,
+          allowOutsideClick:false
+      }).then(res => {
+          if (res.isConfirmed) {
+              SetLoader(false);
+              router.refresh();
+          }
+      });
+      })      
         ;
       }
       if (loader) {

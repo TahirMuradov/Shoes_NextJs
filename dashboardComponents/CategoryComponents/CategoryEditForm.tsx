@@ -39,7 +39,8 @@ try {
         }).then((res) => {
             
             if (res.isConfirmed) {
-                  signOut();
+                  signOut({redirect:false});
+                  router.push('/auth/login');
 
             }
         });
@@ -154,9 +155,9 @@ if (data) {
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); ; 
                     SetLoader(false);
-                    router.refresh();
+                    router.push("/auth/login");
                 }
             });
             return;
@@ -231,8 +232,8 @@ if (data) {
             if (res.isConfirmed) {
               
               SetLoader(false);
-              signOut();
-              router.refresh();
+              signOut({redirect:false}); ;
+              router.push("/auth/login");
             }
           });
       });

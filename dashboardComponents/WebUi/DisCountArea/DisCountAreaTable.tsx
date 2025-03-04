@@ -35,11 +35,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefined}>=({Lang,page,apiDomen})=>{
       const [loader,SetLoader]=useState<boolean>(false)
-    const [Products,SetProducts]=useState<Result<PaginatedList<GetDisCountAreaType>>>();
+    const [DisCounts,SetDisCounts]=useState<Result<PaginatedList<GetDisCountAreaType>>|null>(null);
     const router=useRouter();
     const sessions=useSession();
 
     useEffect(()=>{
+      SetLoader(true)
       fetch(`${apiDomen}api/DisCountArea/GetDisCountAreaForTable?page=${page}`, {
         headers: {
           'Accept': 'application/json',
@@ -62,28 +63,13 @@ const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefi
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;
-      }else if(!x.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool'
-      }).then(x=>{
-        if (x.isConfirmed) {
-          
-            SetLoader(false)
-
-       signOut()
-          router.refresh();
-        }
-      });
-      return;
       }
         return x.json()
       }
@@ -93,37 +79,61 @@ const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefi
     
      if (res.isSuccess) {
        
-       SetProducts(res)
+       SetDisCounts(res)
+       SetLoader(false)
      }else {
-       let errors = "<ul>";
-       if (Array.isArray(res.messages)) {
-       
-           res.messages.forEach((message:string)=> {
-               errors += `<li>${message}</li>`;
-           });
-       } else if (res.message) {
-        
-           errors += `<li>${res.message}</li>`;
-       }
-       errors += "</ul>";
+        let errors = "<ul>";
+          if (Array.isArray(res.messages)) {
+          
+              res.messages.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+          } else if (res.message) {
+           
+              errors += `<li>${res.message}</li>`;
+          }
+          else if(res.errors){
+     
+             res.errors.Description.forEach((message:string)=> {
+                 errors += `<li>${message}</li>`;
+             });
+          }
+          errors += "</ul>";
+    
+          Swal.fire({
+              title: 'Error!',
+              html: errors, 
+              icon: 'error',
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false
+          }).then(res => {
+              if (res.isConfirmed) {
+                  SetLoader(false);                
+                  router.refresh();
+              }
+          });
 
-       Swal.fire({
-           title: 'Error!',
-           html: errors, 
-           icon: 'error',
-           confirmButtonText: 'Cool',
-           allowEscapeKey:false,
-           allowOutsideClick:false
-       }).then(res => {
-           if (res.isConfirmed) {
-               SetLoader(false);
-               router.refresh();
-           }
-       });
+     
      }
      
    }
+    })
+    .catch(err=>{
+      Swal.fire({
+        title: 'Error!',
+        html: err, 
+        icon: 'error',
+        confirmButtonText: 'Cool',
+        allowEscapeKey:false,
+        allowOutsideClick:false
+    }).then(res => {
+        if (res.isConfirmed) {
+            SetLoader(false);
+            router.refresh();
+        }
     });
+    })  ;
     },[])
 
     function Delete(id:string){
@@ -133,7 +143,7 @@ const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefi
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'langCode': `${Lang}`,  // You can dynamically set this value based on user selection or other logic
+            'langCode': `${Lang}`,
             'Accept-Language': `${Lang}`,
    'Authorization':`Bearer ${sessions.data?.user.token}`
           },
@@ -149,29 +159,14 @@ const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefi
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
+
                 }
             });
             return;
-        }else if(!response.ok){
-          Swal.fire({
-            title: 'Error!',
-            text: 'An unexpected error occurred!',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        }).then(x=>{
-          if (x.isConfirmed) {
-            
-              SetLoader(false)
-
-         signOut()
-           
-          }
-        });
-        return;
-        }
+        }         
          return response.json()
         })
         .then(responsData=>{
@@ -180,12 +175,22 @@ const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefi
             if (responsData.isSuccess) {
               Swal.fire({
                   title: 'Success!',
-                  text: 'Product delete successfully!',
+                  text: 'DisCount delete successfully!',
                   icon: 'success',
                   confirmButtonText: 'Cool'
               }).then((res) => {
                   if (res.isConfirmed) {
-                 router.refresh();
+                    SetDisCounts(prevDisCounts => {
+                      if (!prevDisCounts) return null;
+              
+                      return {
+                          ...prevDisCounts,
+                          response: {
+                              ...prevDisCounts.response,
+                              data: prevDisCounts.response.data.filter(x => x.id !== id)
+                          }
+                      };
+                  });
                     SetLoader(false)
                   }
               })
@@ -237,7 +242,7 @@ const DisCountAreaTable:React.FC<{Lang:Locale,page:number,apiDomen:string|undefi
             </TableRow>
           </TableHead>
           <TableBody>
-            {Products?.response.data.map((row) => (
+            {DisCounts?.response.data.map((row) => (
               <StyledTableRow key={row.id}>
                 
                 <StyledTableCell align='center' component="th" scope="row">

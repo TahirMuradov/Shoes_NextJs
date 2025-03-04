@@ -14,9 +14,9 @@ const HomeSliderItemUpdateForm: React.FC<{params:{lang:Locale,apiDomen:string|un
 
     const router=useRouter();
     const[loader,SetLoader]=useState<boolean>(false)
+    const [Data,SetData]=useState<Result<GetHomeSliderItemForUpdateType>>();
     const [newPhotos, setNewPhotos] = useState<File[]>([]);
     const PictureinputRef = useRef<HTMLInputElement | null>(null);
-const [Data,SetData]=useState<Result<GetHomeSliderItemForUpdateType>>();
     const sessions=useSession();
     function NewPhotoAdded(e:React.ChangeEvent<HTMLInputElement>){
         e.preventDefault()
@@ -52,79 +52,95 @@ const [Data,SetData]=useState<Result<GetHomeSliderItemForUpdateType>>();
         }
       },[newPhotos])
     const GetHomeSliderItemFetch= async ()=>{
-
-        const response = await fetch(`${apiDomen}api/HomeSliderItem/GetHomeSliderItemForUpdate?Id=${id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept-Language': `${lang}`,  
-                'Authorization': `Bearer ${sessions.data?.user.token}`
-            }
-        });
-
-        if (response.status == 401) {
+        try {
+            
+            SetLoader(true);
+                    const response = await fetch(`${apiDomen}api/HomeSliderItem/GetHomeSliderItemForUpdate?Id=${id}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept-Language': `${lang}`,  
+                            'Authorization': `Bearer ${sessions.data?.user.token}`
+                        }
+                    });
+            
+                    if (response.status == 401) {
+                        Swal.fire({
+                            title: 'Unauthorized',
+                            text: 'Your session has expired. Please log in again.',
+                            icon: 'error',
+                            confirmButtonText: 'Cool',
+                            allowOutsideClick: false, 
+                            allowEscapeKey:false,
+                        }).then((res) => {
+                            
+                            if (res.isConfirmed) {
+                                  signOut({redirect:false});
+                                  router.push("/auth/login");
+                                  SetLoader(false);
+            
+            
+                            }
+                        });
+                    }
+            
+              const data=  await  response.json()
+            
+              if (data) {
+                
+                  if (data.isSuccess) {
+                      SetData(data);
+                      SetLoader(false);
+                  } else {
+                    let errors = "<ul>";
+                    if (Array.isArray(data.messages)) {
+                    
+                        data.messages.forEach((message:string)=> {
+                            errors += `<li>${message}</li>`;
+                        });
+                    } else if (data.message) {
+                     
+                        errors += `<li>${data.message}</li>`;
+                    }
+                    else if(data.errors){
+               
+                       data.errors.Description.forEach((message:string)=> {
+                           errors += `<li>${message}</li>`;
+                       });
+                    }
+                    errors += "</ul>";
+              
+                    Swal.fire({
+                        title: 'Error!',
+                        html: errors, 
+                        icon: 'error',
+                        confirmButtonText: 'Cool',
+                        allowEscapeKey:false,
+                        allowOutsideClick:false
+                    }).then(res => {
+                        if (res.isConfirmed) {
+                            router.refresh();
+                            SetLoader(false);              
+                        }
+                    });
+                   
+                  }
+              }
+        } catch (error) {
             Swal.fire({
-                title: 'Unauthorized',
-                text: 'Your session has expired. Please log in again.',
+                title: 'Error!',
+                html: `${error}`, 
                 icon: 'error',
                 confirmButtonText: 'Cool',
-                allowOutsideClick: false, 
                 allowEscapeKey:false,
-            }).then((res) => {
-                
+                allowOutsideClick:false
+            }).then(res => {
                 if (res.isConfirmed) {
-                      signOut();
-
+                    router.refresh();
+                    SetLoader(false);
                 }
             });
         }
-if (!response.ok) {
-    Swal.fire({
-        title: 'Error!',
-        text: 'An unexpected error occurred!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-    }).then(x=>{
-      if (x.isConfirmed) {
-        
-          SetLoader(false)
-
-     signOut()
- 
-      }
-    });
-
-}
-  const data:Result<GetHomeSliderItemForUpdateType>=  await  response.json()
-
-  if (data) {
-    
-      if (data.isSuccess) {
-          SetData(data);
-      } else {
-        let error="<ul>"
-        if (data.message) {
-          error+=`<li>${data.message}</li>`
-        }
-        data.messages?.forEach((message:string)=>{
-         error+=`<li>${message}</li>`
-        })
-        error+="</ul>"
-          Swal.fire({
-              title: 'Error!',
-              html: error || 'Failed to fetch category!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowOutsideClick: false, 
-              allowEscapeKey:false,
-          }).then((res)=>{
-              if (res.isConfirmed) {
-                  
-                  router.refresh();
-              }
-          });
-      }
-  }
       
     }
 useEffect( ()  =>{
@@ -151,17 +167,7 @@ GetHomeSliderItemFetch();
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+              router.refresh();
                 return;
             }
             if (title !== null) {
@@ -171,17 +177,7 @@ GetHomeSliderItemFetch();
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+               router.refresh();
                 return;
             }
 
@@ -214,9 +210,10 @@ form.append("Id",id)
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); 
+                        router.push("/auth/login");
                         SetLoader(false);
-                        router.refresh();
+
                     }
                 });
                 return;
@@ -234,8 +231,8 @@ form.append("Id",id)
                         confirmButtonText: 'Cool'
                     }).then((res) => {
                         if (res.isConfirmed) {
-                          SetLoader(false)
-                         router.push("/dashboard/webui/homeslideritem/1")
+                            router.push("/dashboard/webui/homeslideritem/1")
+                            SetLoader(false)
                         }
                     });
                 } else {
@@ -249,8 +246,14 @@ form.append("Id",id)
                      
                         errors += `<li>${result.message}</li>`;
                     }
+                    else if(result.errors){
+               
+                       result.errors.Description.forEach((message:string)=> {
+                           errors += `<li>${message}</li>`;
+                       });
+                    }
                     errors += "</ul>";
-            
+              
                     Swal.fire({
                         title: 'Error!',
                         html: errors, 
@@ -261,29 +264,33 @@ form.append("Id",id)
                     }).then(res => {
                         if (res.isConfirmed) {
                             SetLoader(false);
+                          
                             router.refresh();
                         }
                     });
                 }
             }
         })
-        // .catch(error => {
-        //     Swal.fire({
-        //         title: 'Error!',
-        //         text: 'An unexpected error occurred!',
-        //         icon: 'error',
-        //         confirmButtonText: 'Cool'
-        //     }).then(x=>{
-        //       SetLoader(false)
-           
-        //       router.refresh();
-        //     });
-        // });
+        .catch(error => {
+            Swal.fire({
+                title: 'Error!',
+                html: error, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+        });
     }
 if (loader) {
     return <Loader/>
 }
-console.log(Data)
+
 if (Data?.response.title) {
     
     return (

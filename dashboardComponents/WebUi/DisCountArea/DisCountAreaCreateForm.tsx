@@ -32,46 +32,24 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
                     value: description as string,
                 });
        
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+            }else{
+                router.refresh();
                 return;
             }
+            
             if (title !== null) {
                 Title.push({
                     key,
                     value: title as string,
                 });
        
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+            }else{
+                router.refresh();
                 return;
             }
         }
 
-     console.log( JSON.stringify({
-        titleContent:Title,
-        descriptionContent: Description
-    }))
+ 
    
         fetch(`${apiDomen}api/DisCountArea/AddDiscountArea`, {
             method: 'POST',
@@ -92,7 +70,7 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
                 }, {} as { [key: string]: string | null }),
             }),
         })
-        .then(async response => {
+        .then( response => {
                   
             if (response.status === 401) {
                 Swal.fire({
@@ -104,39 +82,27 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({
+                            redirect:false,                                                    
+                        }); 
+                        router.push("/auth/login");
                         SetLoader(false);
-                        router.refresh();
+
                     }
                 });
                 return;
             }
-            else if(!response.ok){
-                console.log(response)
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                    
-                      SetLoader(false)
-      
-                 signOut()
-                    router.refresh();
-                  }
-                });
-                return;
-            }
+          
 
-            const result = await response.json();
+            return response.json();
+          
+        }).then(result=>{
             if (result) {
                 
                 if (result.isSuccess) {
                     Swal.fire({
                         title: 'Success!',
-                        text: 'Category added successfully!',
+                        text: 'DisCount Area added successfully!',
                         icon: 'success',
                         confirmButtonText: 'Cool',
                         allowEscapeKey:false,
@@ -145,7 +111,7 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
                         if (res.isConfirmed) {
                             SetLoader(false);
                           
-                            router.push("/dashboard/category/1");
+                            router.push("/dashboard/webui/discountarea/1");
                         }
                     });
                 } else {
@@ -159,8 +125,14 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
                      
                         errors += `<li>${result.message}</li>`;
                     }
+                    else if(result.errors){
+               
+                       result.errors.Description.forEach((message:string)=> {
+                           errors += `<li>${message}</li>`;
+                       });
+                    }
                     errors += "</ul>";
-            
+              
                     Swal.fire({
                         title: 'Error!',
                         html: errors, 
@@ -170,18 +142,19 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
                         allowOutsideClick:false
                     }).then(res => {
                         if (res.isConfirmed) {
-                            SetLoader(false);
-                           
+                            SetLoader(false);                          
                             router.refresh();
                         }
                     });
+            
+                 
                 }
             }
         })
         .catch(error => {
             Swal.fire({
                 title: 'Error!',
-                text: 'An unexpected error occurred!',
+                text: `${error}`,
                 icon: 'error',
                 confirmButtonText: 'Cool',
                 allowEscapeKey:false,
@@ -189,8 +162,6 @@ const DisCountAreaCreateForm: React.FC<{params:{lang:Locale,apiDomen:string|unde
             }).then(res => {
                 if (res.isConfirmed) {
                     SetLoader(false);
-                 
-                    signOut();
                     router.refresh();
                 }
             });

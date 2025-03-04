@@ -6,7 +6,6 @@ import { i18n, Locale } from "@/i18n-config";
 import Result from "@/types/ApiResultType";
 import GetCategoryForUI from "@/types/CategoryTypes/GetCategoryForUI";
 import GetSubCategoryForUI from "@/types/SubCategoriesType/GetSubCategoryForUI";
-import GetTopCategoryAreaForUpdate from "@/types/WebUI/TopCategoryArea/GetTopCategoryAreaForUpdate";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -57,79 +56,94 @@ const [Category,SetCategory]=useState<Result<GetCategoryForUI[]>>();
       },[newPhotos])
  
     const GetSubCategoryFetch=async()=>{
-        const response = await fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'LangCode':`${lang}`,
-                'Accept-Language': `${lang}`,  
-                'Authorization': `Bearer ${sessions.data?.user.token}`
+        try {
+            
+          
+            const response = await fetch(`${apiDomen}api/SubCategory/GetAllSubCategory`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'LangCode':`${lang}`,
+                    'Accept-Language': `${lang}`,  
+                    'Authorization': `Bearer ${sessions.data?.user.token}`
+                }
+            });
+    
+            if (response.status == 401) {
+                Swal.fire({
+                    title: 'Unauthorized',
+                    text: 'Your session has expired. Please log in again.',
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowOutsideClick: false, 
+                    allowEscapeKey:false,
+                }).then((res) => {
+                    
+                    if (res.isConfirmed) {
+                          signOut({redirect:false});
+                          router.push("/auth/login");
+                          
+    
+                    }
+                });
             }
-        });
-
-        if (response.status == 401) {
+    
+      const data=  await  response.json()
+    
+      if (data) {
+        
+          if (data.isSuccess) {
+              SetSubCategory(data);
+           
+          } else {
+            let errors = "<ul>";
+            if (Array.isArray(data.messages)) {
+            
+                data.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (data.message) {
+             
+                errors += `<li>${data.message}</li>`;
+            }
+            else if(data.errors){
+       
+               data.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+            }
+            errors += "</ul>";
+      
             Swal.fire({
-                title: 'Unauthorized',
-                text: 'Your session has expired. Please log in again.',
+                title: 'Error!',
+                html: errors, 
                 icon: 'error',
                 confirmButtonText: 'Cool',
-                allowOutsideClick: false, 
                 allowEscapeKey:false,
-            }).then((res) => {
-                
+                allowOutsideClick:false
+            }).then(res => {
                 if (res.isConfirmed) {
-                      signOut();
-
+                    SetLoader(false);              
+                    router.refresh();
+                }
+            });
+          }
+      }
+        } catch (error) {
+            Swal.fire({
+                title: 'Error!',
+                html: `${error}`, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
                 }
             });
         }
-if (!response.ok) {
-    Swal.fire({
-        title: 'Error!',
-        text: 'An unexpected error occurred!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-    }).then(x=>{
-      if (x.isConfirmed) {
-        
-          SetLoader(false)
-
-     signOut()
- 
-      }
-    });
-
-}
-  const data:Result<GetSubCategoryForUI[]>=  await  response.json()
-
-  if (data) {
-    
-      if (data.isSuccess) {
-          SetSubCategory(data);
-      } else {
-        let error="<ul>"
-        if (data.message) {
-          error+=`<li>${data.message}</li>`
-        }
-        data.messages?.forEach((message:string)=>{
-         error+=`<li>${message}</li>`
-        })
-        error+="</ul>"
-          Swal.fire({
-              title: 'Error!',
-              html: error || 'Failed to fetch category!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowOutsideClick: false, 
-              allowEscapeKey:false,
-          }).then((res)=>{
-              if (res.isConfirmed) {
-                  
-                  router.refresh();
-              }
-          });
-      }
-  }
     }
     const GetCategoryFetch =async()=>{
         const response = await fetch(`${apiDomen}api/Category/GetAllCategory`, {
@@ -153,63 +167,66 @@ if (!response.ok) {
             }).then((res) => {
                 
                 if (res.isConfirmed) {
-                      signOut();
+                      signOut({redirect:false});
+                      router.push("/auth/login");
 
                 }
             });
         }
-if (!response.ok) {
-    Swal.fire({
-        title: 'Error!',
-        text: 'An unexpected error occurred!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-    }).then(x=>{
-      if (x.isConfirmed) {
-        
-          SetLoader(false)
 
-     signOut()
- 
-      }
-    });
-
-}
-  const data:Result<GetCategoryForUI[]>=  await  response.json()
+  const data=  await  response.json()
 
   if (data) {
     
       if (data.isSuccess) {
           SetCategory(data);
+       
       } else {
-        let error="<ul>"
-        if (data.message) {
-          error+=`<li>${data.message}</li>`
+        let errors = "<ul>";
+        if (Array.isArray(data.messages)) {
+        
+            data.messages.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+        } else if (data.message) {
+         
+            errors += `<li>${data.message}</li>`;
         }
-        data.messages?.forEach((message:string)=>{
-         error+=`<li>${message}</li>`
-        })
-        error+="</ul>"
-          Swal.fire({
-              title: 'Error!',
-              html: error || 'Failed to fetch category!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowOutsideClick: false, 
-              allowEscapeKey:false,
-          }).then((res)=>{
-              if (res.isConfirmed) {
-                  
-                  router.refresh();
-              }
-          });
+        else if(data.errors){
+   
+           data.errors.Description.forEach((message:string)=> {
+               errors += `<li>${message}</li>`;
+           });
+        }
+        errors += "</ul>";
+  
+        Swal.fire({
+            title: 'Error!',
+            html: errors, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
       }
   }
     }
-useEffect( ()  =>{
-GetSubCategoryFetch();
-GetCategoryFetch();
-},[])
+    useEffect(() => {
+        const fetchData = async () => {
+          SetLoader(true);
+          await GetSubCategoryFetch();
+          await GetCategoryFetch();
+          SetLoader(false);
+        };
+      
+        fetchData();
+      }, []);
 
 
 
@@ -230,17 +247,7 @@ GetCategoryFetch();
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+            router.refresh();
                 return;
             }
             if (title !== null) {
@@ -250,17 +257,7 @@ GetCategoryFetch();
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+              router.refresh();
                 return;
             }
 
@@ -302,9 +299,10 @@ GetCategoryFetch();
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); 
+                        router.push("/auth/login"); 
                         SetLoader(false);
-                        router.refresh();
+
                     }
                 });
                 return;
@@ -312,7 +310,7 @@ GetCategoryFetch();
             
            return response.json()})
         .then(result => {
-            console.log(result)
+           
             if (result) {
                 
                 if (result.isSuccess) {
@@ -323,51 +321,64 @@ GetCategoryFetch();
                         confirmButtonText: 'Cool'
                     }).then((res) => {
                         if (res.isConfirmed) {
-                          SetLoader(false)
-                         router.push("/dashboard/webui/homeslideritem/1")
+                            router.push("/dashboard/webui/homeslideritem/1")
+                            SetLoader(false)
                         }
                     });
                 } else {
-                    let errors = "<ul>";
-                    if (Array.isArray(result.messages)) {
-                    
-                        result.messages.forEach((message:string)=> {
-                            errors += `<li>${message}</li>`;
-                        });
-                    } else if (result.message) {
-                     
-                        errors += `<li>${result.message}</li>`;
-                    }
-                    errors += "</ul>";
-            
-                    Swal.fire({
-                        title: 'Error!',
-                        html: errors, 
-                        icon: 'error',
-                        confirmButtonText: 'Cool',
-                        allowEscapeKey:false,
-                        allowOutsideClick:false
-                    }).then(res => {
-                        if (res.isConfirmed) {
-                            SetLoader(false);
-                            router.refresh();
-                        }
-                    });
+                   
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                   
+                     router.refresh();
+                 }
+             });
+                
                 }
             }
         })
-        // .catch(error => {
-        //     Swal.fire({
-        //         title: 'Error!',
-        //         text: 'An unexpected error occurred!',
-        //         icon: 'error',
-        //         confirmButtonText: 'Cool'
-        //     }).then(x=>{
-        //       SetLoader(false)
-           
-        //       router.refresh();
-        //     });
-        // });
+        .catch(error => {
+            Swal.fire({
+                title: 'Error!',
+                text: `${error}`,
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(x=>{
+                if (x.isConfirmed) {
+                    
+                    router.refresh();
+                    SetLoader(false)
+                }
+            });
+        });
     }
 if (loader) {
     return <Loader/>

@@ -77,56 +77,53 @@ const [Category,SetCategory]=useState<Result<GetCategoryForUI[]>>();
             }).then((res) => {
                 
                 if (res.isConfirmed) {
-                      signOut();
+                      signOut({redirect:false});
+                      router.push("/auth/login");
 
                 }
             });
         }
-if (!response.ok) {
-    Swal.fire({
-        title: 'Error!',
-        text: 'An unexpected error occurred!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-    }).then(x=>{
-      if (x.isConfirmed) {
-        
-          SetLoader(false)
 
-     signOut()
- 
-      }
-    });
-
-}
-  const data:Result<GetTopCategoryAreaForUpdate>=  await  response.json()
+  const data=  await  response.json()
 
   if (data) {
     
       if (data.isSuccess) {
           SetData(data);
+     
       } else {
-        let error="<ul>"
-        if (data.message) {
-          error+=`<li>${data.message}</li>`
+        let errors = "<ul>";
+        if (Array.isArray(data.messages)) {
+        
+            data.messages.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+        } else if (data.message) {
+         
+            errors += `<li>${data.message}</li>`;
         }
-        data.messages?.forEach((message:string)=>{
-         error+=`<li>${message}</li>`
-        })
-        error+="</ul>"
-          Swal.fire({
-              title: 'Error!',
-              html: error || 'Failed to fetch category!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowOutsideClick: false, 
-              allowEscapeKey:false,
-          }).then((res)=>{
-              if (res.isConfirmed) {
-                  
-                  router.refresh();
-              }
-          });
+        else if(data.errors){
+   
+           data.errors.Description.forEach((message:string)=> {
+               errors += `<li>${message}</li>`;
+           });
+        }
+        errors += "</ul>";
+  
+        Swal.fire({
+            title: 'Error!',
+            html: errors, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
       }
   }
       
@@ -153,56 +150,54 @@ if (!response.ok) {
             }).then((res) => {
                 
                 if (res.isConfirmed) {
-                      signOut();
+                      signOut({redirect:false});
+                      router.push("/auth/login");
+
 
                 }
             });
         }
-if (!response.ok) {
-    Swal.fire({
-        title: 'Error!',
-        text: 'An unexpected error occurred!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-    }).then(x=>{
-      if (x.isConfirmed) {
-        
-          SetLoader(false)
 
-     signOut()
- 
-      }
-    });
-
-}
-  const data:Result<GetSubCategoryForUI[]>=  await  response.json()
+  const data=  await  response.json()
 
   if (data) {
     
       if (data.isSuccess) {
           SetSubCategory(data);
+        
       } else {
-        let error="<ul>"
-        if (data.message) {
-          error+=`<li>${data.message}</li>`
+        let errors = "<ul>";
+        if (Array.isArray(data.messages)) {
+        
+            data.messages.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+        } else if (data.message) {
+         
+            errors += `<li>${data.message}</li>`;
         }
-        data.messages?.forEach((message:string)=>{
-         error+=`<li>${message}</li>`
-        })
-        error+="</ul>"
-          Swal.fire({
-              title: 'Error!',
-              html: error || 'Failed to fetch category!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowOutsideClick: false, 
-              allowEscapeKey:false,
-          }).then((res)=>{
-              if (res.isConfirmed) {
-                  
-                  router.refresh();
-              }
-          });
+        else if(data.errors){
+   
+           data.errors.Description.forEach((message:string)=> {
+               errors += `<li>${message}</li>`;
+           });
+        }
+        errors += "</ul>";
+  
+        Swal.fire({
+            title: 'Error!',
+            html: errors, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
       }
   }
     }
@@ -228,64 +223,65 @@ if (!response.ok) {
             }).then((res) => {
                 
                 if (res.isConfirmed) {
-                      signOut();
+                      signOut({redirect:false});
+                      router.push("/auth/login");
+
 
                 }
             });
         }
-if (!response.ok) {
-    Swal.fire({
-        title: 'Error!',
-        text: 'An unexpected error occurred!',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-    }).then(x=>{
-      if (x.isConfirmed) {
-        
-          SetLoader(false)
 
-     signOut()
- 
-      }
-    });
-
-}
-  const data:Result<GetCategoryForUI[]>=  await  response.json()
+  const data=  await  response.json()
 
   if (data) {
     
       if (data.isSuccess) {
           SetCategory(data);
       } else {
-        let error="<ul>"
-        if (data.message) {
-          error+=`<li>${data.message}</li>`
+        let errors = "<ul>";
+        if (Array.isArray(data.messages)) {
+        
+            data.messages.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+        } else if (data.message) {
+         
+            errors += `<li>${data.message}</li>`;
         }
-        data.messages?.forEach((message:string)=>{
-         error+=`<li>${message}</li>`
-        })
-        error+="</ul>"
-          Swal.fire({
-              title: 'Error!',
-              html: error || 'Failed to fetch category!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowOutsideClick: false, 
-              allowEscapeKey:false,
-          }).then((res)=>{
-              if (res.isConfirmed) {
-                  
-                  router.refresh();
-              }
-          });
+        else if(data.errors){
+   
+           data.errors.Description.forEach((message:string)=> {
+               errors += `<li>${message}</li>`;
+           });
+        }
+        errors += "</ul>";
+  
+        Swal.fire({
+            title: 'Error!',
+            html: errors, 
+            icon: 'error',
+            confirmButtonText: 'Cool',
+            allowEscapeKey:false,
+            allowOutsideClick:false
+        }).then(res => {
+            if (res.isConfirmed) {
+                SetLoader(false);
+              
+                router.refresh();
+            }
+        });
       }
   }
     }
 useEffect( ()  =>{
-GetTopCategoryFetch();
-GetSubCategoryFetch();
-GetCategoryFetch();
-
+   const GetAllData= async ()=>{
+SetLoader(true)
+    await   GetTopCategoryFetch();
+     await  GetSubCategoryFetch();
+     await  GetCategoryFetch();
+     SetLoader(false)
+    }
+GetAllData();
 },[])
 
 
@@ -307,17 +303,7 @@ GetCategoryFetch();
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+             router.refresh();
                 return;
             }
             if (title !== null) {
@@ -327,17 +313,7 @@ GetCategoryFetch();
                 });
        
             } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Inspecti de duzelis etme datalar duzgun gelmir!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                  }).then(res=>{
-                    if (res.isConfirmed) {
-                       
-                        router.refresh(); // Reload the page if the locale doesn't match
-                    }
-                  })
+               router.refresh();
                 return;
             }
 
@@ -379,9 +355,9 @@ form.append("Id",id)
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); 
+                        router.push("/auth/login");
                         SetLoader(false);
-                        router.refresh();
                     }
                 });
                 return;
@@ -414,8 +390,14 @@ form.append("Id",id)
                      
                         errors += `<li>${result.message}</li>`;
                     }
+                    else if(result.errors){
+               
+                       result.errors.Description.forEach((message:string)=> {
+                           errors += `<li>${message}</li>`;
+                       });
+                    }
                     errors += "</ul>";
-            
+              
                     Swal.fire({
                         title: 'Error!',
                         html: errors, 
@@ -426,24 +408,30 @@ form.append("Id",id)
                     }).then(res => {
                         if (res.isConfirmed) {
                             SetLoader(false);
+                          
                             router.refresh();
                         }
                     });
+               
                 }
             }
         })
-        // .catch(error => {
-        //     Swal.fire({
-        //         title: 'Error!',
-        //         text: 'An unexpected error occurred!',
-        //         icon: 'error',
-        //         confirmButtonText: 'Cool'
-        //     }).then(x=>{
-        //       SetLoader(false)
-           
-        //       router.refresh();
-        //     });
-        // });
+        .catch(error => {
+            Swal.fire({
+                title: 'Error!',
+                text: error,
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(x=>{
+                if (x.isConfirmed) {
+                    
+                    router.refresh();
+                  SetLoader(false)           
+                }
+            });
+        });
     }
 if (loader) {
     return <Loader/>

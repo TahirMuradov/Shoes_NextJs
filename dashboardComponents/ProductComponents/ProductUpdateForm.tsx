@@ -41,9 +41,10 @@ const [Product,SetProduct]=useState<Result<GetProductForUpdate>>()
          allowOutsideClick:false                     
     }).then(res => {
         if (res.isConfirmed) {
-            signOut(); 
+            signOut({redirect:false}); 
+            router.push("/auth/login");
             SetLoader(false);
-            router.refresh();
+
         }
     });
     return;
@@ -109,9 +110,10 @@ method: "GET",
          allowOutsideClick:false                     
     }).then(res => {
         if (res.isConfirmed) {
-            signOut(); 
+            signOut({redirect:false}); 
+            router.push("/auth/login");        
             SetLoader(false);
-            router.refresh();
+        
         }
     });
     return;
@@ -196,7 +198,8 @@ method: "GET",
          allowOutsideClick:false                     
     }).then(res => {
         if (res.isConfirmed) {
-            signOut(); 
+            signOut({redirect:false}); 
+            router.push("/auth/login");
             SetLoader(false);
            
         }
@@ -379,9 +382,10 @@ formData.append("Id",id)
                allowOutsideClick:false                     
           }).then(res => {
               if (res.isConfirmed) {
-                  signOut(); 
+                  signOut({redirect:false}); 
+                  router.push("/auth/login");
                   SetLoader(false);
-                  router.refresh();
+
               }
           });
           return;

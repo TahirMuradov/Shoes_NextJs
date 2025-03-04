@@ -114,9 +114,9 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
              allowOutsideClick:false                     
         }).then(res => {
             if (res.isConfirmed) {
-                signOut(); 
+                signOut({redirect:false}); 
+                router.push("/auth/login");
                 SetLoader(false);
-                router.refresh();
             }
         });
         return;
@@ -166,7 +166,8 @@ export default function CuponTable({lang,page,apiDomen}:{lang:Locale,page:number
           allowOutsideClick:false,
         }).then((res) => {
           if (res.isConfirmed) {
-            signOut();
+            signOut({redirect:false});
+            router.push("/auth/login");
           }
         });
         return;

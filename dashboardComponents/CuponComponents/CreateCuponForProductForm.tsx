@@ -35,9 +35,9 @@ useEffect(()=>{
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
                 }
             });
         }else if(!res.ok){
@@ -49,10 +49,10 @@ useEffect(()=>{
             }).then(x=>{
               if (x.isConfirmed) {
                 
+                  signOut({redirect:false})
+                  router.push("/auth/login");
                   SetLoader(false)
   
-             signOut()
-                router.refresh();
               }
             });
         }
@@ -159,9 +159,9 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
                      allowOutsideClick:false                     
                 }).then(res => {
                     if (res.isConfirmed) {
-                        signOut(); 
+                        signOut({redirect:false}); 
+                        router.push("/auth/login");
                         SetLoader(false);
-                        router.refresh();
                     }
                 });
                 return;

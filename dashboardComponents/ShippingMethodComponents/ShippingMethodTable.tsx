@@ -59,14 +59,7 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
               confirmButtonText: 'Login',
                allowEscapeKey:false,
                allowOutsideClick:false                     
-          }).then(res => {
-              if (res.isConfirmed) {
-                  signOut(); 
-                  SetLoader(false);
-                  router.refresh();
-              }
-          } 
-          );
+          })
           return;
       }
        return res.json()})
@@ -79,39 +72,38 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
             SetLoader(false)
           }else{
        
-            let errors = "<ul>";
-            if (Array.isArray(x.messages)) {
-            
-                x.messages.forEach((message:string)=> {
-                    errors += `<li>${message}</li>`;
-                });
-            } else if (x.message) {
-             
-                errors += `<li>${x.message}</li>`;
-            }
-            else if(x.errors){
-       
-              Object.keys(x.errors).forEach((key) => {
-                x.errors[key].forEach((message: string) => {
-                                            errors += `<li>${message}</li>`;
-                });
-            });
-            }
-            errors += "</ul>";
-    
-            Swal.fire({
-                title: 'Error!',
-                html: errors, 
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowEscapeKey:false,
-                allowOutsideClick:false
-            }).then(res => {
-                if (res.isConfirmed) {
-                    SetLoader(false);                  
-                    router.refresh();
-                }
-            });
+             let errors = "<ul>";
+               if (Array.isArray(x.messages)) {
+               
+                   x.messages.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+               } else if (x.message) {
+                
+                   errors += `<li>${x.message}</li>`;
+               }
+               else if(x.errors){
+          
+                  x.errors.Description.forEach((message:string)=> {
+                      errors += `<li>${message}</li>`;
+                  });
+               }
+               errors += "</ul>";
+         
+               Swal.fire({
+                   title: 'Error!',
+                   html: errors, 
+                   icon: 'error',
+                   confirmButtonText: 'Cool',
+                   allowEscapeKey:false,
+                   allowOutsideClick:false
+               }).then(res => {
+                   if (res.isConfirmed) {
+                       SetLoader(false);
+                     
+                       router.refresh();
+                   }
+               });
     
           }
         }
@@ -160,9 +152,10 @@ const ShippingMethodTable = ({page,lang,apiDomen}:{page:number,lang:Locale,apiDo
                  allowOutsideClick:false                     
             }).then(res => {
                 if (res.isConfirmed) {
-                    signOut(); 
+                    signOut({redirect:false}); 
+                    router.push("/auth/login");
                     SetLoader(false);
-                    router.refresh();
+
                 }
             });
             return;
