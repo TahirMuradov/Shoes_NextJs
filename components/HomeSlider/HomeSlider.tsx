@@ -1,57 +1,17 @@
 'use client'
 import React from 'react';
 import Slider from "react-slick";
-import bg1 from '../../public/img/bg-img/bg-1.jpg';
-import bg2 from '../../public/img/bg-img/bg-2.jpg';
-import bg3 from '../../public/img/bg-img/bg-3.jpg';
-import bg4 from '../../public/img/bg-img/bg-4.jpg';
-
-import CartType from '@/types/CartTypes/Cart.type';
 import { Locale } from '@/i18n-config';
 import {  HomeSliderLaunguage } from '@/types/DictionaryTypes/Dictionary';
-import GetAllHomeSliderItemType from '@/types/WebUI/HomeSliderItem/GetAllHomeSliderItemType';
 import Link from 'next/link';
+import GetHomeSliderItemForUI from '@/types/WebUI/HomeSliderItem/GetHomeSliderItemForUI';
 
-
-
-
-
-const slidesData = [
-  {
-    id: 1,
-    heading: 'Moda Trendleri',
-    buttonText: 'Şimdi Alışveriş Yap',
-    buttonLink: '#',
-    backgroundImage: bg1
-  },
-  {
-    id: 2,
-    heading: 'Yaz Koleksiyonu',
-    buttonText: 'Koleksiyonu İncele',
-    buttonLink: '#',
-    backgroundImage: bg2
-  },
-  {
-    id: 3,
-    heading: 'Kadın Modası',
-    buttonText: 'Koleksiyonu İncele',
-    buttonLink: '#',
-    backgroundImage: bg3
-  },
-  {
-    id: 4,
-    heading: 'Kadın Modası',
-    buttonText: 'Koleksiyonu İncele',
-    buttonLink: '#',
-    backgroundImage: bg4
-  }
-];
 
 
 interface HomeSliderParasm{
   local:Locale,
   dictinory:HomeSliderLaunguage,
-  homeSliderItem:GetAllHomeSliderItemType[],
+  homeSliderItem:GetHomeSliderItemForUI[],
   apiDomen:string|undefined
 }
 const HomeSlider: React.FC<HomeSliderParasm> = (params:HomeSliderParasm) => {
@@ -70,8 +30,8 @@ const HomeSlider: React.FC<HomeSliderParasm> = (params:HomeSliderParasm) => {
   return (
     <section className="welcome_area overflow-hidden w-full">
       <Slider {...settings} className="welcome_slides owl-carousel">
-        {params.homeSliderItem.map(slide => (
-          <div key={slide.id}>
+        {params.homeSliderItem.map((slide,index) => (
+          <div key={index}>
 
           <div  className="single_slide h-[800px] bg-img background-overlay" style={{ backgroundImage: `url(${params.apiDomen}${slide.imageUrl})` }}>
             <div className="container m-auto my-auto h-full">

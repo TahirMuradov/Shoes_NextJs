@@ -3,7 +3,6 @@ import { i18n, Locale } from "@/i18n-config"
 import GetProductForUpdate from "@/types/ProductTypes/GetProdutForUpdate";
 import GetSize from "@/types/SizeTypes/GetSize"
 import GetSubCategory from "@/types/SubCategoriesType/GetSubCategory"
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { ChangeEvent, SyntheticEvent, useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
@@ -53,6 +52,7 @@ const [Product,SetProduct]=useState<Result<GetProductForUpdate>>()
 return response.json()
 }).then(result=>{
   if (result.isSuccess) {
+ 
 SetSizes(result)
   }else{
   
@@ -69,9 +69,11 @@ SetSizes(result)
     }
     else if(result.errors){
 
-       result.errors.Description.forEach((message:string)=> {
-           errors += `<li>${message}</li>`;
-       });
+      Object.keys(result.errors).forEach((key) => {
+        result.errors[key].forEach((message: string) => {
+                                    errors += `<li>${message}</li>`;
+        });
+    });
     }
     errors += "</ul>";
 
@@ -137,9 +139,11 @@ if (result.isSuccess) {
   }
   else if(result.errors){
 
-     result.errors.Description.forEach((message:string)=> {
-         errors += `<li>${message}</li>`;
-     });
+    Object.keys(result.errors).forEach((key) => {
+      result.errors[key].forEach((message: string) => {
+                                  errors += `<li>${message}</li>`;
+      });
+  });
   }
   errors += "</ul>";
 
@@ -208,6 +212,7 @@ method: "GET",
 }
 return response.json()
 }).then(result=>{
+ 
   if (result.isSuccess) {
     SetProduct(result)
   }else{
@@ -224,9 +229,11 @@ return response.json()
     }
     else if(result.errors){
 
-       result.errors.Description.forEach((message:string)=> {
-           errors += `<li>${message}</li>`;
-       });
+      Object.keys(result.errors).forEach((key) => {
+        result.errors[key].forEach((message: string) => {
+                                    errors += `<li>${message}</li>`;
+        });
+    });
     }
     errors += "</ul>";
 
@@ -328,6 +335,7 @@ if (sizes?.response) {
   }
 }
     formData.append("Sizes",JSON.stringify(Size))
+  
     //productName
     const productName: { key: string, value: string | null }[] = [];
     const productDescription: { key: string, value: string | null }[] = [];
@@ -394,7 +402,7 @@ formData.append("Id",id)
       return  response.json()})
       .then(result => {
         if (result) {
-          
+        
           if (result.isSuccess) {
               Swal.fire({
                   title: 'Success!',
@@ -425,9 +433,11 @@ formData.append("Id",id)
             }
             else if(result.errors){
        
-               result.errors.Description.forEach((message:string)=> {
-                   errors += `<li>${message}</li>`;
-               });
+              Object.keys(result.errors).forEach((key) => {
+                result.errors[key].forEach((message: string) => {
+                                            errors += `<li>${message}</li>`;
+                });
+            });
             }
             errors += "</ul>";
     
@@ -466,7 +476,7 @@ formData.append("Id",id)
   };
   if (loader) 
    return ( <Loader/>)
-  
+
     return(
     
         <form id="addPictureForm" onSubmit={handleSubmit} encType="multipart/form-data">
@@ -481,7 +491,7 @@ formData.append("Id",id)
                     <input
                         key={locale}
                         placeholder={`Product  Name in ${locale} Language`}
-                        defaultValue={`${Product?.response?.productName[locale as keyof typeof Product.response.productName]}`}
+                        defaultValue={String(Product?.response?.productName[locale as keyof typeof Product.response.productName]??"")}
                         type="text"
                         id={locale}
                         name={`Name${locale}`}
@@ -501,7 +511,7 @@ formData.append("Id",id)
                 i18n.locales.map((locale) => (
                     <input
                         key={locale}
-                        defaultValue={`${Product?.response.description[locale as keyof typeof Product.response.productName]}`}
+                        defaultValue={String(Product?.response.description[locale as keyof typeof Product.response.productName]??"")}
                         placeholder={`Product  Description in ${locale} Language`}
                         type="text"
                         id={locale}
@@ -575,15 +585,20 @@ formData.append("Id",id)
             </label>
             <div id="sizes" className="grid grid-cols-3 gap-4">
 {
-    sizes?.response.map((size)=>(
+    sizes?.response?.map((size)=>{
+      const stockCount = Product?.response?.sizes?.find((x) => x.sizeId === size.id)?.stockCount;
+      return(
 
-              <div className="">
+              <div className="" key={size.id}>
                 <label htmlFor={size.id} className="text-sm font-medium text-gray-900 dark:text-white">№ {size.size}</label>
+               
+               
+               
                 <input
                 id={size.id}
                 name={`SizeId-${size.id}`}
                   type="number"
-                  defaultValue={`${Product?.response.sizes.find((x)=>x.sizeId==size.id)?.stockCount}`}
+                  defaultValue={stockCount !== undefined ? Number(stockCount) : ""}
                   placeholder={`Size ${size.size} Quantity`}
                   onChange={(e) =>{
                     if (Number.parseInt(e.target.value)<1) {
@@ -597,8 +612,8 @@ formData.append("Id",id)
                              dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                  
                 />
-              </div>
-    ))
+              </div>)
+})
 }
            
             </div>

@@ -100,8 +100,6 @@ function NumberInputCheckedValue(e: ChangeEvent<HTMLInputElement>) {
         SetLoader(true);
 
         const form = new FormData(e.currentTarget);
-          
-       
         fetch(`${apiDomen}api/Cupon/AddSpecificCuponForCategory`, {
             method: 'POST',
             headers: {

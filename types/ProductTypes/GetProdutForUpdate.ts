@@ -1,4 +1,4 @@
-import { Locale } from "@/i18n-config"
+
 
 export default interface GetProductForUpdate{
     id:string,

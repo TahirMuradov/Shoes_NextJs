@@ -1,47 +1,27 @@
-import bg_img1 from "../../public/img/bg-img/bg-3.jpg"
-import bg_img2 from "../../public/img/bg-img/bg-2.jpg"
+"use client"
 import { Locale } from "@/i18n-config"
 import { HomeCategoryTopLaunguage } from "@/types/DictionaryTypes/Dictionary"
-import Result from "@/types/ApiResultType"
-import GetCategoryForUI from "@/types/CategoryTypes/GetCategoryForUI"
-import GetTopCategoryArea from "@/types/WebUI/TopCategoryArea/GetTopCategoryArea"
 import Link from "next/link"
+import GetDisCountAreaForUI from "@/types/WebUI/DiscountArea/GetDisCountAreForUI"
+import GetTopCategoryAreaForUI from "@/types/WebUI/TopCategoryArea/GetTopCategoryAreaForUI"
 interface TopCategoryParams{
+    apiDomen:string|undefined
     locale:Locale,
-    dictinory:HomeCategoryTopLaunguage
+    dictinory:HomeCategoryTopLaunguage,
+    data:GetTopCategoryAreaForUI[]
 }
-const TopCategory:React.FC<TopCategoryParams>=async (params)=>{
-try{
+const TopCategory:React.FC<TopCategoryParams>= (params)=>{
 
-
-    const apiDomen = process.env.apiDomen;
-    // This line should be placed at the very top of your file
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
- const response:Response = await  fetch(`${apiDomen}api/TopCategoryArea/GetTopCategoryAreaForUI`, {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'langCode': `${params.locale}`,  
-            'Accept-Language': `${params.locale}`
-
-    },
-    cache:"no-store",
-    method: "GET",
-  })
-  if (!response.ok) {
-    console.log(response)
-  }
-const data:Result<GetTopCategoryArea[]> = await response.json();
 
     return(
     
         <section className="top_catagory_area lg:grid lg:grid-cols-2 clearfix">
             {
 
-        data.response.map((item)=>(
+        params.data.map((item,index)=>(
 
            
-            <div key={item.id} className="single_catagory_area flex items-center w-full bg-img" style={{backgroundImage:`url(${apiDomen}/${item.pictureUrl})`}}>
+            <div key={index} className="single_catagory_area flex items-center w-full bg-img" style={{backgroundImage:`url(${params.apiDomen}/${item.pictureUrl})`}}>
                 <div className="catagory-content">
                     <h6>{item.title}</h6>
                     <h2>{item.description}</h2>
@@ -55,8 +35,6 @@ const data:Result<GetTopCategoryArea[]> = await response.json();
         </section>
     
     )
-}catch(error){
-console.log(error)
-}
+
 }
 export default TopCategory;
