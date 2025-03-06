@@ -7,11 +7,17 @@ import GetProductDetailType from "@/types/ProductTypes/GetProductDetailType";
 
 
 
+
 export default async function Page ({ params }: { params: {lang:Locale, id: string } }){
+    const validStr = (str:string) => str ? true : false
+
+if (!validStr(params.id)) return null;
+    
+
     const apiDomen = process.env.apiDomen;
     const dictionary:ProductDetailLaunguage= (await getDictionary(params.lang)).ProductDetail
     try{
-
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
         const response = await fetch(`${apiDomen}api/Product/GetProductDetail?Id=${params.id}`, {
             method: 'GET',
             cache:"no-store",
@@ -23,12 +29,32 @@ export default async function Page ({ params }: { params: {lang:Locale, id: stri
             
             }
         });
-        if (!response.ok) {
-console.log(response)
+        const data= await response.json();
+        console.log(data)
+        if (!data.isSuccess) {
+
+            let errors = "<ul>";
+            if (Array.isArray(data.messages)) {
+            
+                data.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (data.message) {
+             
+                errors += `<li>${data.message}</li>`;
+            }
+            else if(data.errors){
+       
+               data.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+            }
+            errors += "</ul>";
+    
+          console.error(errors)
 
         }
-        const data:Result<GetProductDetailType> = await response.json();
-console.log(data)
+
         
 if (data.isSuccess) {
    
